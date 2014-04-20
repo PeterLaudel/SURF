@@ -13,19 +13,19 @@ public class ImageProcess {
 	 */
     static void applyMask(Image image, int divisor, int offset, double[][] mask, boolean pure)
     {
-    	int[] dstPixels = image.imagePixels;
+    	int[] dstPixels = image.GetImagePixels();
     	//calculate the middle value of the array for example
     	int xNegativeValue = (int) (mask.length / 2.0);
     	int yNegativeValue = (int) (mask[0].length / 2.0);
     	
     	//iterate over the image
-    	for(int y = 0; y < image.imageHeight; y++)
+    	for(int y = 0; y < image.GetHeight(); y++)
 		{
-	    	for(int x = 0; x < image.imageWidth; x++)	
+	    	for(int x = 0; x < image.GetWidth(); x++)	
 	    	{
 	    		
     			//calculate the current position -> the center of the mask
-    			int realPos = y * image.imageWidth + x;
+    			int realPos = y * image.GetWidth() + x;
     			
     			//go from -index over 0 to +index
     			int value = 0;
@@ -38,16 +38,16 @@ public class ImageProcess {
     					int yIndex = y + j;
     					
     					//out of bounds check
-    					if(yIndex >= image.imageHeight || yIndex < 0)
+    					if(yIndex >= image.GetHeight() || yIndex < 0)
     			    		continue;
-    			    	if(xIndex >= image.imageWidth || xIndex < 0)
+    			    	if(xIndex >= image.GetWidth() || xIndex < 0)
     			    		continue;
 
     			    	//compute the position
-						int pos = yIndex * image.imageWidth + xIndex;
+						int pos = yIndex * image.GetWidth() + xIndex;
 						
 						//get the gray value
-						int gray = image.imagePixels[pos] & 0xFF;
+						int gray = image.GetImagePixels()[pos] & 0xFF;
 						
 						//accumulate the result to the value
 						value += (int) ((gray * mask[j + xNegativeValue][i + yNegativeValue]));
@@ -79,7 +79,7 @@ public class ImageProcess {
     	int[] histogram = new int[256];
     	
     	//get the pixels
-    	int[] pixels = image.imagePixels;
+    	int[] pixels = image.GetImagePixels();
     	int mean = 0;
     	
     	//iterate over all pixels and update the histogram and calculate the mean
@@ -141,9 +141,9 @@ public class ImageProcess {
     static Image accumulatorImageForLineDetection(Image image)
     {
     	//initialize propertys
-    	int height = image.imageHeight;
-    	int width = image.imageWidth;
-    	int[] srcPixels = image.imagePixels;
+    	int height = image.GetHeight();
+    	int width = image.GetWidth();
+    	int[] srcPixels = image.GetImagePixels();
     	
     	//the arrayHeight is the diagonal of the image
     	int arrayHeight = (int) (Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2)) + 1); 
