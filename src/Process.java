@@ -29,7 +29,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("save.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\360411_pixelio.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -182,6 +182,9 @@ public class Process extends JPanel {
     		break;
     	case 1:	// Graustufen
     		doGray(srcPixels, dstPixels, width, height);
+    		doIntegralImage(dstPixels, tmpPixels, width, height);
+    		NormalizeIntegraleImage(tmpPixels, dstPixels, width, height);
+    		
     		break;
     	}
 
@@ -229,6 +232,64 @@ public class Process extends JPanel {
 				
 			}
 		}
+    }
+    
+    void doIntegralImage(int srcPixels[], int dstPixels[], int width, int height)
+    {
+    	for(int y = 0; y < height; y++)
+    	{
+    		for(int x = 0; x < width; x++)
+    		{
+    			
+    			int pos	= y * width + x;
+    			if(x != 0 && y != 0)
+    			{
+    				int a = (y - 1) * width + (x - 1);
+    				int b = (y - 1) * width + x;
+    				int c = y * width + (x - 1);
+    				dstPixels[pos] = dstPixels[b] + dstPixels[c] + ((srcPixels[pos]>>16)&0xFF) - dstPixels[a];
+    			}
+    			else if(x == 0 && y != 0)
+    			{
+    				int pos2 = (y - 1) * width + x;
+    				dstPixels[pos] = dstPixels[pos2] + ((srcPixels[pos]>>16)&0xFF);
+    				continue;
+    			}
+    			else if(y == 0 && x != 0)
+    			{
+    				int pos2 = y * width + (x - 1);
+    				dstPixels[pos] = dstPixels[pos2] + ((srcPixels[pos]>>16)&0xFF);
+    				continue;
+    			} 
+    			else if (pos == 0)
+    			{
+    				dstPixels[0] = ((srcPixels[0]>>8)&0xFF);
+    			}
+    			
+    			
+    			
+    		}
+    	}
+    }
+    
+    void NormalizeIntegraleImage(int srcPixels[], int dstPixels[], int width, int height)
+    {
+    	float min = (float) srcPixels[0];
+    	float max = (float) srcPixels[width * height - 1] - min;
+    	
+    	for(int y = 0; y < height; y++)
+    	{
+    		for(int x = 0; x < width; x++)
+    		{
+				int pos = y * width + x;
+				int value = (int)(((srcPixels[pos] - min) / max) * 255.0);
+				int k = 0;
+				if(value != 0)
+					k++;
+						
+				dstPixels[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
+    		}
+    	}
     }
 
 }
