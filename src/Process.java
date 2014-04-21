@@ -29,7 +29,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\360411_pixelio.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test2.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -183,10 +183,8 @@ public class Process extends JPanel {
     	case 1:	// Graustufen
     		doGray(srcPixels, dstPixels, width, height);
     		
-    		Image srcImage = new Image(srcPixels, width, height);
-    		IntegralImage integralImage = new IntegralImage(srcImage);
-    		dstPixels = integralImage.GetDrawableIntegraleImage().GetImagePixels();
-    		
+    		Image srcImage = new Image(dstPixels, width, height);
+    		dstPixels = doTmp(srcImage);
     		break;
     	}
 
@@ -234,6 +232,43 @@ public class Process extends JPanel {
 				
 			}
 		}
+    }
+    
+    int[] doTmp(Image image)
+    {
+    	int[] dstPixel = new int[image.GetHeight() * image.GetWidth()];
+    	System.arraycopy(image.GetImagePixels(), 0, dstPixel, 0, dstPixel.length);
+		IntegralImage integralImage = new IntegralImage(image);
+		BoxFilter yyFilter = BoxFilter.GetSURFyyFilter(9);
+		BoxFilter xxFilter = BoxFilter.GetSURFxxFilter(9);
+		BoxFilter xyFilter = BoxFilter.GetSURFxyFilter(9);
+		
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
+		
+		for (int y = 0; y < image.GetHeight(); y++) {
+			
+			for (int x = 0; x < image.GetWidth(); x++) {
+				int pos	= y * image.GetWidth() + x;
+				
+				int Dxx = (int) (integralImage.ApplyBoxFilter(xxFilter, x, y));
+				int Dyy = (int) (integralImage.ApplyBoxFilter(yyFilter, x, y));
+				int Dxy = (int) (integralImage.ApplyBoxFilter(xyFilter, x, y));
+				
+				int det =(int) (Dxx*Dyy - Math.pow(Dxy*0.81, 2));
+				max = Math.max(det, max);
+				dstPixel[pos] = Math.max(0, det);
+			}
+		}
+		for (int y = 0; y < image.GetHeight(); y++) {
+			
+			for (int x = 0; x < image.GetWidth(); x++) {
+				int pos	= y * image.GetWidth() + x;
+				int value = (int) ((dstPixel[pos]) / (float) max * 255.0);
+				dstPixel[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
+			}
+		}
+		return dstPixel;
     }
 }
     

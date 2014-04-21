@@ -1,3 +1,6 @@
+import java.awt.Point;
+import java.util.Vector;
+
 
 public class IntegralImage {
 	
@@ -49,6 +52,19 @@ public class IntegralImage {
     			}
     		}
     	}
+    	/*
+    	for(int y = 0; y < height; y++)
+    	{
+    		String s = new String();
+    		for(int x = 0; x < width; x++)
+    		{
+    			int pos	= y * width + x;
+    			s += "" + dstPixels[pos]+ ", ";
+    		}
+    		System.out.println(s+ "\n");
+    	}
+    	*/
+    	
     	
     	return new Image(dstPixels, width, height);
     }
@@ -69,5 +85,47 @@ public class IntegralImage {
     		}
     	}
     	return resultImage;
+    }
+    
+    int GetBoxIntegral(int col, int row, int cols, int rows)
+    {
+    	row = Math.min(row, m_integralImage.GetHeight());
+        col = Math.min(col, m_integralImage.GetWidth());
+        rows= Math.min(rows, m_integralImage.GetHeight()-1);
+        cols = Math.min(cols, m_integralImage.GetWidth()-1);
+
+        int A = 0, B = 0, C = 0, D = 0;
+        if (row > 0 && col > 0) A = m_integralImage.GetPixel(col-1, row-1);
+        if (row > 0 && cols > 0) B = m_integralImage.GetPixel(cols, row-1);
+        if (rows > 0 && col > 0) C = m_integralImage.GetPixel(col-1, rows);
+        if (rows > 0 && cols > 0) D = m_integralImage.GetPixel(cols, rows);
+
+        return A +D -B - C;
+    }
+    
+    
+    float ApplyBoxFilter(BoxFilter boxFilter, int x, int y)
+    {
+    	float normalizeFactor = 1.0f / (float) (boxFilter.GetSize() * boxFilter.GetSize());
+    	
+    	float result = 0;
+    	
+    	Vector<Box> boxes = boxFilter.GetBoxes();
+    	
+    	for(int i = 0; i < boxes.size(); i++)
+    	{
+    		Box b = boxes.get(i);
+    		Point pos = new Point(x, y);
+    		Point upPoint = b.GetLeftUpperPoint();
+    		Point bottomPoint = b.GetRightBottemPoint();
+    		
+    		int weight = b.GetWeight();
+    		
+    		result += GetBoxIntegral(pos.x + upPoint.x, pos.y + upPoint.y, pos.x + bottomPoint.x, pos.y + bottomPoint.y) * weight;
+    	}
+    	
+    	float totalWeight = (float) boxFilter.GetWeight();
+    	
+    	return result / totalWeight;
     }
 }
