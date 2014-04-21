@@ -38,4 +38,12 @@ public class Box
 		
 		return count;
 	}
+	
+	public void Scale(int scaleFactor)
+	{
+		m_leftUp.x *= scaleFactor;
+		m_leftUp.y *= scaleFactor;
+		m_rightDown.x *= scaleFactor;
+		m_rightDown.y *= scaleFactor;
+	}
 }

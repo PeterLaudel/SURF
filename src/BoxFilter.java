@@ -5,8 +5,7 @@ public class BoxFilter {
 
 	Vector<Box> m_boxes;
 	private int m_size;
-	private int m_sum;
-	private int m_weight;
+
 	private final static int DEFAULT_SIZE = 9;
 	
 	
@@ -14,13 +13,11 @@ public class BoxFilter {
 	{
 		m_boxes = new Vector<Box>();
 		m_size = size;
-		m_weight = 0;
 	}
 	
 	public void AddBox(Box box)
 	{
 		m_boxes.add(box);
-		m_weight += box.GetArea() * Math.abs(box.GetWeight());
 	}
 	
 	public int GetSize()
@@ -30,7 +27,7 @@ public class BoxFilter {
 	
 	public int GetWeight()
 	{
-		return m_weight;
+		return m_size * m_size;
 	}
 	
 	public Vector<Box> GetBoxes()
@@ -41,6 +38,15 @@ public class BoxFilter {
 	private static boolean IsEven(int value)
 	{
 		return ((value & 1) == 0 );
+	}
+	
+	private void Scale(int scaleFactor)
+	{
+		for(int i = 0; i < m_boxes.size(); i++)
+		{
+			Box b = m_boxes.get(i);
+			b.Scale(scaleFactor);
+		}
 	}
 	
 	static BoxFilter GetSURFxxFilter()
@@ -55,9 +61,11 @@ public class BoxFilter {
 			return null;
 		
 		BoxFilter filter = new BoxFilter(size);
+		int scaleFactor = (int) (Math.round((float) size / (float) BoxFilter.DEFAULT_SIZE) + 0.5f);
 		filter.AddBox(new Box(new Point(-2, -4), new Point(2, -2), 1));
 		filter.AddBox(new Box(new Point(-2, -1), new Point(2, 1), -2));
 		filter.AddBox(new Box(new Point(-2, 2), new Point(2, 4), 1));
+		filter.Scale(scaleFactor);
 		
 		return filter;
 	}

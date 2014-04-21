@@ -106,7 +106,6 @@ public class IntegralImage {
     
     float ApplyBoxFilter(BoxFilter boxFilter, int x, int y)
     {
-    	float normalizeFactor = 1.0f / (float) (boxFilter.GetSize() * boxFilter.GetSize());
     	
     	float result = 0;
     	

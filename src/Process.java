@@ -1,11 +1,28 @@
 // Copyright (C) 2009 by Klaus Jung
 // angepasst von Kai Barthel
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Process extends JPanel {
 	
@@ -29,7 +46,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test2.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -175,7 +192,7 @@ public class Process extends JPanel {
 
 		long startTime = System.currentTimeMillis();
 		
-		int[] tmpPixels = new int[width * height];
+		//int[] tmpPixels = new int[width * height];
     	switch(methodList.getSelectedIndex()) {
     	case 0:	// Kopie
     		doCopy(srcPixels, dstPixels, width, height);
@@ -255,16 +272,20 @@ public class Process extends JPanel {
 				int Dyy = (int) (integralImage.ApplyBoxFilter(yyFilter, x, y));
 				int Dxy = (int) (integralImage.ApplyBoxFilter(xyFilter, x, y));
 				
-				int det =(int) (Dxx*Dyy - Math.pow(Dxy*0.81, 2));
+				int det =(int) (Dxx*Dyy - Math.pow(Dxy*0.9, 2));
+				det = Math.abs(det);
 				max = Math.max(det, max);
-				dstPixel[pos] = Math.max(0, det);
+				min = Math.min(det, min);
+				dstPixel[pos] = det;
 			}
 		}
+		max = Math.abs(max);
 		for (int y = 0; y < image.GetHeight(); y++) {
 			
 			for (int x = 0; x < image.GetWidth(); x++) {
 				int pos	= y * image.GetWidth() + x;
-				int value = (int) ((dstPixel[pos]) / (float) max * 255.0);
+				int value = (int) ((dstPixel[pos] -min) / (float) max * 255.0);
+					
 				dstPixel[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
 			}
 		}
