@@ -60,12 +60,16 @@ public class BoxFilter {
 		if(IsEven(size))
 			return null;
 		
+		
+		
 		BoxFilter filter = new BoxFilter(size);
-		int scaleFactor = (int) (Math.round((float) size / (float) BoxFilter.DEFAULT_SIZE) + 0.5f);
-		filter.AddBox(new Box(new Point(-2, -4), new Point(2, -2), 1));
-		filter.AddBox(new Box(new Point(-2, -1), new Point(2, 1), -2));
-		filter.AddBox(new Box(new Point(-2, 2), new Point(2, 4), 1));
-		filter.Scale(scaleFactor);
+		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0);
+		int xBorder = 2 * (scaleFactor + 1);
+
+		filter.AddBox(new Box(new Point(-xBorder, -4 - (scaleFactor * 3)), new Point(xBorder, -2 - scaleFactor), 1));
+		filter.AddBox(new Box(new Point(-xBorder, -1 - scaleFactor), new Point(xBorder, 1 + scaleFactor), -2));
+		filter.AddBox(new Box(new Point(-xBorder, 2 + scaleFactor), new Point(xBorder, 4 + (scaleFactor * 3)), 1));
+		//filter.Scale(scaleFactor);
 		
 		return filter;
 	}
@@ -75,10 +79,13 @@ public class BoxFilter {
 		if(IsEven(size))
 			return null;
 		
+		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0);
+		int yBorder = 2 * (scaleFactor + 1);
+		
 		BoxFilter filter = new BoxFilter(size);
-		filter.AddBox(new Box(new Point(-4, -2), new Point(-2, 2), 1));
-		filter.AddBox(new Box(new Point(-1, -2), new Point(1, 2), -2));
-		filter.AddBox(new Box(new Point(2, -2), new Point(4, 2), 1));
+		filter.AddBox(new Box(new Point(-4  - (scaleFactor * 3), -yBorder), new Point(-2 - scaleFactor, yBorder), 1));
+		filter.AddBox(new Box(new Point(-1 - scaleFactor, -yBorder), new Point(1 + scaleFactor, yBorder), -2));
+		filter.AddBox(new Box(new Point(2 + scaleFactor, -yBorder), new Point(4  + (scaleFactor * 3), yBorder), 1));
 		
 		return filter;
 	}
@@ -88,11 +95,13 @@ public class BoxFilter {
 		if(IsEven(size))
 			return null;
 		
+		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0) * 2;
+		
 		BoxFilter filter = new BoxFilter(size);
-		filter.AddBox(new Box(new Point(-3, -3), new Point(-1, -1), 1));
-		filter.AddBox(new Box(new Point(1, -3), new Point(3, -1), -1));
-		filter.AddBox(new Box(new Point(-3, 1), new Point(-1, 3), -1));
-		filter.AddBox(new Box(new Point(1, 1), new Point(3, 3), 1));
+		filter.AddBox(new Box(new Point(-3 - scaleFactor, -3 - scaleFactor), new Point(-1, -1), 1));
+		filter.AddBox(new Box(new Point(1, -3 - scaleFactor), new Point(3 + scaleFactor, -1), -1));
+		filter.AddBox(new Box(new Point(-3 - scaleFactor, 1), new Point(-1, 3 + scaleFactor), -1));
+		filter.AddBox(new Box(new Point(1, 1), new Point(3 + scaleFactor, 3 + scaleFactor), 1));
 		
 		return filter;
 	}
