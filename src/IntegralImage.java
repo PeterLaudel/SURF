@@ -100,7 +100,7 @@ public class IntegralImage {
         if (rows > 0 && col > 0) C = m_integralImage.GetPixel(col-1, rows);
         if (rows > 0 && cols > 0) D = m_integralImage.GetPixel(cols, rows);
 
-        return Math.max(0, A + D -B - C);
+        return Math.max(0, A + D - B - C);
     }
     
     
@@ -118,9 +118,7 @@ public class IntegralImage {
     		Point upPoint = b.GetLeftUpperPoint();
     		Point bottomPoint = b.GetRightBottemPoint();
     		
-    		int weight = b.GetWeight();
-    		
-    		result += GetBoxIntegral(pos.x + upPoint.x, pos.y + upPoint.y, pos.x + bottomPoint.x, pos.y + bottomPoint.y) * weight;
+    		result += GetBoxIntegral(pos.x + upPoint.x, pos.y + upPoint.y, pos.x + bottomPoint.x, pos.y + bottomPoint.y) * b.GetWeight();
     	}
     	
     	float totalWeight = (float) boxFilter.GetWeight();

@@ -7,16 +7,13 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.List;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -39,7 +36,6 @@ public class Process extends JPanel {
 	private ImageView srcView;			// source image view
 	private ImageView dstView;			// scaled image view
 	
-	private JComboBox methodList;		// the selected scaling method
 	private JLabel statusLine;			// to print some status text
 	private JTextField parameterInput1;		// to input a scaling factor
 	JPanel images = new JPanel(new FlowLayout());
@@ -49,7 +45,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test2.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -72,17 +68,6 @@ public class Process extends JPanel {
         	}        	
         });
          
-        // selector for the method
-        JLabel methodText = new JLabel("Methode:");
-        String[] methodNames = {"Kopie", "Graustufen"};
-        
-        methodList = new JComboBox(methodNames);
-        methodList.setSelectedIndex(0);		// set initial method
-        methodList.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-                processImage(false);
-        	}
-        });
         
         // input for scaling factor
         JLabel scaleText = new JLabel("Parameter:");
@@ -111,8 +96,6 @@ public class Process extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(0,border,0,0);
         controls.add(load, c);
-        controls.add(methodText, c);
-        controls.add(methodList, c);
         controls.add(scaleText, c);
         controls.add(parameterInput1, c);
         controls.add(apply, c);
@@ -178,8 +161,7 @@ public class Process extends JPanel {
 	
 	
     protected void processImage(boolean silent) {
-  
-        String methodName = (String)methodList.getSelectedItem();
+
     	
     	try  {
     		parameter1 = Double.parseDouble(parameterInput1.getText());
@@ -198,24 +180,18 @@ public class Process extends JPanel {
     	int srcPixels[] = srcView.getPixels();
     	int dstPixels[] = new int[width * height];
     	
-    	String message = "\"" + methodName + "\"";
+    	String message = "\"" + "SURF" + "\"";
 
     	statusLine.setText(message);
 
 		long startTime = System.currentTimeMillis();
 		
-		//int[] tmpPixels = new int[width * height];
-    	switch(methodList.getSelectedIndex()) {
-    	case 0:	// Kopie
-    		doCopy(srcPixels, dstPixels, width, height);
-    		break;
-    	case 1:	// Graustufen
-    		doGray(srcPixels, dstPixels, width, height);
-    		
-    		Image srcImage = new Image(dstPixels, width, height);
-    		dstPixels = doTmp(srcImage);
-    		break;
-    	}
+		doGray(srcPixels, dstPixels, width, height);
+		
+		Image srcImage = new Image(dstPixels, width, height);
+		dstPixels = doTmp(srcImage);
+		
+    	
 
 		long time = System.currentTimeMillis() - startTime;
 		   	
@@ -303,55 +279,13 @@ public class Process extends JPanel {
 			}
 		}
 		*/
-    	IntegralImage integralImage = new IntegralImage(image);
-    	Octave octave = new Octave(2);
-    	octave.ComputeOctaves(integralImage);
     	
-    	Image[] images = octave.GetOctave();
-    	ArrayList<Integer> indices = findMaximum(images);
-    	int[] dstPixel = new int[image.GetHeight() * image.GetWidth()];
-    	System.arraycopy(image.GetImagePixels(), 0, dstPixel, 0, dstPixel.length);
-    	
-    	for(int i = 0; i <indices.size(); i++)
-    		dstPixel[indices.get(i)] =  0xFF000000 | (255<<16) | (0<<8) | 0;
-    	
-    	addImageView(octave.GetMergedOctave());
-    	
-		return dstPixel;
+    	SURF surf = new SURF(image, 4);
+    	surf.Process();
+    	addImageView(surf.GetOctaveImage(2, 2));
+    	return image.GetImagePixels();
     }
     
-    ArrayList<Integer> findMaximum(Image[] octave)
-    {
-    	ArrayList<Integer> list = new ArrayList<Integer>();
-    	int[] octavePixels = octave[1].GetImagePixels();
-    	for (int y = 1; y < octave[1].GetHeight() - 1; y++) {
-			for (int x = 1; x < octave[1].GetWidth() - 1; x++) {
-				int pos	= y * octave[1].GetWidth() + x;
-				int[] neighborhood = new int[] {1, 0 ,-1};
-				
-				boolean found = true;
-				outerloop:
-				for(int i = 0; i< neighborhood.length; i++)
-					for(int j = 0; j <neighborhood.length; j++)
-						for(int k = 0; k < neighborhood.length; k++)
-						{
-							int[] tmpOctavePixels = octave[1-neighborhood[k]].GetImagePixels();
-							System.out.println("i: " + i + " j: " + j + " k: " + k);
-							int tmpPos = (y - neighborhood[i]) * octave[1].GetWidth() + (x - neighborhood[j]);
-							if(tmpOctavePixels[tmpPos] >=  octavePixels[pos] && (tmpPos != pos ))
-							{
-								found = false;
-								break outerloop;
-							}
-						}
-				
-				if(found)
-					list.add(pos);
-					
-			}
-			
-    	}
-    	return list;
-    }
+
 }
     
