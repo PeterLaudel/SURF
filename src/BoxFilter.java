@@ -29,6 +29,11 @@ public class BoxFilter {
 		return m_size * m_size;
 	}
 	
+	public int GetScale()
+	{
+		return m_scale;
+	}
+	
 	public Vector<Box> GetBoxes()
 	{
 		return m_boxes;
