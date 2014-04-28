@@ -20,7 +20,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Process extends JPanel {
@@ -34,12 +37,18 @@ public class Process extends JPanel {
 	private static JFrame frame;
 	
 	private ImageView srcView;			// source image view
+	private ImageView octaveView;
 	private ImageView dstView;			// scaled image view
 	
 	private JLabel statusLine;			// to print some status text
 	private JTextField parameterInput1;		// to input a scaling factor
 	JPanel images = new JPanel(new FlowLayout());
 	private double parameter1 = 1;		// initial scaling factor
+	
+	private JSlider m_octaveDepthSlider;
+	private JSlider m_octaveLayerSlider;
+	
+	private SURF m_surf;
 
 	public Process() {
         super(new BorderLayout(border, border));
@@ -51,9 +60,31 @@ public class Process extends JPanel {
         
         srcView = new ImageView(input);
         srcView.setMaxSize(new Dimension(maxWidth, maxHeight));
+        
+        octaveView = new ImageView(input);
+        octaveView.setMaxSize(new Dimension(maxWidth, maxHeight));
        
 		// create an empty destination image
 		dstView = new ImageView(maxWidth, maxHeight);
+		
+		JLabel octaveDepthText = new JLabel("Octave Depth: ");
+		JLabel octaveLayerText = new JLabel("Octave Layer: ");
+		
+		m_octaveDepthSlider = new JSlider(0, 3);
+		m_octaveLayerSlider = new JSlider(0, 3);
+		
+		ChangeListener al = new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				octaveView.setPixels(m_surf.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue()).GetImagePixels());
+				frame.pack();
+			}
+		};
+		
+		m_octaveDepthSlider.addChangeListener(al);
+		m_octaveLayerSlider.addChangeListener(al);
 		
 		// load image button
         JButton load = new JButton("Bild Oeffnen");
@@ -96,12 +127,17 @@ public class Process extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(0,border,0,0);
         controls.add(load, c);
+        controls.add(octaveDepthText);
+        controls.add(m_octaveDepthSlider, c);
+        controls.add(octaveLayerText, c);
+        controls.add(m_octaveLayerSlider, c);
         controls.add(scaleText, c);
         controls.add(parameterInput1, c);
         controls.add(apply, c);
         
         
         images.add(srcView);
+        images.add(octaveView);
         images.add(dstView);
         
         add(controls, BorderLayout.NORTH);
@@ -280,9 +316,9 @@ public class Process extends JPanel {
 		}
 		*/
     	
-    	SURF surf = new SURF(image, 4);
-    	surf.Process();
-    	addImageView(surf.GetOctaveImage(2, 2));
+    	m_surf = new SURF(image, 4);
+    	m_surf.Process();
+    	//addImageView(surf.GetOctaveImage(2, 2));
     	return image.GetImagePixels();
     }
     

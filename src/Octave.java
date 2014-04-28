@@ -7,19 +7,23 @@ public class Octave {
 	
 	private int m_octaveNumber;
 	private Image[] m_octave;
+	private int m_scalePixelSteps;
+	private int m_startFilterSize;
 	
 	
 	public Octave(int octaveNumber)
 	{
 		m_octaveNumber = octaveNumber;
+		m_scalePixelSteps = m_octaveNumber * Octave.PIXEL_SCALE;
+		m_startFilterSize = Octave.DEFAULT_FILTER_SIZE + (m_octaveNumber - 1) * Octave.PIXEL_SCALE;
 		
 	}
 	
 	
 	void ComputeOctaves(IntegralImage integralImage)
 	{
-		int scalePixelSteps = m_octaveNumber * Octave.PIXEL_SCALE;
-		int startFilterSize = Octave.DEFAULT_FILTER_SIZE + (m_octaveNumber - 1) * Octave.PIXEL_SCALE;
+		int scalePixelSteps = m_scalePixelSteps;
+		int startFilterSize = m_startFilterSize;
 		
 		//int min = Integer.MAX_VALUE;
 		//int max = Integer.MIN_VALUE;
@@ -56,6 +60,14 @@ public class Octave {
 			return m_octave;
 		else
 			return null;
+	}
+	
+	Image GetOctaveImage(int octaveLayer)
+	{
+		Image image = new Image(m_octave[octaveLayer].GetImagePixels().clone(), m_octave[octaveLayer].GetWidth(), m_octave[octaveLayer].GetHeight());
+		ImageProcess.NormalizeImage(image);
+		ImageProcess.CastToRGB(image);
+		return image;
 	}
 	
 	Image GetMergedOctave()

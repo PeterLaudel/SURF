@@ -14,7 +14,7 @@ public class SURF {
 		m_octaves = new Octave[m_octaveDepth];
 		
 		for(int i = 0; i< m_octaves.length; i++)
-			m_octaves[i] = new Octave(i);
+			m_octaves[i] = new Octave(i+1);
 		
 		m_integralImage = new IntegralImage(m_image);
 		
@@ -49,8 +49,7 @@ public class SURF {
 		if(octaveNumber >= m_octaveDepth || octaveLayer > 3)
 			return null;
 		
-		Image[] octaveImages = m_octaves[octaveNumber].GetOctave();
-		return octaveImages[octaveLayer];
+		return m_octaves[octaveNumber].GetOctaveImage(octaveLayer);
 	}
 	
    private ArrayList<Integer> findMaximum(Image[] octave)
