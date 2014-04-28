@@ -49,7 +49,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test2.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -134,7 +134,7 @@ public class Process extends JPanel {
 	void addImageView(Image image)
 	{
 		ImageView view = new ImageView(image.GetWidth(), image.GetHeight());
-		Image tmpImage = ImageProcess.CastToRGB(image);
+		Image tmpImage = ImageProcess.CastToRGBCopy(ImageProcess.NormalizeImageCopy(image));
 		view.setPixels(tmpImage.GetImagePixels());
 		images.add(view);
 		frame.pack();
@@ -305,7 +305,9 @@ public class Process extends JPanel {
 		*/
     	IntegralImage integralImage = new IntegralImage(image);
     	Octave octave = new Octave(2);
-    	Image[] images = octave.GetOctave(integralImage);
+    	octave.ComputeOctaves(integralImage);
+    	
+    	Image[] images = octave.GetOctave();
     	ArrayList<Integer> indices = findMaximum(images);
     	int[] dstPixel = new int[image.GetHeight() * image.GetWidth()];
     	System.arraycopy(image.GetImagePixels(), 0, dstPixel, 0, dstPixel.length);
@@ -313,8 +315,7 @@ public class Process extends JPanel {
     	for(int i = 0; i <indices.size(); i++)
     		dstPixel[indices.get(i)] =  0xFF000000 | (255<<16) | (0<<8) | 0;
     	
-    	for(int i = 0; i < images.length; i++)
-    		addImageView(images[i]);
+    	addImageView(octave.GetMergedOctave());
     	
 		return dstPixel;
     }

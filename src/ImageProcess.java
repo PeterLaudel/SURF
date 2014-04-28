@@ -210,17 +210,52 @@ public class ImageProcess {
     	return new Image(akkumulatorArray, arrayWidth, arrayHeight);
 	}
     
-    static Image CastToRGB(Image image)
+    static void CastToRGB(Image image)
     {
-    	Image result = new Image(image.GetWidth(), image.GetHeight());
-    	int[] resultPixels = result.GetImagePixels();
+    	//
+    	int[] pixels = image.GetImagePixels();
     	for(int x = 0; x < image.GetWidth(); x++)
     		for(int y = 0; y < image.GetHeight(); y++)
     		{
     			int pos	= y * image.GetWidth() + x;
-    			int value = image.GetImagePixels()[pos];
-    			resultPixels[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
+    			int value = pixels[pos];
+    			pixels[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
     		}
+    }
+    
+    static Image CastToRGBCopy(Image image)
+    {
+    	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
+    	CastToRGB(result);
     	return result;
+    }
+    
+    
+    static Image NormalizeImageCopy(Image image)
+    {
+    	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
+    	NormalizeImage(result);
+    	return result;
+    }
+    
+    static void NormalizeImage(Image image)
+    {
+    	
+    	int[] pixels = image.GetImagePixels();
+    	int max = GetMax(pixels);
+    	for(int x = 0; x < image.GetWidth(); x++)
+    		for(int y = 0; y < image.GetHeight(); y++)
+    		{
+    			int pos	= y * image.GetWidth() + x;
+    			pixels[pos] = (int) Math.round(((float) pixels[pos] / max) * 255.0f);
+    		}
+    }
+    
+    private static int GetMax(int[] array)
+    {
+    	int max = Integer.MIN_VALUE;
+    	for(int i = 0; i < array.length; i++)
+    		max = Math.max(max, array[i]);
+    	return max;
     }
 }

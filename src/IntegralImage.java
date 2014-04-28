@@ -100,7 +100,7 @@ public class IntegralImage {
         if (rows > 0 && col > 0) C = m_integralImage.GetPixel(col-1, rows);
         if (rows > 0 && cols > 0) D = m_integralImage.GetPixel(cols, rows);
 
-        return Math.max(0, A +D -B - C);
+        return Math.max(0, A + D -B - C);
     }
     
     
