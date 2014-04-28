@@ -209,4 +209,18 @@ public class ImageProcess {
     	//return a new image
     	return new Image(akkumulatorArray, arrayWidth, arrayHeight);
 	}
+    
+    static Image CastToRGB(Image image)
+    {
+    	Image result = new Image(image.GetWidth(), image.GetHeight());
+    	int[] resultPixels = result.GetImagePixels();
+    	for(int x = 0; x < image.GetWidth(); x++)
+    		for(int y = 0; y < image.GetHeight(); y++)
+    		{
+    			int pos	= y * image.GetWidth() + x;
+    			int value = image.GetImagePixels()[pos];
+    			resultPixels[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
+    		}
+    	return result;
+    }
 }

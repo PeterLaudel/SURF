@@ -127,4 +127,14 @@ public class IntegralImage {
     	
     	return result / totalWeight;
     }
+    
+    int GetWidth()
+    {
+    	return m_integralImage.GetWidth();
+    }
+    
+    int GetHeight()
+    {
+    	return m_integralImage.GetHeight();
+    }
 }

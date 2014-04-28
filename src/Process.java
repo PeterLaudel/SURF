@@ -7,10 +7,12 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.List;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -40,13 +42,14 @@ public class Process extends JPanel {
 	private JComboBox methodList;		// the selected scaling method
 	private JLabel statusLine;			// to print some status text
 	private JTextField parameterInput1;		// to input a scaling factor
+	JPanel images = new JPanel(new FlowLayout());
 	private double parameter1 = 1;		// initial scaling factor
 
 	public Process() {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -114,7 +117,7 @@ public class Process extends JPanel {
         controls.add(parameterInput1, c);
         controls.add(apply, c);
         
-        JPanel images = new JPanel(new FlowLayout());
+        
         images.add(srcView);
         images.add(dstView);
         
@@ -126,6 +129,15 @@ public class Process extends JPanel {
         
         // perform the initial scaling
         processImage(true);
+	}
+	
+	void addImageView(Image image)
+	{
+		ImageView view = new ImageView(image.GetWidth(), image.GetHeight());
+		Image tmpImage = ImageProcess.CastToRGB(image);
+		view.setPixels(tmpImage.GetImagePixels());
+		images.add(view);
+		frame.pack();
 	}
 	
 	private File openFile() {
@@ -253,6 +265,7 @@ public class Process extends JPanel {
     
     int[] doTmp(Image image)
     {
+    	/*
     	int[] dstPixel = new int[image.GetHeight() * image.GetWidth()];
     	System.arraycopy(image.GetImagePixels(), 0, dstPixel, 0, dstPixel.length);
 		IntegralImage integralImage = new IntegralImage(image);
@@ -289,7 +302,55 @@ public class Process extends JPanel {
 				dstPixel[pos] = 0xFF000000 | (value<<16) | (value<<8) | value;
 			}
 		}
+		*/
+    	IntegralImage integralImage = new IntegralImage(image);
+    	Octave octave = new Octave(2);
+    	Image[] images = octave.GetOctave(integralImage);
+    	ArrayList<Integer> indices = findMaximum(images);
+    	int[] dstPixel = new int[image.GetHeight() * image.GetWidth()];
+    	System.arraycopy(image.GetImagePixels(), 0, dstPixel, 0, dstPixel.length);
+    	
+    	for(int i = 0; i <indices.size(); i++)
+    		dstPixel[indices.get(i)] =  0xFF000000 | (255<<16) | (0<<8) | 0;
+    	
+    	for(int i = 0; i < images.length; i++)
+    		addImageView(images[i]);
+    	
 		return dstPixel;
+    }
+    
+    ArrayList<Integer> findMaximum(Image[] octave)
+    {
+    	ArrayList<Integer> list = new ArrayList<Integer>();
+    	int[] octavePixels = octave[1].GetImagePixels();
+    	for (int y = 1; y < octave[1].GetHeight() - 1; y++) {
+			for (int x = 1; x < octave[1].GetWidth() - 1; x++) {
+				int pos	= y * octave[1].GetWidth() + x;
+				int[] neighborhood = new int[] {1, 0 ,-1};
+				
+				boolean found = true;
+				outerloop:
+				for(int i = 0; i< neighborhood.length; i++)
+					for(int j = 0; j <neighborhood.length; j++)
+						for(int k = 0; k < neighborhood.length; k++)
+						{
+							int[] tmpOctavePixels = octave[1-neighborhood[k]].GetImagePixels();
+							System.out.println("i: " + i + " j: " + j + " k: " + k);
+							int tmpPos = (y - neighborhood[i]) * octave[1].GetWidth() + (x - neighborhood[j]);
+							if(tmpOctavePixels[tmpPos] >=  octavePixels[pos] && (tmpPos != pos ))
+							{
+								found = false;
+								break outerloop;
+							}
+						}
+				
+				if(found)
+					list.add(pos);
+					
+			}
+			
+    	}
+    	return list;
     }
 }
     

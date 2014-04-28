@@ -6,12 +6,12 @@ public class BoxFilter {
 	Vector<Box> m_boxes;
 	private int m_size;
 
-	private final static int DEFAULT_SIZE = 9;
+	
 	
 	
 	public BoxFilter(int size)
 	{
-		m_boxes = new Vector<Box>();
+		m_boxes = new Vector<Box>(4);
 		m_size = size;
 	}
 	
@@ -48,11 +48,7 @@ public class BoxFilter {
 			b.Scale(scaleFactor);
 		}
 	}
-	
-	static BoxFilter GetSURFxxFilter()
-	{
-		return BoxFilter.GetSURFxxFilter(BoxFilter.DEFAULT_SIZE);
-	}
+
 	
 	static BoxFilter GetSURFxxFilter(int size)
 	{
@@ -63,7 +59,7 @@ public class BoxFilter {
 		
 		
 		BoxFilter filter = new BoxFilter(size);
-		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0);
+		int scaleFactor = (int) ((size - Octave.DEFAULT_FILTER_SIZE) / 6.0);
 		int xBorder = 2 * (scaleFactor + 1);
 
 		filter.AddBox(new Box(new Point(-xBorder, -4 - (scaleFactor * 3)), new Point(xBorder, -2 - scaleFactor), 1));
@@ -79,7 +75,7 @@ public class BoxFilter {
 		if(IsEven(size))
 			return null;
 		
-		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0);
+		int scaleFactor = (int) ((size - Octave.DEFAULT_FILTER_SIZE) / 6.0);
 		int yBorder = 2 * (scaleFactor + 1);
 		
 		BoxFilter filter = new BoxFilter(size);
@@ -95,7 +91,7 @@ public class BoxFilter {
 		if(IsEven(size))
 			return null;
 		
-		int scaleFactor = (int) ((size - BoxFilter.DEFAULT_SIZE) / 6.0) * 2;
+		int scaleFactor = (int) ((size - Octave.DEFAULT_FILTER_SIZE) / 6.0) * 2;
 		
 		BoxFilter filter = new BoxFilter(size);
 		filter.AddBox(new Box(new Point(-3 - scaleFactor, -3 - scaleFactor), new Point(-1, -1), 1));
