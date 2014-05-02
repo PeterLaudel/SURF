@@ -6,7 +6,7 @@ public class Octave {
 	public final static int DEFAULT_FILTER_SIZE = 9;
 	
 	private int m_octaveNumber;
-	private Image[] m_octave;
+	private HarrisResponse[] m_octave;
 	private int m_scalePixelSteps;
 	private int m_startFilterSize;
 	
@@ -19,7 +19,6 @@ public class Octave {
 		
 	}
 	
-	
 	void ComputeOctaves(IntegralImage integralImage)
 	{
 		int scalePixelSteps = m_scalePixelSteps;
@@ -27,11 +26,11 @@ public class Octave {
 		
 		//int min = Integer.MAX_VALUE;
 		//int max = Integer.MIN_VALUE;
-		m_octave = new Image[4];
+		m_octave = new HarrisResponse[4];
 		for(int i = 0; i < 4; i++)
 		{
-			m_octave[i] = new Image(integralImage.GetWidth(), integralImage.GetHeight());
-			int[] octavePixels = m_octave[i].GetImagePixels();
+			m_octave[i] = new HarrisResponse(integralImage.GetWidth(), integralImage.GetHeight(), (startFilterSize/ (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
+			float[] octavePixels = m_octave[i].GetResponseArray();
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
 			BoxFilter dxyBoxFilter = BoxFilter.GetSURFxyFilter(startFilterSize);
@@ -45,7 +44,7 @@ public class Octave {
 					float Dyy =  (integralImage.ApplyBoxFilter(dyyBoxFilter, x, y));
 					float Dxy =  (integralImage.ApplyBoxFilter(dxyBoxFilter, x, y));
 					
-					octavePixels[pos] = (int) Math.abs(Dxx*Dyy - Math.pow(Dxy*0.9, 2));
+					octavePixels[pos] = (float) Math.abs(Dxx*Dyy - Math.pow(Dxy*0.9, 2));
 				}
 			}
 			
@@ -53,7 +52,7 @@ public class Octave {
 		}
 	}
 	
-	Image[] GetOctave()
+	HarrisResponse[] GetOctave()
 	{
 		if(m_octave != null)
 			return m_octave;
@@ -63,10 +62,8 @@ public class Octave {
 	
 	Image GetOctaveImage(int octaveLayer)
 	{
-		Image image = new Image(m_octave[octaveLayer].GetImagePixels().clone(), m_octave[octaveLayer].GetWidth(), m_octave[octaveLayer].GetHeight());
-		ImageProcess.NormalizeImage(image);
-		ImageProcess.CastToRGB(image);
-		return image;
+
+		return m_octave[octaveLayer].GetImage();
 	}
 	
 	Image GetMergedOctave()
@@ -79,7 +76,7 @@ public class Octave {
 		int[] resultPixels = result.GetImagePixels();
 		for(int i = 0; i < m_octave.length; i++)
 		{
-			int[] pixels = m_octave[i].GetImagePixels();
+			int[] pixels = m_octave[i].GetImage().GetImagePixels();
 			System.arraycopy(pixels, 0, resultPixels, i * pixels.length, pixels.length);
 		}
 		return result;

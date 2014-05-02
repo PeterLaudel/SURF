@@ -43,10 +43,14 @@ public class SURF {
 			m_octaves[i].ComputeOctaves(m_integralImage);
 		}
 		
-		ArrayList<Integer> result = FindLocalMaximum();		
+		ArrayList<InterestPoint> result = FindLocalMaximum();		
 		int[] imagePixels = m_image.GetImagePixels();
 		for(int i = 0; i < result.size();i++)
-			imagePixels[result.get(i)] = 0xFF000000 | (255<<16) | (0<<8) | 0;
+		{
+			InterestPoint ip = result.get(i);
+			int pos = ip.y * m_image.GetWidth() + ip.x;
+			imagePixels[pos] = 0xFF000000 | (255<<16) | (0<<8) | 0;
+		}
 	}
 	
 	public Image GetOctaveImage(int octaveNumber, int octaveLayer)
@@ -56,64 +60,28 @@ public class SURF {
 		
 		return m_octaves[octaveNumber].GetOctaveImage(octaveLayer);
 	}
-	
-   private ArrayList<Integer> findMaximum(Image[] octave)
-    {
-    	ArrayList<Integer> list = new ArrayList<Integer>();
-    	int[] octavePixels = octave[1].GetImagePixels();
-    	for (int y = 1; y < octave[1].GetHeight() - 1; y++) {
-			for (int x = 1; x < octave[1].GetWidth() - 1; x++) {
-				int pos	= y * octave[1].GetWidth() + x;
-				int[] neighborhood = new int[] {1, 0 ,-1};
-				
-				boolean found = true;
-				outerloop:
-				for(int i = 0; i< neighborhood.length; i++)
-					for(int j = 0; j <neighborhood.length; j++)
-						for(int k = 0; k < neighborhood.length; k++)
-						{
-							int[] tmpOctavePixels = octave[1-neighborhood[k]].GetImagePixels();
-							int tmpPos = (y - neighborhood[i]) * octave[1].GetWidth() + (x - neighborhood[j]);
-							if(tmpOctavePixels[tmpPos] >=  octavePixels[pos] && (tmpPos != pos ))
-							{
-								found = false;
-								break outerloop;
-							}
-						}
-				
-				if(found)
-					list.add(pos);
-					
-			}
-			
-    	}
-    	return list;
-    }
    
-   private ArrayList<Integer> FindLocalMaximum()
+   private ArrayList<InterestPoint> FindLocalMaximum()
    {
-	   ArrayList<Integer> result = new ArrayList<Integer>();
+	   ArrayList<InterestPoint> result = new ArrayList<InterestPoint>();
 	   int[] neighborhood = new int[] {1, 0 ,-1};
 	   for(int i = 0; i < m_octaves.length; i++)
 	   {
-		   Image[] octaveLayer = m_octaves[i].GetOctave();
+		   HarrisResponse[] octaveLayer = m_octaves[i].GetOctave();
 		   for(int j = 1; j < octaveLayer.length - 1; j++)
 		   {
-			   Image octaveLayerImage = octaveLayer[j];
-			   
-			   
+			   HarrisResponse octaveLayerImage = octaveLayer[j];
 			   for(int x = 1; x < octaveLayerImage.GetWidth() - 1; x++)
 				   for(int y = 1; y < octaveLayerImage.GetHeight() - 1; y++)
 				   {
 					   boolean found = true;
-					   int pos = y * octaveLayerImage.GetWidth() + x;
 					   failed:
 					   for(int u = 0; u < neighborhood.length; u++)
 						   for(int v = 0; v < neighborhood.length; v++)
 							   for(int w = 0; w < neighborhood.length; w++)
 							   {
 								   int layer = j + neighborhood[w];
-								   if(octaveLayerImage.GetPixel(x, y) <=  octaveLayer[layer].GetPixel((x + neighborhood[u]), (y + neighborhood[v]))
+								   if(octaveLayerImage.GetResponse(x, y) <=  octaveLayer[layer].GetResponse((x + neighborhood[u]), (y + neighborhood[v]))
 										   && !(neighborhood[u] == 0 && neighborhood[v] == 0 && neighborhood[w] == 0))
 								   {
 									   found = false;
@@ -121,7 +89,7 @@ public class SURF {
 								   }
 							   }
 					   if(found)
-					    result.add(pos);
+						   result.add(new InterestPoint(x, y, octaveLayer[i].GetScale()));
 				   }
 		   } 
 	   }

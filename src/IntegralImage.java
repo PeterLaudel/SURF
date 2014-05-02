@@ -71,17 +71,17 @@ public class IntegralImage {
     
     int GetBoxIntegral(int col, int row, int cols, int rows)
     {
-    	row = Math.min(Math.max(row, 1), m_integralImage.GetHeight()-1); 
-        col = Math.min(Math.max(col, 1), m_integralImage.GetWidth()-1);
-        rows= Math.min(Math.max(0, rows), m_integralImage.GetHeight()-1);
-        cols = Math.min(Math.max(0, cols), m_integralImage.GetWidth()-1);
+    	row = Math.min(Math.max(0, row), m_integralImage.GetHeight() - 1); 
+        col = Math.min(Math.max(0, col), m_integralImage.GetWidth() - 1);
+        rows = Math.min(Math.max(0, rows), m_integralImage.GetHeight() - 1);
+        cols = Math.min(Math.max(0, cols), m_integralImage.GetWidth() - 1);
         
 
 
         int A = 0, B = 0, C = 0, D = 0;
-        A = m_integralImage.GetPixel(col-1, row-1);
-        B = m_integralImage.GetPixel(cols, row-1);
-        C = m_integralImage.GetPixel(col-1, rows);
+        A = m_integralImage.GetPixel(col, row);
+        B = m_integralImage.GetPixel(cols, row);
+        C = m_integralImage.GetPixel(col, rows);
         D = m_integralImage.GetPixel(cols, rows);
 
         return Math.max(0, A + D - B - C);
@@ -105,9 +105,7 @@ public class IntegralImage {
     		result += GetBoxIntegral(pos.x + upPoint.x, pos.y + upPoint.y, pos.x + bottomPoint.x, pos.y + bottomPoint.y) * b.GetWeight();
     	}
     	
-    	float totalWeight = (float) boxFilter.GetWeight();
-    	
-    	return result / totalWeight;
+    	return result / boxFilter.GetWeight();
     }
     
     int GetWidth()
