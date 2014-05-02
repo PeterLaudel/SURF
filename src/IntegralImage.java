@@ -15,41 +15,23 @@ public class IntegralImage {
 	
 	private Image ComputeIntegralImage(Image srcImage)
     {
-		int height = srcImage.GetHeight();
-		int width = srcImage.GetWidth();
+		int height = srcImage.GetHeight() + 1;
+		int width = srcImage.GetWidth() + 1;
 		int[] srcPixels = srcImage.GetImagePixels();
 		int[] dstPixels = new int[width * height];
-    	for(int y = 0; y < height; y++)
+    	for(int y = 1; y < height; y++)
     	{
-    		for(int x = 0; x < width; x++)
+    		for(int x = 1; x < width; x++)
     		{
     			
     			int pos	= y * width + x;
-    			if(x != 0 && y != 0)
-    			{
-    				int a = (y - 1) * width + (x - 1);
-    				int b = (y - 1) * width + x;
-    				int c = y * width + (x - 1);
-    				dstPixels[pos] = dstPixels[b] + dstPixels[c] + ((srcPixels[pos]>>16)&0xFF) - dstPixels[a];
-    				continue;
-    			}
-    			else if(x == 0 && y != 0)
-    			{
-    				int pos2 = (y - 1) * width + x;
-    				dstPixels[pos] = dstPixels[pos2] + ((srcPixels[pos]>>16)&0xFF);
-    				continue;
-    			}
-    			else if(y == 0 && x != 0)
-    			{
-    				int pos2 = y * width + (x - 1);
-    				dstPixels[pos] = dstPixels[pos2] + ((srcPixels[pos]>>16)&0xFF);
-    				continue;
-    			} 
-    			else if (pos == 0)
-    			{
-    				dstPixels[0] = ((srcPixels[0]>>8)&0xFF);
-    				continue;
-    			}
+    			int pos2 = (y - 1) * (width - 1) + (x-1);
+				int a = (y - 1) * width + (x - 1);
+				int b = (y - 1) * width + x;
+				int c = y * width + (x - 1);
+				dstPixels[pos] = dstPixels[b] + dstPixels[c] + ((srcPixels[pos2]>>16)&0xFF) - dstPixels[a];
+				continue;
+
     		}
     	}
     	/*
@@ -89,16 +71,18 @@ public class IntegralImage {
     
     int GetBoxIntegral(int col, int row, int cols, int rows)
     {
-    	row = Math.min(row, m_integralImage.GetHeight());
-        col = Math.min(col, m_integralImage.GetWidth());
-        rows= Math.min(rows, m_integralImage.GetHeight()-1);
-        cols = Math.min(cols, m_integralImage.GetWidth()-1);
+    	row = Math.min(Math.max(row, 1), m_integralImage.GetHeight()-1); 
+        col = Math.min(Math.max(col, 1), m_integralImage.GetWidth()-1);
+        rows= Math.min(Math.max(0, rows), m_integralImage.GetHeight()-1);
+        cols = Math.min(Math.max(0, cols), m_integralImage.GetWidth()-1);
+        
+
 
         int A = 0, B = 0, C = 0, D = 0;
-        if (row > 0 && col > 0) A = m_integralImage.GetPixel(col-1, row-1);
-        if (row > 0 && cols > 0) B = m_integralImage.GetPixel(cols, row-1);
-        if (rows > 0 && col > 0) C = m_integralImage.GetPixel(col-1, rows);
-        if (rows > 0 && cols > 0) D = m_integralImage.GetPixel(cols, rows);
+        A = m_integralImage.GetPixel(col-1, row-1);
+        B = m_integralImage.GetPixel(cols, row-1);
+        C = m_integralImage.GetPixel(col-1, rows);
+        D = m_integralImage.GetPixel(cols, rows);
 
         return Math.max(0, A + D - B - C);
     }
@@ -114,7 +98,7 @@ public class IntegralImage {
     	for(int i = 0; i < boxes.size(); i++)
     	{
     		Box b = boxes.get(i);
-    		Point pos = new Point(x, y);
+    		Point pos = new Point(x + 1, y+1);
     		Point upPoint = b.GetLeftUpperPoint();
     		Point bottomPoint = b.GetRightBottemPoint();
     		
@@ -128,11 +112,11 @@ public class IntegralImage {
     
     int GetWidth()
     {
-    	return m_integralImage.GetWidth();
+    	return m_integralImage.GetWidth() - 1;
     }
     
     int GetHeight()
     {
-    	return m_integralImage.GetHeight();
+    	return m_integralImage.GetHeight() - 1;
     }
 }

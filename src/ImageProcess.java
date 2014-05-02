@@ -243,11 +243,19 @@ public class ImageProcess {
     	
     	int[] pixels = image.GetImagePixels();
     	int max = GetMax(pixels);
+    	int min = GetMin(pixels);
+    	NormalizeImage(image, min, max);
+    }
+    
+    static void NormalizeImage(Image image, int min, int max)
+    {
+    	int[] pixels = image.GetImagePixels();
+    	int absolutMax = max - min;
     	for(int x = 0; x < image.GetWidth(); x++)
     		for(int y = 0; y < image.GetHeight(); y++)
     		{
     			int pos	= y * image.GetWidth() + x;
-    			pixels[pos] = (int) Math.round(((float) pixels[pos] / max) * 255.0f);
+    			pixels[pos] = (int) Math.round(((float) (pixels[pos] - min) / absolutMax) * 255.0f);
     		}
     }
     
@@ -257,5 +265,14 @@ public class ImageProcess {
     	for(int i = 0; i < array.length; i++)
     		max = Math.max(max, array[i]);
     	return max;
+    }
+    
+    private static int GetMin(int[] array)
+    {
+    	int min = Integer.MAX_VALUE;
+    	for(int i = 0; i < array.length; i++)
+    		min = Math.min(min, array[i]);
+    	
+    	return min;
     }
 }

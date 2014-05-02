@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
 
 
 public class SURF {
@@ -114,7 +113,7 @@ public class SURF {
 							   for(int w = 0; w < neighborhood.length; w++)
 							   {
 								   int layer = j + neighborhood[w];
-								   if(octaveLayerImage.GetPixel(x, y) <= octaveLayer[layer].GetPixel((x + neighborhood[u]), (y + neighborhood[v]))
+								   if(octaveLayerImage.GetPixel(x, y) <=  octaveLayer[layer].GetPixel((x + neighborhood[u]), (y + neighborhood[v]))
 										   && !(neighborhood[u] == 0 && neighborhood[v] == 0 && neighborhood[w] == 0))
 								   {
 									   found = false;
@@ -132,7 +131,6 @@ public class SURF {
    private  ArrayList<Integer>  FindLocalMaximum(Image image)
    {
 	   ArrayList<Integer> list = new ArrayList<Integer>();
-	   int[] pixels = image.GetImagePixels();
 	   int n = 1;
 	   int step = 2*n +1;
 	   

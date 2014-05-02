@@ -45,8 +45,7 @@ public class Octave {
 					float Dyy =  (integralImage.ApplyBoxFilter(dyyBoxFilter, x, y));
 					float Dxy =  (integralImage.ApplyBoxFilter(dxyBoxFilter, x, y));
 					
-					octavePixels[pos] = (int) Math.max(0, Dxx*Dyy - Math.pow(Dxy*0.9, 2));
-					
+					octavePixels[pos] = (int) Math.abs(Dxx*Dyy - Math.pow(Dxy*0.9, 2));
 				}
 			}
 			
