@@ -54,13 +54,13 @@ public class IntegralImage {
     Image GetDrawableIntegraleImage()
     {
     	
-    	float min = (float) m_integralImage.GetPixel(0, 0);
+    	float min = (float) m_integralImage.GetPixel(1, 1);
     	float max = (float) m_integralImage.GetPixel(m_integralImage.GetWidth()-1, m_integralImage.GetHeight()-1);
     	Image resultImage = new Image(m_integralImage.GetWidth(), m_integralImage.GetHeight());
     	
-    	for(int y = 0; y < m_integralImage.GetHeight(); y++)
+    	for(int y = 1; y < m_integralImage.GetHeight(); y++)
     	{
-    		for(int x = 0; x < m_integralImage.GetWidth(); x++)
+    		for(int x = 1; x < m_integralImage.GetWidth(); x++)
     		{
 				int value = (int)(((m_integralImage.GetPixel(x, y) - min) / max) * 255.0);	
 				resultImage.SetPixel(x, y, 0xFF000000 | (value<<16) | (value<<8) | value);
@@ -84,7 +84,7 @@ public class IntegralImage {
         C = m_integralImage.GetPixel(col, rows);
         D = m_integralImage.GetPixel(cols, rows);
 
-        return Math.max(0, A + D - B - C);
+        return A + D - B - C;
     }
     
     

@@ -9,9 +9,15 @@ public class BoxFilter {
 	
 	public BoxFilter(int size, int scale)
 	{
-		m_boxes = new Vector<Box>(4);
+		m_boxes = new Vector<Box>();
 		m_size = size;
 		m_scale = scale;
+	}
+	
+	public BoxFilter()
+	{
+		m_boxes = new Vector<Box>();
+		m_size = 1;
 	}
 	
 	public void AddBox(Box box)
@@ -19,10 +25,6 @@ public class BoxFilter {
 		m_boxes.add(box);
 	}
 	
-	public int GetSize()
-	{
-		return m_size;
-	}
 	
 	public int GetWeight()
 	{
@@ -48,13 +50,9 @@ public class BoxFilter {
 	
 	static BoxFilter GetSURFxxFilter(int size)
 	{
-		
 		if(IsEven(size))
 			return null;
-		
-		
-		
-		
+
 		int scaleFactor = (int) ((size - Octave.DEFAULT_FILTER_SIZE) / 6.0);
 		int xBorder = 2 * (scaleFactor + 1);
 		BoxFilter filter = new BoxFilter(size, scaleFactor);
@@ -94,6 +92,28 @@ public class BoxFilter {
 		filter.AddBox(new Box(new Point(0, -4 - scaleFactor), new Point(3 + scaleFactor, -1), -1));
 		filter.AddBox(new Box(new Point(-4 - scaleFactor, 0), new Point(-1, 3 + scaleFactor), -1));
 		filter.AddBox(new Box(new Point(0, 0), new Point(3 + scaleFactor, 3 + scaleFactor), 1));
+		
+		return filter;
+	}
+	
+	static BoxFilter GetWaveletX(float scale)
+	{
+
+		int shift = (int) Math.round(scale * 0.5);
+		BoxFilter filter = new BoxFilter(shift*2, (int) scale);
+		filter.AddBox(new Box(new Point(-shift-1, -shift -1), new Point(0, shift), -1));
+		filter.AddBox(new Box(new Point(-1, -shift-1), new Point(shift, shift), 1));
+		
+		return filter;
+	}
+	
+	static BoxFilter GetWaveletY(float scale)
+	{
+
+		int shift = (int) Math.round(scale * 0.5);
+		BoxFilter filter = new BoxFilter(shift*2, (int) scale);
+		filter.AddBox(new Box(new Point(-shift-1, -shift -1), new Point(shift, 0), -1));
+		filter.AddBox(new Box(new Point(-shift-1, -1), new Point(shift, shift), 1));
 		
 		return filter;
 	}

@@ -29,7 +29,7 @@ public class Octave {
 		m_octave = new HarrisResponse[4];
 		for(int i = 0; i < 4; i++)
 		{
-			m_octave[i] = new HarrisResponse(integralImage.GetWidth(), integralImage.GetHeight(), (startFilterSize/ (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
+			m_octave[i] = new HarrisResponse(integralImage.GetWidth(), integralImage.GetHeight(), ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
 			float[] octavePixels = m_octave[i].GetResponseArray();
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
@@ -44,7 +44,7 @@ public class Octave {
 					float Dyy =  (integralImage.ApplyBoxFilter(dyyBoxFilter, x, y));
 					float Dxy =  (integralImage.ApplyBoxFilter(dxyBoxFilter, x, y));
 					
-					octavePixels[pos] = (float) Math.abs(Dxx*Dyy - Math.pow(Dxy*0.9, 2));
+					octavePixels[pos] = (float) Math.max(0, (Dxx*Dyy - Math.pow(Dxy*0.9, 2)));
 				}
 			}
 			

@@ -54,7 +54,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test5.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
