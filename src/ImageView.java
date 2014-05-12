@@ -214,8 +214,12 @@ public class ImageView extends JScrollPane{
 			if (image != null)
 				g.drawImage(image, 0, 0, r.width, r.height, this);
 			Graphics2D g2d = (Graphics2D) g;
+			
 			for(int i = 0; i < m_shapes.size(); i++)
+			{
+				g2d.setColor(Color.RED);
 				g2d.draw(m_shapes.get(i));
+			}
 
 		}
 		

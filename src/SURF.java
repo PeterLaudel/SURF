@@ -18,7 +18,8 @@ public class SURF {
 		for (int i = 0; i < m_octaves.length; i++)
 			m_octaves[i] = new Octave(i + 1);
 
-		m_integralImage = new IntegralImage(m_image);
+		SymmetrizationImage symmetricImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 50);
+		m_integralImage = new IntegralImage(symmetricImage);
 		m_max = Float.MIN_VALUE;
 	}
 
@@ -42,7 +43,7 @@ public class SURF {
 	public ArrayList<InterestPoint> Process() {
 
 		for (int i = 0; i < m_octaves.length; i++) {
-			m_octaves[i].ComputeOctaves(m_integralImage);
+			m_octaves[i].ComputeOctaves(m_integralImage, m_image.GetWidth(), m_image.GetHeight());
 		}
 
 		m_interestPoints = FindLocalMaximum();
@@ -122,16 +123,18 @@ public class SURF {
 			double[][] gaussian = Matrix.get2DGaussianKernel((int) Math.round(radius+1), 2 * ip.scale);
 
 			ArrayList<Point2D.Float> angles = new ArrayList<Point2D.Float>();
-			for (int j = Top; j <= Bottom; j++) {
-				for (int k = Left; k <= Right; k++) {
+			for (int j = Top; j <= Bottom; j+= ip.scale) {
+				for (int k = Left; k <= Right; k+= ip.scale) {
 					double dist = Math.pow(ip.x - k, 2.0)
 							+ Math.pow(ip.y - j, 2.0);
 					if (dist <= radius2) {
+						int x = (int) Math.round(k);
+						int y = (int) Math.round(j);
 
-						xResponse = m_integralImage.ApplyBoxFilter(xWavelet, k,
-								j);
-						yResponse = m_integralImage.ApplyBoxFilter(yWavelet, k,
-								j);
+						xResponse = m_integralImage.ApplyBoxFilter(xWavelet, x,
+								y);
+						yResponse = m_integralImage.ApplyBoxFilter(yWavelet, x,
+								y);
 
 						int idxX = Math.abs(j - ip.y);
 						int idxY = Math.abs(k - ip.x);

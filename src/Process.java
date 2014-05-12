@@ -13,12 +13,14 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -54,6 +56,9 @@ public class Process extends JPanel {
 	private JSlider m_octaveLayerSlider;
 	private JSlider m_thresholdSlider;
 
+	private JCheckBox m_pointCheckBox;
+	private JCheckBox m_directionCheckBox;
+	private JCheckBox m_rectCheckBox;
 	
 	private SURF m_surf;
 
@@ -61,7 +66,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test5.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -74,13 +79,31 @@ public class Process extends JPanel {
 		// create an empty destination image
 		dstView = new ImageView(maxWidth, maxHeight);
 		
+		m_pointCheckBox = new JCheckBox("InterestPoints");
+		m_directionCheckBox = new JCheckBox("Direction");
+		m_rectCheckBox = new JCheckBox("Descriptor Rect");
+		
+		ActionListener al = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				ApplyThreshold(m_surf.GetInterestPoints(), (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
+				frame.pack();
+			}
+		};
+		
+		m_pointCheckBox.addActionListener(al);
+		m_directionCheckBox.addActionListener(al);
+		m_rectCheckBox.addActionListener(al);
+		
 		JLabel octaveDepthText = new JLabel("Octave Depth: ");
 		JLabel octaveLayerText = new JLabel("Octave Layer: ");
 		
 		m_octaveDepthSlider = new JSlider(0, 3);
 		m_octaveLayerSlider = new JSlider(0, 3);
 		
-		ChangeListener al = new ChangeListener() {
+		ChangeListener cl = new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -90,8 +113,8 @@ public class Process extends JPanel {
 			}
 		};
 		
-		m_octaveDepthSlider.addChangeListener(al);
-		m_octaveLayerSlider.addChangeListener(al);
+		m_octaveDepthSlider.addChangeListener(cl);
+		m_octaveLayerSlider.addChangeListener(cl);
 		
 		// load image button
         JButton load = new JButton("Bild Oeffnen");
@@ -153,7 +176,9 @@ public class Process extends JPanel {
         controls.add(scaleText, c);
         controls.add(m_thresholdSlider, c);
         controls.add(apply, c);
-       
+        controls.add(m_pointCheckBox, c);
+        controls.add(m_directionCheckBox, c);
+        controls.add(m_rectCheckBox, c);
         
         
         images.add(srcView);
@@ -335,6 +360,7 @@ public class Process extends JPanel {
 			}
 		}
 		*/
+    	
     	dstView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
     	m_surf = new SURF(image, 4);
     	
@@ -344,6 +370,8 @@ public class Process extends JPanel {
     	
     	//graphics.dispose();
     	
+    	//SymmetrizationImage simage = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 50);
+    	//dstView.setPixels(simage.GetImagePixels(), simage.GetWidth(), simage.GetHeight());
     	
     	//addImageView(surf.GetOctaveImage(2, 2));
     	return image.GetImagePixels();
@@ -355,18 +383,32 @@ public class Process extends JPanel {
     	for(int i = 0; i <interestPoints.size(); i++)
     	{
     		InterestPoint ip = interestPoints.get(i);
-    		if(ip.value / m_surf.GetMax() > threshold)
+    		if((1.0 - ip.value / m_surf.GetMax()) >= threshold)
     			continue;
     		
     		float size = (ip.scale * 20.0f) * 0.5f;
     		
     		AffineTransform at = new AffineTransform();
     		at.rotate(ip.orientation, ip.x, ip.y);
-    		Shape s = at.createTransformedShape(new Rectangle((int) (ip.x - size), (int) (ip.y - size), (int) (size*2), (int) (size*2)));
+    		Shape s;
+    		if(m_rectCheckBox.isSelected())
+    		{
+    			s = at.createTransformedShape(new Rectangle((int) (ip.x - size), (int) (ip.y - size), (int) (size*2), (int) (size*2)));
+    			dstView.AddShape(s);
+    		}
     	
-    		dstView.AddShape(s);
-    		s = at.createTransformedShape(new Line2D.Float(ip.x, ip.y, ip.x+size, ip.y));
-    		dstView.AddShape(s);
+    		
+    		if(m_directionCheckBox.isSelected())
+    		{
+    			s = at.createTransformedShape(new Line2D.Float(ip.x, ip.y, ip.x+size, ip.y));
+    			dstView.AddShape(s);
+    		}
+    		
+    		if( m_pointCheckBox.isSelected())
+    		{
+    			s = new Ellipse2D.Float((float) ip.x, (float) ip.y, 2.0f, 2.0f);
+    			dstView.AddShape(s);
+    		}
     	}
     }
     

@@ -7,9 +7,9 @@ public class Image {
 		Gray
 	}
 	
-	private int[] m_imagePixels;
-	private int m_imageWidth;
-	private int m_imageHeight;
+	protected int[] m_imagePixels;
+	protected int m_imageWidth;
+	protected int m_imageHeight;
 	
 	
 	Image(int[] pixels, int width, int height)

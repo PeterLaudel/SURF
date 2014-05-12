@@ -19,7 +19,7 @@ public class Octave {
 		
 	}
 	
-	void ComputeOctaves(IntegralImage integralImage)
+	void ComputeOctaves(IntegralImage integralImage, int width, int height)
 	{
 		int scalePixelSteps = m_scalePixelSteps;
 		int startFilterSize = m_startFilterSize;
@@ -29,18 +29,16 @@ public class Octave {
 		m_octave = new HarrisResponse[4];
 		for(int i = 0; i < 4; i++)
 		{
-			m_octave[i] = new HarrisResponse(integralImage.GetWidth(), integralImage.GetHeight(), ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
+			m_octave[i] = new HarrisResponse(width, height, ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
 			float[] octavePixels = m_octave[i].GetResponseArray();
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
 			BoxFilter dxyBoxFilter = BoxFilter.GetSURFxyFilter(startFilterSize);
 			
-			int offset = (int) Math.round(startFilterSize *  0.5f);
-			
-			for (int y = offset; y < integralImage.GetHeight() - offset; y++) {
+			for (int y = 0; y < height; y++) {
 				
-				for (int x = offset; x < integralImage.GetWidth() - offset; x++) {
-					int pos	= y * integralImage.GetWidth() + x;
+				for (int x = 0; x < width; x++) {
+					int pos	= y * width + x;
 					
 					float Dxx =  (integralImage.ApplyBoxFilter(dxxBoxFilter, x, y));
 					float Dyy =  (integralImage.ApplyBoxFilter(dyyBoxFilter, x, y));

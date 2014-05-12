@@ -7,10 +7,20 @@ public class IntegralImage {
 	Image m_image;
 	Image m_integralImage;
 	
+	private int m_offset;
+	
 	public IntegralImage(Image image)
 	{
 		m_image = image;
 		m_integralImage = ComputeIntegralImage(m_image);
+		m_offset = 1;
+	}
+	
+	public IntegralImage(SymmetrizationImage image)
+	{
+		m_image = image;
+		m_integralImage = ComputeIntegralImage(m_image);
+		m_offset = image.GetOffset() + 1;
 	}
 	
 	private Image ComputeIntegralImage(Image srcImage)
@@ -98,7 +108,7 @@ public class IntegralImage {
     	for(int i = 0; i < boxes.size(); i++)
     	{
     		Box b = boxes.get(i);
-    		Point pos = new Point(x + 1, y+1);
+    		Point pos = new Point(x + m_offset, y + m_offset);
     		Point upPoint = b.GetLeftUpperPoint();
     		Point bottomPoint = b.GetRightBottemPoint();
     		
