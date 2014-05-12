@@ -1,6 +1,7 @@
 // Copyright (C) 2008 by Klaus Jung
 // angepasst von Kai Barthel
 
+import java.awt.Shape;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -9,6 +10,7 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -27,6 +29,8 @@ public class ImageView extends JScrollPane{
 	int borderY = -1;
 	
 	int pixels[] = null;		// pixel array in ARGB format
+	
+	ArrayList<Shape> m_shapes;
 	
 	public ImageView(int width, int height) {
 		// construct empty image of given size
@@ -165,7 +169,7 @@ public class ImageView extends JScrollPane{
 	{
 		screen = new ImageScreen(bi);
 		setViewportView(screen);
-				
+		m_shapes = new ArrayList<Shape>();
 		maxSize = new Dimension(getPreferredSize());
 		
 		if(borderX < 0) borderX = maxSize.width - bi.getWidth();
@@ -178,6 +182,20 @@ public class ImageView extends JScrollPane{
 	
 	private void updatePixels() {
 		if(pixels != null) screen.image.getRGB(0, 0, getImgWidth(), getImgHeight(), pixels, 0, getImgWidth());
+	}
+	
+	public void AddShape(Shape s)
+	{
+		m_shapes.add(s);
+		screen.invalidate();
+		screen.repaint();
+	}
+	
+	public void ClearShape(){
+		m_shapes.clear();
+		screen.invalidate();
+		screen.repaint();
+		
 	}
 	
 	class ImageScreen extends JComponent {
@@ -195,6 +213,10 @@ public class ImageView extends JScrollPane{
 			Rectangle r = this.getBounds();
 			if (image != null)
 				g.drawImage(image, 0, 0, r.width, r.height, this);
+			Graphics2D g2d = (Graphics2D) g;
+			for(int i = 0; i < m_shapes.size(); i++)
+				g2d.draw(m_shapes.get(i));
+
 		}
 		
 		public Dimension getPreferredSize() {
@@ -203,6 +225,7 @@ public class ImageView extends JScrollPane{
 			else
 				return new Dimension(100, 60);
 		}
+		 
 	}
 
 }

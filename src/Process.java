@@ -7,10 +7,15 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -47,6 +52,8 @@ public class Process extends JPanel {
 	
 	private JSlider m_octaveDepthSlider;
 	private JSlider m_octaveLayerSlider;
+	private JSlider m_thresholdSlider;
+
 	
 	private SURF m_surf;
 
@@ -98,10 +105,22 @@ public class Process extends JPanel {
         		}
         	}        	
         });
+        
+        m_thresholdSlider = new JSlider(0, 1000);
+        m_thresholdSlider.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				ApplyThreshold(m_surf.GetInterestPoints(), (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
+				frame.pack();
+			}
+		});
+        
          
         
         // input for scaling factor
-        JLabel scaleText = new JLabel("Parameter:");
+        JLabel scaleText = new JLabel("Threshold:");
          
         parameterInput1 = new JTextField(8);
         parameterInput1.setText(String.valueOf(parameter1));
@@ -132,8 +151,9 @@ public class Process extends JPanel {
         controls.add(octaveLayerText, c);
         controls.add(m_octaveLayerSlider, c);
         controls.add(scaleText, c);
-        controls.add(parameterInput1, c);
+        controls.add(m_thresholdSlider, c);
         controls.add(apply, c);
+       
         
         
         images.add(srcView);
@@ -225,13 +245,13 @@ public class Process extends JPanel {
 		doGray(srcPixels, dstPixels, width, height);
 		
 		Image srcImage = new Image(dstPixels, width, height);
-		dstPixels = doTmp(srcImage);
+		doTmp(srcImage);
 		
     	
 
 		long time = System.currentTimeMillis() - startTime;
 		   	
-        dstView.setPixels(dstPixels, width, height);
+        
         
         frame.pack();
         
@@ -315,11 +335,39 @@ public class Process extends JPanel {
 			}
 		}
 		*/
-    	
+    	dstView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
     	m_surf = new SURF(image, 4);
+    	
     	m_surf.Process();
+    	
+    	ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
+    	
+    	//graphics.dispose();
+    	
+    	
     	//addImageView(surf.GetOctaveImage(2, 2));
     	return image.GetImagePixels();
+    }
+    
+    void ApplyThreshold(ArrayList<InterestPoint> interestPoints, float threshold)
+    {
+    	dstView.ClearShape();
+    	for(int i = 0; i <interestPoints.size(); i++)
+    	{
+    		InterestPoint ip = interestPoints.get(i);
+    		if(ip.value / m_surf.GetMax() > threshold)
+    			continue;
+    		
+    		float size = (ip.scale * 20.0f) * 0.5f;
+    		
+    		AffineTransform at = new AffineTransform();
+    		at.rotate(ip.orientation, ip.x, ip.y);
+    		Shape s = at.createTransformedShape(new Rectangle((int) (ip.x - size), (int) (ip.y - size), (int) (size*2), (int) (size*2)));
+    	
+    		dstView.AddShape(s);
+    		s = at.createTransformedShape(new Line2D.Float(ip.x, ip.y, ip.x+size, ip.y));
+    		dstView.AddShape(s);
+    	}
     }
     
 

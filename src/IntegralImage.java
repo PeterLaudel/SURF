@@ -69,22 +69,22 @@ public class IntegralImage {
     	return resultImage;
     }
     
-    int GetBoxIntegral(int col, int row, int cols, int rows)
+    int GetBoxIntegral(int xUp, int yUp, int xBot, int yBot)
     {
-    	row = Math.min(Math.max(0, row), m_integralImage.GetHeight() - 1); 
-        col = Math.min(Math.max(0, col), m_integralImage.GetWidth() - 1);
-        rows = Math.min(Math.max(0, rows), m_integralImage.GetHeight() - 1);
-        cols = Math.min(Math.max(0, cols), m_integralImage.GetWidth() - 1);
+    	yUp = Math.min(Math.max(0, yUp), m_integralImage.GetHeight() - 1); 
+        xUp = Math.min(Math.max(0, xUp), m_integralImage.GetWidth() - 1);
+        yBot = Math.min(Math.max(0, yBot), m_integralImage.GetHeight() - 1);
+        xBot = Math.min(Math.max(0, xBot), m_integralImage.GetWidth() - 1);
         
 
 
         int A = 0, B = 0, C = 0, D = 0;
-        A = m_integralImage.GetPixel(col, row);
-        B = m_integralImage.GetPixel(cols, row);
-        C = m_integralImage.GetPixel(col, rows);
-        D = m_integralImage.GetPixel(cols, rows);
+        A = m_integralImage.GetPixel(xUp, yUp);
+        B = m_integralImage.GetPixel(xBot, yUp);
+        C = m_integralImage.GetPixel(xUp, yBot);
+        D = m_integralImage.GetPixel(xBot, yBot);
 
-        return A + D - B - C;
+        return Math.max(0, A + D - B - C);
     }
     
     
