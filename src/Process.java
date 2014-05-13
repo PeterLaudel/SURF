@@ -4,6 +4,7 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,6 +16,9 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -66,7 +70,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -366,8 +370,23 @@ public class Process extends JPanel {
     	
     	m_surf.Process();
     	
-    	ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
-    	
+    	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
+    	/*
+    	BufferedImage bi2 = new BufferedImage(image.GetWidth(), image.GetHeight(), BufferedImage.TYPE_INT_ARGB);
+		bi2.setRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
+		Graphics2D g2d = bi2.createGraphics();
+		AffineTransform at = g2d.getTransform();
+		at.setToRotation(Math.toRadians(45), 50, 50);
+		AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		Rectangle2D rect2D = op.getBounds2D(bi2);
+		
+		BufferedImage bi = new BufferedImage((int) Math.floor(rect2D.getWidth()), (int) Math.floor(rect2D.getHeight()), bi2.getType());
+		op.filter(bi2, bi);
+		bi = bi.getSubimage(-5, -5, 60, 60);
+		int[] pixels = new int[bi.getWidth() *  bi.getHeight()];
+		bi.getRGB(0, 0, bi.getWidth(),  bi.getHeight(), pixels, 0, bi.getWidth());
+		dstView.setPixels( pixels, bi.getWidth(), bi.getHeight());
+		*/
     	//graphics.dispose();
     	
     	//SymmetrizationImage simage = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 50);
@@ -383,7 +402,7 @@ public class Process extends JPanel {
     	for(int i = 0; i <interestPoints.size(); i++)
     	{
     		InterestPoint ip = interestPoints.get(i);
-    		if((1.0 - ip.value / m_surf.GetMax()) >= threshold)
+    		if((ip.value / m_surf.GetMax()) >= threshold)
     			continue;
     		
     		float size = (ip.scale * 20.0f) * 0.5f;

@@ -81,6 +81,7 @@ public class IntegralImage {
     
     int GetBoxIntegral(int xUp, int yUp, int xBot, int yBot)
     {
+    	
     	yUp = Math.min(Math.max(0, yUp), m_integralImage.GetHeight() - 1); 
         xUp = Math.min(Math.max(0, xUp), m_integralImage.GetWidth() - 1);
         yBot = Math.min(Math.max(0, yBot), m_integralImage.GetHeight() - 1);

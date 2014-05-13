@@ -9,7 +9,12 @@ public class SymmetrizationImage extends Image{
 	{
 		super(pixels, width, height);
 		
-		m_offset = offset;
+		if(offset > height && height < width)
+			m_offset = height;
+		else if (offset > width)
+			m_offset = width;
+		else
+			m_offset = offset;
 		m_imageHeight = height + (offset * 2);
 		m_imageWidth = width + (offset * 2);
 		m_imagePixels = new int[m_imageHeight * m_imageWidth];
@@ -24,8 +29,8 @@ public class SymmetrizationImage extends Image{
 		for(int x = -m_offset; x < sizeX; x++)
 			for(int y = -m_offset; y < sizeY; y++)
 			{
-				int originX = (x >= width ? width - (x - width) - 1 : x);
-				int originY = (y >= height ? height - (y - height) - 1 : y);
+				int originX = (x >= width ? width - (x - width) - 1 : x) % width;
+				int originY = (y >= height ? height - (y - height) - 1 : y) % height;
 				int originPos = (Math.abs(originY)) * width + (Math.abs(originX));
 				int pos = (x + m_offset) + m_imageWidth * (y + m_offset);
 				m_imagePixels[pos] = pixels[originPos];

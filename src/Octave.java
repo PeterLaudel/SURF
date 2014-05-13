@@ -14,8 +14,12 @@ public class Octave {
 	public Octave(int octaveNumber)
 	{
 		m_octaveNumber = octaveNumber;
-		m_scalePixelSteps = m_octaveNumber * Octave.PIXEL_SCALE;
-		m_startFilterSize = Octave.DEFAULT_FILTER_SIZE + (m_octaveNumber - 1) * Octave.PIXEL_SCALE;
+		
+		m_scalePixelSteps = Octave.PIXEL_SCALE;
+		for(int i = 1; i <octaveNumber; i++)
+			m_scalePixelSteps *=2;
+		
+		m_startFilterSize = m_scalePixelSteps + 3;
 		
 	}
 	

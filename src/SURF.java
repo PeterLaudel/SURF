@@ -1,4 +1,7 @@
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class SURF {
@@ -18,7 +21,7 @@ public class SURF {
 		for (int i = 0; i < m_octaves.length; i++)
 			m_octaves[i] = new Octave(i + 1);
 
-		SymmetrizationImage symmetricImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 50);
+		SymmetrizationImage symmetricImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 230);
 		m_integralImage = new IntegralImage(symmetricImage);
 		m_max = Float.MIN_VALUE;
 	}
@@ -209,8 +212,27 @@ public class SURF {
 
 			// assign orientation of the dominant response vector
 			ip.orientation = orientation;
-
+			ComputeDescriptor(ip);
 		}
+		
+		
+		
+		
+	}
+	
+	void ComputeDescriptor(InterestPoint ip)
+	{
+		/*
+		BufferedImage bi = new BufferedImage(m_integralImage.GetWidth(), m_integralImage.GetHeight(), BufferedImage.TYPE_INT_ARGB);
+		bi.setRGB(0, 0, m_integralImage.GetWidth(), m_integralImage.GetHeight(), m_integralImage., offset, scansize)
+		
+		int halfBoxSize = (int) Math.floor(ip.scale * 10.0f); 
+		BufferedImage sub = bi.getSubimage(ip.x - halfBoxSize, ip.y - halfBoxSize, halfBoxSize* 2, halfBoxSize * 2);
+		AffineTransform transform = new AffineTransform();
+	    transform.rotate(ip.orientation, sub.getWidth()/2, sub.getHeight()/2);
+	    AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+	    sub = op.filter(sub, null);
+	    */
 	}
 
 	/*
