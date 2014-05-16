@@ -1,8 +1,6 @@
 
 public class SymmetrizationImage extends Image{
-	
-	
-	
+
 	private int m_offset;
 
 	public SymmetrizationImage(int[] pixels, int width, int height, int offset) 

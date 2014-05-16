@@ -70,7 +70,7 @@ public class Process extends JPanel {
         super(new BorderLayout(border, border));
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\test4.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -389,7 +389,7 @@ public class Process extends JPanel {
 		*/
     	//graphics.dispose();
     	
-    	//SymmetrizationImage simage = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 50);
+    	//SymmetrizationImage simage = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 230);
     	//dstView.setPixels(simage.GetImagePixels(), simage.GetWidth(), simage.GetHeight());
     	
     	//addImageView(surf.GetOctaveImage(2, 2));
@@ -402,7 +402,7 @@ public class Process extends JPanel {
     	for(int i = 0; i <interestPoints.size(); i++)
     	{
     		InterestPoint ip = interestPoints.get(i);
-    		if((ip.value / m_surf.GetMax()) >= threshold)
+    		if((1.0f - ip.value / m_surf.GetMax()) >= threshold)
     			continue;
     		
     		float size = (ip.scale * 20.0f) * 0.5f;

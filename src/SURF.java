@@ -1,12 +1,11 @@
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class SURF {
 
 	private Image m_image;
+	private SymmetrizationImage m_symmetrizationImage;
 	private IntegralImage m_integralImage;
 	private int m_octaveDepth;
 	private Octave[] m_octaves;
@@ -21,8 +20,8 @@ public class SURF {
 		for (int i = 0; i < m_octaves.length; i++)
 			m_octaves[i] = new Octave(i + 1);
 
-		SymmetrizationImage symmetricImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 230);
-		m_integralImage = new IntegralImage(symmetricImage);
+		m_symmetrizationImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 230);
+		m_integralImage = new IntegralImage(m_symmetrizationImage);
 		m_max = Float.MIN_VALUE;
 	}
 
@@ -223,16 +222,67 @@ public class SURF {
 	void ComputeDescriptor(InterestPoint ip)
 	{
 		/*
-		BufferedImage bi = new BufferedImage(m_integralImage.GetWidth(), m_integralImage.GetHeight(), BufferedImage.TYPE_INT_ARGB);
-		bi.setRGB(0, 0, m_integralImage.GetWidth(), m_integralImage.GetHeight(), m_integralImage., offset, scansize)
+		BufferedImage bi = new BufferedImage(m_symmetrizationImage.GetWidth(), m_symmetrizationImage.GetHeight(), BufferedImage.TYPE_INT_ARGB);
+		bi.setRGB(0, 0, m_symmetrizationImage.GetWidth(), m_symmetrizationImage.GetHeight(), m_symmetrizationImage.GetImagePixels(), 0, m_symmetrizationImage.GetWidth());
 		
 		int halfBoxSize = (int) Math.floor(ip.scale * 10.0f); 
-		BufferedImage sub = bi.getSubimage(ip.x - halfBoxSize, ip.y - halfBoxSize, halfBoxSize* 2, halfBoxSize * 2);
+		BufferedImage sub = bi.getSubimage(ip.x + m_symmetrizationImage.GetOffset() - halfBoxSize, ip.y + m_symmetrizationImage.GetOffset() - halfBoxSize, halfBoxSize* 2, halfBoxSize * 2);
+		
 		AffineTransform transform = new AffineTransform();
-	    transform.rotate(ip.orientation, sub.getWidth()/2, sub.getHeight()/2);
+	    transform.rotate(ip.orientation, sub.getWidth() * 0.5f, sub.getHeight() * 0.5f);
 	    AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
 	    sub = op.filter(sub, null);
+	    
+	    int[] subPixels = new int[sub.getWidth() * sub.getHeight()];
+	    sub.getRGB(0, 0, sub.getWidth(), sub.getHeight(), subPixels, 0, sub.getWidth());
+	    IntegralImage tmpIntegralImage = new IntegralImage(new Image(subPixels, sub.getWidth(), sub.getHeight()));
 	    */
+		float halfSize = 20.0f* ip.scale;
+		Point2D dirX = new Point2D.Float(1.0f, 0.0f);
+		Point2D dirY = new Point2D.Float(0.0f, 1.0f);
+		Point2D pos = new Point2D.Float(ip.x, ip.y);
+
+		
+		AffineTransform at = new AffineTransform();
+		at.rotate(ip.orientation, 0.0f, 0.0f);
+		at.transform(dirX, dirX);
+		at.transform(dirY, dirY);
+		
+		BoxFilter xWavelet = BoxFilter.GetWaveletX(2 * ip.scale);
+		BoxFilter yWavelet = BoxFilter.GetWaveletY(2 * ip.scale);
+		
+		float[] descriptor = new float[64];
+		
+		for(float i = -1.0f; i <1.0f; i += 0.1f)
+			for(float j = -1.0f; j < 1.0f; j += 0.1f)
+			{
+				float stepX= halfSize * i;
+				float stepY= halfSize * j;
+				
+				AffineTransform atTmp = new AffineTransform();
+				atTmp.translate(stepX * dirX.getX(), stepX * dirX.getY());
+				atTmp.translate(stepY * dirY.getX(), stepY * dirY.getY());
+				Point2D targetPos = new Point2D.Float();
+				atTmp.transform(pos, targetPos);
+				
+				float xResponse = m_integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				float yResponse = m_integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				
+				int idx1 = (int) (((i + 1.0f) / 2.0f) * 4.0f);
+				int idx2 = (int) (((j + 1.0f) / 2.0f) * 4.0f);
+				
+				int idx = 4 * (idx1 + idx2 * 4);
+				
+				descriptor[idx] += xResponse;
+				descriptor[idx+1] += Math.abs(xResponse);
+				descriptor[idx+2] += yResponse;
+				descriptor[idx+3] += Math.abs(yResponse);
+
+			}
+		
+		int k = 0;
+		k++;
+	    
 	}
 
 	/*
