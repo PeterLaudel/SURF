@@ -11,6 +11,7 @@ public class SURF {
 	private Octave[] m_octaves;
 	private float m_max;
 	private ArrayList<InterestPoint> m_interestPoints;
+	
 
 	public SURF(Image image, int octaveDepth) {
 		m_image = image;
@@ -251,7 +252,8 @@ public class SURF {
 		BoxFilter xWavelet = BoxFilter.GetWaveletX(2 * ip.scale);
 		BoxFilter yWavelet = BoxFilter.GetWaveletY(2 * ip.scale);
 		
-		float[] descriptor = new float[64];
+		
+		double[][] gauss = Matrix.get2DGaussianKernel(40, 3.3f * ip.scale);
 		
 		for(float i = -1.0f; i <1.0f; i += 0.1f)
 			for(float j = -1.0f; j < 1.0f; j += 0.1f)
@@ -268,21 +270,39 @@ public class SURF {
 				float xResponse = m_integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				float yResponse = m_integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				
-				int idx1 = (int) (((i + 1.0f) / 2.0f) * 4.0f);
-				int idx2 = (int) (((j + 1.0f) / 2.0f) * 4.0f);
+				float normalizedI = ((i + 1.0f) / 2.0f);
+				float normalizedJ = ((j + 1.0f) / 2.0f);
+				int idx1 = (int) (normalizedI * 4.0f);
+				int idx2 = (int) (normalizedJ * 4.0f);
 				
 				int idx = 4 * (idx1 + idx2 * 4);
 				
-				descriptor[idx] += xResponse;
-				descriptor[idx+1] += Math.abs(xResponse);
-				descriptor[idx+2] += yResponse;
-				descriptor[idx+3] += Math.abs(yResponse);
+				double gaussWeight = gauss[(int) (normalizedI * 40.0f)][(int) (normalizedJ * 40.0f)];
+				xResponse *= gaussWeight;
+				yResponse *= gaussWeight;
+				
+				ip.descriptor[idx] += xResponse;
+				ip.descriptor[idx+1] += Math.abs(xResponse);
+				ip.descriptor[idx+2] += yResponse;
+				ip.descriptor[idx+3] += Math.abs(yResponse);
 
 			}
 		
-		int k = 0;
-		k++;
-	    
+		
+		NormalizeVector(ip.descriptor);
+	}
+	
+	private void NormalizeVector(float[] vector)
+	{
+		float tmp = 0;
+		for(int i = 0; i < vector.length; i++)
+			tmp += vector[i] * vector[i];
+		
+		float length = (float) Math.sqrt(tmp);
+		for(int i = 0; i < vector.length; i++)
+			vector[i] /= length;
+			
+		
 	}
 
 	/*
