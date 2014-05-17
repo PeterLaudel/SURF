@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import Features.InterestPoint;
+import Imageprocess.Image;
+import Imageprocess.Matrix;
 import IntegralImage.BoxFilter;
 import IntegralImage.IntegralImage;
-import Process.Image;
-import Process.Matrix;
 
 public class SurfFeatureDescriptor {
 

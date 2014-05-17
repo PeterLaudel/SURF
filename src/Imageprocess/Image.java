@@ -1,4 +1,4 @@
-package Process;
+package Imageprocess;
 
 public class Image {
 	

@@ -1,8 +1,8 @@
 package SURF;
+import Imageprocess.HarrisResponse;
+import Imageprocess.Image;
 import IntegralImage.BoxFilter;
 import IntegralImage.IntegralImage;
-import Process.HarrisResponse;
-import Process.Image;
 
 
 
@@ -90,6 +90,11 @@ public class Octave {
 			System.arraycopy(pixels, 0, resultPixels, i * pixels.length, pixels.length);
 		}
 		return result;
+	}
+	
+	public int GetOctaveNumber()
+	{
+		return m_octaveNumber;
 	}
 
 }

@@ -1,10 +1,10 @@
+package Process;
 // Copyright (C) 2009 by Klaus Jung
 // angepasst von Kai Barthel
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,11 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -39,12 +35,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Features.InterestPoint;
+import Imageprocess.Image;
+import Imageprocess.ImageProcess;
+import Imageprocess.SymmetrizationImage;
 import IntegralImage.IntegralImage;
 import SURF.SurfFeatureDescriptor;
 import SURF.SurfFeatureDetector;
-import Process.Image;
-import Process.ImageProcess;
-import Process.SymmetrizationImage;
 
 public class Process extends JPanel {
 	

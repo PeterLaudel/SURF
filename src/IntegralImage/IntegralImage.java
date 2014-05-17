@@ -2,8 +2,9 @@ package IntegralImage;
 
 import java.awt.Point;
 import java.util.Vector;
-import Process.Image;
-import Process.SymmetrizationImage;
+
+import Imageprocess.Image;
+import Imageprocess.SymmetrizationImage;
 
 
 

@@ -3,9 +3,9 @@ package SURF;
 import java.util.Vector;
 
 import Features.InterestPoint;
+import Imageprocess.HarrisResponse;
+import Imageprocess.Image;
 import IntegralImage.IntegralImage;
-import Process.HarrisResponse;
-import Process.Image;
 
 
 public class SurfFeatureDetector {
