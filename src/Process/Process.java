@@ -34,6 +34,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import FeatureMatching.Matches;
+import FeatureMatching.Matching;
 import Features.InterestPoint;
 import Imageprocess.Image;
 import Imageprocess.ImageProcess;
@@ -375,6 +377,8 @@ public class Process extends JPanel {
 		}
 		*/
     	
+    	
+    	
     	dstView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
     	m_surfDetector = new SurfFeatureDetector(2500, 4);
     	m_surfDescriptor = new SurfFeatureDescriptor();
@@ -383,9 +387,27 @@ public class Process extends JPanel {
     	IntegralImage ii = new IntegralImage(si);
     	
     	
+    	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
+        if(!input.canRead()) input = openFile(); // file not found, choose another image
+        ImageView tmpView= new ImageView(input);
+        
+        Image tmpImage = new Image(tmpView.getPixels(), tmpView.getImgWidth(), tmpView.getImgHeight());
+    	SymmetrizationImage tmpSi = new SymmetrizationImage(tmpImage.GetImagePixels(), tmpImage.GetWidth(), tmpImage.GetHeight(), 230);
+    	IntegralImage tmpIi = new IntegralImage(tmpSi);
+    	
+    	Vector<InterestPoint> tmpIp = new Vector<InterestPoint>();
+    	m_surfDetector.Detect(tmpIi, tmpImage.GetWidth(), tmpImage.GetHeight(), tmpIp);
+    	m_surfDescriptor.Compute(tmpIi, tmpIp);
+    	
     	m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);
     	m_surfDescriptor.Compute(ii, m_interestPoints);
     	
+    	Matching matching = new Matching();
+    	Vector<Matches> matches = new Vector<Matches>();
+    	matching.Match(tmpIp, m_interestPoints, matches);
+    	
+    	int k = 0;
+    	k++;
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
     	/*
     	BufferedImage bi2 = new BufferedImage(image.GetWidth(), image.GetHeight(), BufferedImage.TYPE_INT_ARGB);
