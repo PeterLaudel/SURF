@@ -1,3 +1,9 @@
+package SURF;
+import IntegralImage.BoxFilter;
+import IntegralImage.IntegralImage;
+import Process.HarrisResponse;
+import Process.Image;
+
 
 
 public class Octave {

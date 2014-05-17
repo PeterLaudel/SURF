@@ -1,109 +1,43 @@
+package SURF;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Vector;
 
-public class SURF {
+import Features.InterestPoint;
+import IntegralImage.BoxFilter;
+import IntegralImage.IntegralImage;
+import Process.Image;
+import Process.Matrix;
+
+public class SurfFeatureDescriptor {
 
 	private Image m_image;
-	private SymmetrizationImage m_symmetrizationImage;
-	private IntegralImage m_integralImage;
-	private int m_octaveDepth;
-	private Octave[] m_octaves;
-	private float m_max;
-	private ArrayList<InterestPoint> m_interestPoints;
 	
 
-	public SURF(Image image, int octaveDepth) {
-		m_image = image;
-		m_octaveDepth = octaveDepth;
-		m_octaves = new Octave[m_octaveDepth];
-
-		for (int i = 0; i < m_octaves.length; i++)
-			m_octaves[i] = new Octave(i + 1);
-
-		m_symmetrizationImage = new SymmetrizationImage(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight(), 230);
-		m_integralImage = new IntegralImage(m_symmetrizationImage);
-		m_max = Float.MIN_VALUE;
+	public SurfFeatureDescriptor() {
+		
 	}
 
 	public Image GetImage() {
 		return m_image;
 	}
 
-	public int GetOctaveDepth() {
-		return m_octaveDepth;
-	}
 
-	public Octave[] GetOctaves() {
-		return m_octaves;
-	}
-	
-	public float GetMax()
-	{
-		return m_max;
-	}
 
-	public ArrayList<InterestPoint> Process() {
+	public void Compute(Image image, Vector<InterestPoint> interestPoints) {
 
-		for (int i = 0; i < m_octaves.length; i++) {
-			m_octaves[i].ComputeOctaves(m_integralImage, m_image.GetWidth(), m_image.GetHeight());
-		}
+		IntegralImage integralImage = new IntegralImage(image);
 
-		m_interestPoints = FindLocalMaximum();
-		m_interestPoints.trimToSize();
-
-		CreateDescriptor(m_interestPoints);
-
-		return m_interestPoints;
+		CreateDescriptorWindow(interestPoints, integralImage);
 	}
 	
-	public ArrayList<InterestPoint> GetInterestPoints()
+	public void Compute(IntegralImage integralImage, Vector<InterestPoint> interestPoints)
 	{
-		return m_interestPoints;
+		CreateDescriptorWindow(interestPoints, integralImage);
 	}
 
-	public Image GetOctaveImage(int octaveNumber, int octaveLayer) {
-		if (octaveNumber >= m_octaveDepth || octaveLayer > 3)
-			return null;
-
-		return m_octaves[octaveNumber].GetOctaveImage(octaveLayer);
-	}
-
-	private ArrayList<InterestPoint> FindLocalMaximum() {
-		ArrayList<InterestPoint> result = new ArrayList<InterestPoint>();
-		int[] neighborhood = new int[] { 1, 0, -1 };
-		for (int i = 0; i < m_octaves.length; i++) {
-			HarrisResponse[] octaveLayer = m_octaves[i].GetOctave();
-			for (int j = 1; j < octaveLayer.length - 1; j++) {
-				HarrisResponse octaveLayerImage = octaveLayer[j];
-				for (int x = 1; x < octaveLayerImage.GetWidth() - 1; x++)
-					for (int y = 1; y < octaveLayerImage.GetHeight() - 1; y++) {
-						boolean found = true;
-						float response = octaveLayerImage.GetResponse(x, y);
-						failed: for (int u = 0; u < neighborhood.length; u++)
-							for (int v = 0; v < neighborhood.length; v++)
-								for (int w = 0; w < neighborhood.length; w++) {
-									int layer = j + neighborhood[w];
-									if (response <= octaveLayer[layer].GetResponse((x + neighborhood[u]), (y + neighborhood[v]))
-										&& !(neighborhood[u] == 0 && neighborhood[v] == 0 && neighborhood[w] == 0)) {
-										found = false;
-										break failed;
-									}
-								}
-						if (found)
-						{
-							result.add(new InterestPoint(x, y, octaveLayer[j]
-									.GetScale(), response));
-							m_max = Math.max(m_max, response);
-							
-						}
-					}
-			}
-		}
-		return result;
-	}
-
-	void CreateDescriptor(ArrayList<InterestPoint> interestPoints) {
+	private void CreateDescriptorWindow(Vector<InterestPoint> interestPoints, IntegralImage integralImage) {
 
 		for (int i = 0; i < interestPoints.size(); i++) {
 			
@@ -134,9 +68,9 @@ public class SURF {
 						int x = (int) Math.round(k);
 						int y = (int) Math.round(j);
 
-						xResponse = m_integralImage.ApplyBoxFilter(xWavelet, x,
+						xResponse = integralImage.ApplyBoxFilter(xWavelet, x,
 								y);
-						yResponse = m_integralImage.ApplyBoxFilter(yWavelet, x,
+						yResponse = integralImage.ApplyBoxFilter(yWavelet, x,
 								y);
 
 						int idxX = Math.abs(j - ip.y);
@@ -212,7 +146,7 @@ public class SURF {
 
 			// assign orientation of the dominant response vector
 			ip.orientation = orientation;
-			ComputeDescriptor(ip);
+			CreateDescriptor(ip, integralImage);
 		}
 		
 		
@@ -220,30 +154,13 @@ public class SURF {
 		
 	}
 	
-	void ComputeDescriptor(InterestPoint ip)
-	{
-		/*
-		BufferedImage bi = new BufferedImage(m_symmetrizationImage.GetWidth(), m_symmetrizationImage.GetHeight(), BufferedImage.TYPE_INT_ARGB);
-		bi.setRGB(0, 0, m_symmetrizationImage.GetWidth(), m_symmetrizationImage.GetHeight(), m_symmetrizationImage.GetImagePixels(), 0, m_symmetrizationImage.GetWidth());
-		
-		int halfBoxSize = (int) Math.floor(ip.scale * 10.0f); 
-		BufferedImage sub = bi.getSubimage(ip.x + m_symmetrizationImage.GetOffset() - halfBoxSize, ip.y + m_symmetrizationImage.GetOffset() - halfBoxSize, halfBoxSize* 2, halfBoxSize * 2);
-		
-		AffineTransform transform = new AffineTransform();
-	    transform.rotate(ip.orientation, sub.getWidth() * 0.5f, sub.getHeight() * 0.5f);
-	    AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-	    sub = op.filter(sub, null);
-	    
-	    int[] subPixels = new int[sub.getWidth() * sub.getHeight()];
-	    sub.getRGB(0, 0, sub.getWidth(), sub.getHeight(), subPixels, 0, sub.getWidth());
-	    IntegralImage tmpIntegralImage = new IntegralImage(new Image(subPixels, sub.getWidth(), sub.getHeight()));
-	    */
+	void CreateDescriptor(InterestPoint ip, IntegralImage integralImage)
+	{	
 		float halfSize = 20.0f* ip.scale;
 		Point2D dirX = new Point2D.Float(1.0f, 0.0f);
 		Point2D dirY = new Point2D.Float(0.0f, 1.0f);
 		Point2D pos = new Point2D.Float(ip.x, ip.y);
 
-		
 		AffineTransform at = new AffineTransform();
 		at.rotate(ip.orientation, 0.0f, 0.0f);
 		at.transform(dirX, dirX);
@@ -267,8 +184,8 @@ public class SURF {
 				Point2D targetPos = new Point2D.Float();
 				atTmp.transform(pos, targetPos);
 				
-				float xResponse = m_integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
-				float yResponse = m_integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				float xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				float yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				
 				float normalizedI = ((i + 1.0f) / 2.0f);
 				float normalizedJ = ((j + 1.0f) / 2.0f);
@@ -285,7 +202,6 @@ public class SURF {
 				ip.descriptor[idx+1] += Math.abs(xResponse);
 				ip.descriptor[idx+2] += yResponse;
 				ip.descriptor[idx+3] += Math.abs(yResponse);
-
 			}
 		
 		

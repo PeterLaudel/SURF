@@ -1,3 +1,5 @@
+package Process;
+
 public class ImageProcess {
 	
 	
@@ -11,7 +13,7 @@ public class ImageProcess {
 	 * @param pure boolean for checking if result gets written pure in the pixel or as gray color 
 	 * @return
 	 */
-    static void applyMask(Image image, int divisor, int offset, double[][] mask, boolean pure)
+    public static void applyMask(Image image, int divisor, int offset, double[][] mask, boolean pure)
     {
     	int[] dstPixels = image.GetImagePixels();
     	//calculate the middle value of the array for example
@@ -72,7 +74,7 @@ public class ImageProcess {
      * and on the right side to one 
      * @param image which get binarized
      */
-    static void isoDataAlgorithm(Image image) 
+    public static void isoDataAlgorithm(Image image) 
     {
     	//create a histogram array with buckets
     	//in java it get filled by zeros by the initialization
@@ -138,7 +140,7 @@ public class ImageProcess {
      * @param image black-white image for line detection
      * @return an image (accumulator array) with sinus vibrations 
      */
-    static Image accumulatorImageForLineDetection(Image image)
+   public static Image accumulatorImageForLineDetection(Image image)
     {
     	//initialize propertys
     	int height = image.GetHeight();
@@ -210,7 +212,7 @@ public class ImageProcess {
     	return new Image(akkumulatorArray, arrayWidth, arrayHeight);
 	}
     
-    static void CastToRGB(Image image)
+    public static void CastToRGB(Image image)
     {
     	//
     	int[] pixels = image.GetImagePixels();
@@ -223,7 +225,7 @@ public class ImageProcess {
     		}
     }
     
-    static Image CastToRGBCopy(Image image)
+    public static Image CastToRGBCopy(Image image)
     {
     	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
     	CastToRGB(result);
@@ -231,14 +233,14 @@ public class ImageProcess {
     }
     
     
-    static Image NormalizeImageCopy(Image image)
+    public static Image NormalizeImageCopy(Image image)
     {
     	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
     	NormalizeImage(result);
     	return result;
     }
     
-    static void NormalizeImage(Image image)
+    public static void NormalizeImage(Image image)
     {
     	
     	int[] pixels = image.GetImagePixels();
@@ -247,7 +249,7 @@ public class ImageProcess {
     	NormalizeImage(image, min, max);
     }
     
-    static void NormalizeImage(Image image, int min, int max)
+    public static void NormalizeImage(Image image, int min, int max)
     {
     	int[] pixels = image.GetImagePixels();
     	int absolutMax = max - min;

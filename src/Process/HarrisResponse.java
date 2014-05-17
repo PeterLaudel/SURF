@@ -1,3 +1,5 @@
+package Process;
+
 
 public class HarrisResponse {
 	
@@ -8,7 +10,7 @@ public class HarrisResponse {
 	private float m_scale;
 	
 	
-	HarrisResponse(float[] pixels, int width, int height, float scale)
+	public HarrisResponse(float[] pixels, int width, int height, float scale)
 	{
 		m_response = pixels;
 		m_imageWidth = width;
@@ -16,7 +18,7 @@ public class HarrisResponse {
 		m_scale = scale;
 	}
 	
-	HarrisResponse(int width, int height, float scale)
+	public HarrisResponse(int width, int height, float scale)
 	{
 		m_response = new float[width * height];
 		m_imageWidth = width;

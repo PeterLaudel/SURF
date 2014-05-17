@@ -1,3 +1,5 @@
+package Process;
+
 
 public class SymmetrizationImage extends Image{
 

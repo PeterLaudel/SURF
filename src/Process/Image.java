@@ -1,3 +1,4 @@
+package Process;
 
 public class Image {
 	
@@ -12,14 +13,14 @@ public class Image {
 	protected int m_imageHeight;
 	
 	
-	Image(int[] pixels, int width, int height)
+	public Image(int[] pixels, int width, int height)
 	{
 		m_imagePixels = pixels;
 		m_imageWidth = width;
 		m_imageHeight = height;
 	}
 	
-	Image(int width, int height)
+	public Image(int width, int height)
 	{
 		m_imagePixels = new int[width * height];
 		m_imageWidth = width;

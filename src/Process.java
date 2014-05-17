@@ -21,6 +21,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -36,6 +37,14 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import Features.InterestPoint;
+import IntegralImage.IntegralImage;
+import SURF.SurfFeatureDescriptor;
+import SURF.SurfFeatureDetector;
+import Process.Image;
+import Process.ImageProcess;
+import Process.SymmetrizationImage;
 
 public class Process extends JPanel {
 	
@@ -64,10 +73,14 @@ public class Process extends JPanel {
 	private JCheckBox m_directionCheckBox;
 	private JCheckBox m_rectCheckBox;
 	
-	private SURF m_surf;
+	private SurfFeatureDetector m_surfDetector;
+	private SurfFeatureDescriptor m_surfDescriptor;
+	private Vector<InterestPoint> m_interestPoints;
+	
 
 	public Process() {
         super(new BorderLayout(border, border));
+        
         
         // load the default image
         File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
@@ -86,13 +99,14 @@ public class Process extends JPanel {
 		m_pointCheckBox = new JCheckBox("InterestPoints");
 		m_directionCheckBox = new JCheckBox("Direction");
 		m_rectCheckBox = new JCheckBox("Descriptor Rect");
+		m_interestPoints = new Vector<InterestPoint>();
 		
 		ActionListener al = new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				ApplyThreshold(m_surf.GetInterestPoints(), (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
+				ApplyThreshold(m_interestPoints, (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
 				frame.pack();
 			}
 		};
@@ -112,7 +126,7 @@ public class Process extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				octaveView.setPixels(m_surf.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue()).GetImagePixels());
+				octaveView.setPixels(m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue()).GetImagePixels());
 				frame.pack();
 			}
 		};
@@ -139,7 +153,7 @@ public class Process extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				// TODO Auto-generated method stub
-				ApplyThreshold(m_surf.GetInterestPoints(), (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
+				ApplyThreshold(m_interestPoints, (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
 				frame.pack();
 			}
 		});
@@ -366,9 +380,15 @@ public class Process extends JPanel {
 		*/
     	
     	dstView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
-    	m_surf = new SURF(image, 4);
+    	m_surfDetector = new SurfFeatureDetector(2500, 4);
+    	m_surfDescriptor = new SurfFeatureDescriptor();
     	
-    	m_surf.Process();
+    	SymmetrizationImage si = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 230);
+    	IntegralImage ii = new IntegralImage(si);
+    	
+    	
+    	m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);
+    	m_surfDescriptor.Compute(ii, m_interestPoints);
     	
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
     	/*
@@ -396,13 +416,13 @@ public class Process extends JPanel {
     	return image.GetImagePixels();
     }
     
-    void ApplyThreshold(ArrayList<InterestPoint> interestPoints, float threshold)
+    void ApplyThreshold(Vector<InterestPoint> interestPoints, float threshold)
     {
     	dstView.ClearShape();
     	for(int i = 0; i <interestPoints.size(); i++)
     	{
     		InterestPoint ip = interestPoints.get(i);
-    		if((1.0f - ip.value / m_surf.GetMax()) >= threshold)
+    		if((1.0f - ip.value / m_surfDetector.GetMax()) >= threshold)
     			continue;
     		
     		float size = (ip.scale * 20.0f) * 0.5f;

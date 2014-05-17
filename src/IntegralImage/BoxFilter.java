@@ -1,5 +1,8 @@
+package IntegralImage;
 import java.awt.Point;
 import java.util.Vector;
+
+import SURF.Octave;
 
 public class BoxFilter {
 
@@ -48,7 +51,7 @@ public class BoxFilter {
 	
 
 	
-	static BoxFilter GetSURFxxFilter(int size)
+	public static BoxFilter GetSURFxxFilter(int size)
 	{
 		if(IsEven(size))
 			return null;
@@ -64,7 +67,7 @@ public class BoxFilter {
 		return filter;
 	}
 	
-	static BoxFilter GetSURFyyFilter(int size)
+	public static BoxFilter GetSURFyyFilter(int size)
 	{
 		if(IsEven(size))
 			return null;
@@ -80,7 +83,7 @@ public class BoxFilter {
 		return filter;
 	}
 	
-	static BoxFilter GetSURFxyFilter(int size)
+	public static BoxFilter GetSURFxyFilter(int size)
 	{
 		if(IsEven(size))
 			return null;
@@ -96,7 +99,7 @@ public class BoxFilter {
 		return filter;
 	}
 	
-	static BoxFilter GetWaveletX(float scale)
+	public static BoxFilter GetWaveletX(float scale)
 	{
 
 		int shift = (int) Math.round(scale * 0.5);
@@ -107,7 +110,7 @@ public class BoxFilter {
 		return filter;
 	}
 	
-	static BoxFilter GetWaveletY(float scale)
+	public static BoxFilter GetWaveletY(float scale)
 	{
 
 		int shift = (int) Math.round(scale * 0.5);

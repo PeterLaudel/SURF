@@ -1,5 +1,10 @@
+package IntegralImage;
+
 import java.awt.Point;
 import java.util.Vector;
+import Process.Image;
+import Process.SymmetrizationImage;
+
 
 
 public class IntegralImage {
@@ -61,7 +66,7 @@ public class IntegralImage {
     	return new Image(dstPixels, width, height);
     }
 	 
-    Image GetDrawableIntegraleImage()
+    public Image GetDrawableIntegraleImage()
     {
     	
     	float min = (float) m_integralImage.GetPixel(1, 1);
@@ -79,7 +84,7 @@ public class IntegralImage {
     	return resultImage;
     }
     
-    int GetBoxIntegral(int xUp, int yUp, int xBot, int yBot)
+    private int GetBoxIntegral(int xUp, int yUp, int xBot, int yBot)
     {
     	
     	yUp = Math.min(Math.max(0, yUp), m_integralImage.GetHeight() - 1); 
@@ -99,7 +104,7 @@ public class IntegralImage {
     }
     
     
-    float ApplyBoxFilter(BoxFilter boxFilter, int x, int y)
+    public float ApplyBoxFilter(BoxFilter boxFilter, int x, int y)
     {
     	
     	float result = 0;
@@ -119,12 +124,12 @@ public class IntegralImage {
     	return result / boxFilter.GetWeight();
     }
     
-    int GetWidth()
+    public int GetWidth()
     {
     	return m_integralImage.GetWidth() - 1;
     }
     
-    int GetHeight()
+    public int GetHeight()
     {
     	return m_integralImage.GetHeight() - 1;
     }

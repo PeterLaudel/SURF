@@ -1,3 +1,4 @@
+package IntegralImage;
 import java.awt.Point;
 
 
