@@ -28,6 +28,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -405,9 +406,12 @@ public class Process extends JPanel {
     	Matching matching = new Matching();
     	Vector<Matches> matches = new Vector<Matches>();
     	matching.Match(tmpIp, m_interestPoints, matches);
+    	JPanel panel = new JPanel();
+    	JScrollPane jsp = new JScrollPane();
+    	jsp.setViewportView(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
+    	images.add(jsp);
+    	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	
-    	int k = 0;
-    	k++;
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
     	/*
     	BufferedImage bi2 = new BufferedImage(image.GetWidth(), image.GetHeight(), BufferedImage.TYPE_INT_ARGB);
