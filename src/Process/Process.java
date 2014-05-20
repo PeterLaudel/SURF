@@ -406,13 +406,13 @@ public class Process extends JPanel {
     	
     	Matching matching = new Matching();
     	Vector<Matches> matches = new Vector<Matches>();
-    	matching.Match(tmpIp, m_interestPoints, matches);
+    	//matching.Match(tmpIp, m_interestPoints, matches);
     	
     	//images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
     	
     	KDTree kdtree = new KDTree();
     	
-    	Node node = kdtree.ComputeKdTree(m_interestPoints, 0);
+    	Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
     	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
