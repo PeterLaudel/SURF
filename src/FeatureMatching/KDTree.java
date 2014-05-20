@@ -38,6 +38,8 @@ public class KDTree {
 		{
 			Vector<Matches> tmpMatchVec = (Vector<Matches>) matchVec.clone();
 			NearestNeighbor(root, interestPoints2.get(i), tmpMatchVec, i);
+			for(int j = 0; j < tmpMatchVec.size(); j++)
+				tmpMatchVec.get(j).distance = (float) Math.sqrt(tmpMatchVec.get(j).distance);
 			result.add(tmpMatchVec);
 		}
 		
@@ -58,13 +60,12 @@ public class KDTree {
 			for(int i = 0; i < matchVec.size(); i++)
 				if(matchVec.get(i).distance > distance)
 				{
-					
-					matchVec.insertElementAt(new Matches(i, index, (float) Math.sqrt(distance)), i);
+					matchVec.insertElementAt(new Matches(i, index, distance), i);
 					matchVec.remove(matchVec.size() - 1);
 					break;
 				}
 
-		float diff = destination.descriptor[node.axis] - node.value;
+		float diff = destination.descriptor[node.axis] - node.interestPoint.descriptor[node.axis];
 		Node close, far;
 		
 		if(diff <= 0)
