@@ -44,10 +44,10 @@ public class Octave {
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
 			BoxFilter dxyBoxFilter = BoxFilter.GetSURFxyFilter(startFilterSize);
-			
-			for (int y = 0; y < height; y++) {
+			int halfSize = (int) (startFilterSize * 0.5f + 0.5f);
+			for (int y = halfSize; y < height - halfSize; y++) {
 				
-				for (int x = 0; x < width; x++) {
+				for (int x = halfSize; x < width - halfSize; x++) {
 					int pos	= y * width + x;
 					
 					float Dxx =  (integralImage.ApplyBoxFilter(dxxBoxFilter, x, y));

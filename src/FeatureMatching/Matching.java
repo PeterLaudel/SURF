@@ -1,6 +1,5 @@
 package FeatureMatching;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import Features.InterestPoint;
@@ -102,9 +100,12 @@ public class Matching {
 	
 		
 
-		for(int i = 0 ; i < matches.size(); i+=100)
+		for(int i = 0 ; i < matches.size(); i++)
 		{
+			
 			Matches match = matches.get(i);
+			if(match.distance > 0.03)
+				continue;
 			InterestPoint ip1 = interestPoints1.get(match.idx1);
 			InterestPoint ip2 = interestPoints2.get(match.idx2);
 			Line2D.Float line = new Line2D.Float(ip1.x, ip1.y, ip2.x + image1.GetWidth(), ip2.y);

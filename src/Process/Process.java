@@ -28,13 +28,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import FeatureMatching.KDTree;
+import FeatureMatching.KDTree.Node;
 import FeatureMatching.Matches;
 import FeatureMatching.Matching;
 import Features.InterestPoint;
@@ -406,10 +407,12 @@ public class Process extends JPanel {
     	Matching matching = new Matching();
     	Vector<Matches> matches = new Vector<Matches>();
     	matching.Match(tmpIp, m_interestPoints, matches);
-    	JPanel panel = new JPanel();
-    	JScrollPane jsp = new JScrollPane();
-    	jsp.setViewportView(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
-    	images.add(jsp);
+    	
+    	//images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
+    	
+    	KDTree kdtree = new KDTree();
+    	
+    	Node node = kdtree.ComputeKdTree(m_interestPoints, 0);
     	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);
