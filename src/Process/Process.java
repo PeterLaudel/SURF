@@ -90,9 +90,31 @@ public class Process extends JPanel {
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
+        
+        
         srcView = new ImageView(input);
         srcView.setMaxSize(new Dimension(maxWidth, maxHeight));
+
+     // get image dimensions
+    	int width = srcView.getImgWidth();
+    	int height = srcView.getImgHeight();
+
+
+    	// get pixels arrays
+    	int srcPixels[] = srcView.getPixels();
+    	int dstPixels[] = new int[width * height];
+    	
+		
+		doGray(srcPixels, dstPixels, width, height);
+		
+		Image srcImage = new Image(dstPixels, width, height);
+		//doTmp(srcImage);
         
+        SurfImagePanel sip = new SurfImagePanel(srcImage);
+        add(sip);
+        frame.pack();
+        
+        /*
         octaveView = new ImageView(input);
         octaveView.setMaxSize(new Dimension(maxWidth, maxHeight));
        
@@ -184,7 +206,6 @@ public class Process extends JPanel {
         });
         
         // some status text
-        statusLine = new JLabel(" ");
         
         // arrange all controls
         JPanel controls = new JPanel(new GridBagLayout());
@@ -215,6 +236,7 @@ public class Process extends JPanel {
         
         // perform the initial scaling
         processImage(true);
+        */
 	}
 	
 	void addImageView(Image image)
@@ -416,7 +438,7 @@ public class Process extends JPanel {
     	
     	Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
     	Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
-    	images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
+    	images.add(kdtree.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
     	
     	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	

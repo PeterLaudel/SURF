@@ -104,6 +104,45 @@ public class SurfFeatureDetector {
 			}
 		}
 	}
+	private  Vector<Integer>  FindLocalMaximum(Image image)
+	{
+		 Vector<Integer> list = new Vector<Integer>();
+	 	   int[] pixels = image.GetImagePixels();
+	 	   int n = 1;
+	 	   int step = 2*n + 1;
+	 	   
+	 	   for(int i = n; i < image.GetWidth()-n; i =step)
+	 		   for(int j = n; j < image.GetHeight()-n; j =step)
+	 		   {
+	 			   int mi = i;
+	 			   int mj = j;
+	 			   
+	 			   for(int i2 = i; i2 < i + n; i2++  )
+	 				   for(int j2 = j; j2 < j + n; j2++  )
+	 					   if(image.GetPixel(i2, j2) > image.GetPixel(mi, mj))
+	 					   {
+	 						   mi = i2;
+	 						   mj = j2;
+	 					   }
+	 			   boolean found = true;
+	 			   failed:
+	 			   for(int i2 = mi - n; i2 < mi + n; i2++  )
+	 				   for(int j2 = mj - n; j2 < mj + n; j2++  )
+	 					   if(image.GetPixel(i2, j2) > image.GetPixel(mi, mj))
+	 					   {
+	 						   found = false;
+	 						   break failed;
+	 					   }
+	 			   
+	 			  if(found)
+	 			  {
+	 				  int pos = mj * image.GetWidth() + mi;
+	 				  list.add(pos);
+	 			  }
+	 		   }
+	 	   
+	   return list;
+	}
 	
 	public Image GetOctaveImage(int octaveNumber, int octaveLayer) {
 		if (octaveNumber >= m_octaveDepth || octaveLayer > 3)

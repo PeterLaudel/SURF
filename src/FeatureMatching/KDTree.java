@@ -6,7 +6,8 @@ import java.util.Vector;
 
 import Features.InterestPoint;
 
-public class KDTree {
+public class KDTree extends Matching{
+
 
 	public class Node {
 		float value;
