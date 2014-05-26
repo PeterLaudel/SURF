@@ -104,7 +104,7 @@ public class Matching {
 		{
 			
 			Matches match = matches.get(i);
-			if(match.distance > 0.2)
+			if(match.distance > 0.15)
 				continue;
 
 			InterestPoint ip1 = interestPoints1.get(match.idx1);

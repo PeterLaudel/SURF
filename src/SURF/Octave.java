@@ -46,7 +46,7 @@ public class Octave {
 				startFilterSize += scalePixelSteps;
 				continue;
 			}
-			m_octave[i] = new HarrisResponse(width, height, ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
+			m_octave[i] = new HarrisResponse(width, height, ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f, startFilterSize);
 			float[] octavePixels = m_octave[i].GetResponseArray();
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
@@ -104,6 +104,4 @@ public class Octave {
 	{
 		return m_octaveNumber;
 	}
-	
-
 }

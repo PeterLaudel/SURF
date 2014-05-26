@@ -8,22 +8,30 @@ public class HarrisResponse {
 	private int m_imageWidth;
 	private int m_imageHeight;
 	private float m_scale;
+	private int m_filterSize;
 	
 	
-	public HarrisResponse(float[] pixels, int width, int height, float scale)
+	public HarrisResponse(float[] pixels, int width, int height, float scale, int filterSize)
 	{
 		m_response = pixels;
 		m_imageWidth = width;
 		m_imageHeight = height;
 		m_scale = scale;
+		m_filterSize = filterSize;
 	}
 	
-	public HarrisResponse(int width, int height, float scale)
+	public HarrisResponse(int width, int height, float scale, int filterSize)
 	{
 		m_response = new float[width * height];
 		m_imageWidth = width;
 		m_imageHeight = height;
 		m_scale = scale;
+		m_filterSize = filterSize;
+	}
+	
+	public int GetFilterSize()
+	{
+		return m_filterSize;
 	}
 	
 	public int GetWidth()

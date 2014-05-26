@@ -77,8 +77,9 @@ public class SurfFeatureDetector {
 			HarrisResponse[] octaveLayer = m_octaves[i].GetOctave();
 			for (int j = 1; j < octaveLayer.length - 1; j++) {
 				HarrisResponse octaveLayerImage = octaveLayer[j];
-				for (int x = 1; x < octaveLayerImage.GetWidth() - 1; x++)
-					for (int y = 1; y < octaveLayerImage.GetHeight() - 1; y++) {
+				int searchAreaOffset = (int) (octaveLayer[j + 1].GetFilterSize() * 0.5f + 0.5f);
+				for (int x = searchAreaOffset; x < octaveLayerImage.GetWidth() - searchAreaOffset; x++)
+					for (int y = searchAreaOffset; y < octaveLayerImage.GetHeight() - searchAreaOffset; y++) {
 						boolean found = true;
 						float response = octaveLayerImage.GetResponse(x, y);
 						failed: 
