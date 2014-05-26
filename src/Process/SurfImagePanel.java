@@ -1,9 +1,7 @@
 package Process;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -33,6 +31,10 @@ import SURF.SurfFeatureDetector;
 public class SurfImagePanel extends JPanel {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final int maxWidth = 600;
 	private static final int maxHeight = 600;
 	
@@ -140,10 +142,6 @@ public class SurfImagePanel extends JPanel {
         
         setLayout(new BorderLayout());
         
-       
-        
-   
-        
         add(m_controlPanel, BorderLayout.NORTH);
         JPanel tmp = new JPanel();
         tmp.add(m_imageView);
@@ -156,8 +154,11 @@ public class SurfImagePanel extends JPanel {
         
         invalidate();
         repaint();
-		
-		
+	}
+	
+	public Vector<InterestPoint> GetInterestPoints()
+	{
+		return m_interestPoints;
 	}
 	
 	void ApplyThreshold(Vector<InterestPoint> interestPoints, float threshold)

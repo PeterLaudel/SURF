@@ -5,22 +5,15 @@ package Process;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.io.File;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -30,21 +23,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.KDTree;
-import FeatureMatching.KDTree.Node;
 import FeatureMatching.Matches;
 import FeatureMatching.Matching;
 import Features.InterestPoint;
 import Imageprocess.Image;
 import Imageprocess.ImageProcess;
-import Imageprocess.SymmetrizationImage;
 import IntegralImage.IntegralImage;
 import SURF.SurfFeatureDescriptor;
 import SURF.SurfFeatureDetector;
@@ -84,6 +71,7 @@ public class Process extends JPanel {
 	public Process() {
         super(new BorderLayout(border, border));
         
+        JPanel tmp = new JPanel(new BorderLayout());
         
         // load the default image
         File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
@@ -108,10 +96,41 @@ public class Process extends JPanel {
 		doGray(srcPixels, dstPixels, width, height);
 		
 		Image srcImage = new Image(dstPixels, width, height);
+		
+		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
+		srcView = new ImageView(input);
+		// get pixels arrays
+		
+		 width = srcView.getImgWidth();
+    	 height = srcView.getImgHeight();
+    	srcPixels = srcView.getPixels();
+    	dstPixels = new int[width * height];
+    	
+		
+		doGray(srcPixels, dstPixels, width, height);
+		Image srcImage2 = new Image(dstPixels, width, height);
 		//doTmp(srcImage);
+		
         
         SurfImagePanel sip = new SurfImagePanel(srcImage);
-        add(sip);
+        tmp.add(sip, BorderLayout.WEST);
+        SurfImagePanel sip2 = new SurfImagePanel(srcImage2);
+        tmp.add(sip2, BorderLayout.CENTER);
+        
+        
+        KDTree kdTree = new KDTree();
+
+        Vector<Vector<Matches>> knnMatches = kdTree.KnnMatching(sip.GetInterestPoints(), sip2.GetInterestPoints(), 2);
+        Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
+        JComponent component = kdTree.DrawMatches(srcImage, sip.GetInterestPoints(), srcImage2, sip2.GetInterestPoints(), matches);
+        JPanel tmp2 = new JPanel();
+        tmp2.add(component);
+        tmp.add(tmp2, BorderLayout.EAST);
+        
+        add(tmp);
+
+
+        
         frame.pack();
         
         /*
