@@ -104,8 +104,7 @@ public class Matching {
 		{
 			
 			Matches match = matches.get(i);
-			if(match.distance > 0.03)
-				continue;
+
 			InterestPoint ip1 = interestPoints1.get(match.idx1);
 			InterestPoint ip2 = interestPoints2.get(match.idx2);
 			Line2D.Float line = new Line2D.Float(ip1.x, ip1.y, ip2.x + image1.GetWidth(), ip2.y);

@@ -34,6 +34,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+
+import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.KDTree;
 import FeatureMatching.KDTree.Node;
 import FeatureMatching.Matches;
@@ -126,7 +129,8 @@ public class Process extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				octaveView.setPixels(m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue()).GetImagePixels());
+				Image image = m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue());
+				octaveView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
 				frame.pack();
 			}
 		};
@@ -385,8 +389,7 @@ public class Process extends JPanel {
     	m_surfDetector = new SurfFeatureDetector(2500, 4);
     	m_surfDescriptor = new SurfFeatureDescriptor();
     	
-    	SymmetrizationImage si = new SymmetrizationImage(image.GetImagePixels(), image.GetWidth(), image.GetHeight(), 230);
-    	IntegralImage ii = new IntegralImage(si);
+    	IntegralImage ii = new IntegralImage(image);
     	
     	
     	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
@@ -394,8 +397,7 @@ public class Process extends JPanel {
         ImageView tmpView= new ImageView(input);
         
         Image tmpImage = new Image(tmpView.getPixels(), tmpView.getImgWidth(), tmpView.getImgHeight());
-    	SymmetrizationImage tmpSi = new SymmetrizationImage(tmpImage.GetImagePixels(), tmpImage.GetWidth(), tmpImage.GetHeight(), 230);
-    	IntegralImage tmpIi = new IntegralImage(tmpSi);
+    	IntegralImage tmpIi = new IntegralImage(tmpImage);
     	
     	Vector<InterestPoint> tmpIp = new Vector<InterestPoint>();
     	m_surfDetector.Detect(tmpIi, tmpImage.GetWidth(), tmpImage.GetHeight(), tmpIp);
@@ -405,7 +407,7 @@ public class Process extends JPanel {
     	m_surfDescriptor.Compute(ii, m_interestPoints);
     	
     	Matching matching = new Matching();
-    	Vector<Matches> matches = new Vector<Matches>();
+    	//Vector<Matches> matches = new Vector<Matches>();
     	//matching.Match(tmpIp, m_interestPoints, matches);
     	
     	//images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
@@ -413,6 +415,9 @@ public class Process extends JPanel {
     	KDTree kdtree = new KDTree();
     	
     	Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
+    	Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
+    	images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
+    	
     	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	
     	//ApplyThreshold(m_surf.GetInterestPoints(), 1.0f);

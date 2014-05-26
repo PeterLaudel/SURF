@@ -1,5 +1,6 @@
 package SURF;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import Features.InterestPoint;
@@ -22,6 +23,7 @@ public class SurfFeatureDetector {
 		m_number = number;
 		m_octaveDepth = octaveDepth;
 		m_octaves = new Octave[m_octaveDepth];
+		
 		for (int i = 0; i < m_octaves.length; i++)
 			m_octaves[i] = new Octave(i + 1);
 		
@@ -30,9 +32,10 @@ public class SurfFeatureDetector {
 	
 	public void Detect(Image image, Vector<InterestPoint> interestPoints)
 	{
+		HashMap<Integer, HarrisResponse> harrisResponse= new HashMap<Integer, HarrisResponse>();
 		IntegralImage integralImage = new IntegralImage(image);
 		for (int i = 0; i < m_octaves.length; i++) {
-			m_octaves[i].ComputeOctaves(integralImage, image.GetWidth(), image.GetHeight());
+			m_octaves[i].ComputeOctaves(integralImage, image.GetWidth(), image.GetHeight(), harrisResponse);
 		}
 		
 		FindLocalMaximum(interestPoints);
@@ -41,8 +44,9 @@ public class SurfFeatureDetector {
 	
 	public void Detect(IntegralImage integralImage, int width, int height, Vector<InterestPoint> interestPoints)
 	{
+		HashMap<Integer, HarrisResponse> harrisResponse= new HashMap<Integer, HarrisResponse>();
 		for (int i = 0; i < m_octaves.length; i++) {
-			m_octaves[i].ComputeOctaves(integralImage, width, height);
+			m_octaves[i].ComputeOctaves(integralImage, width, height, harrisResponse);
 		}
 		
 		FindLocalMaximum(interestPoints);
@@ -77,7 +81,8 @@ public class SurfFeatureDetector {
 					for (int y = 1; y < octaveLayerImage.GetHeight() - 1; y++) {
 						boolean found = true;
 						float response = octaveLayerImage.GetResponse(x, y);
-						failed: for (int u = 0; u < neighborhood.length; u++)
+						failed: 
+						for (int u = 0; u < neighborhood.length; u++)
 							for (int v = 0; v < neighborhood.length; v++)
 								for (int w = 0; w < neighborhood.length; w++) {
 									int layer = j + neighborhood[w];

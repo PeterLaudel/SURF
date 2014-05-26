@@ -1,4 +1,6 @@
 package SURF;
+import java.util.HashMap;
+
 import Imageprocess.HarrisResponse;
 import Imageprocess.Image;
 import IntegralImage.BoxFilter;
@@ -26,10 +28,9 @@ public class Octave {
 			m_scalePixelSteps *=2;
 		
 		m_startFilterSize = m_scalePixelSteps + 3;
-		
 	}
 	
-	void ComputeOctaves(IntegralImage integralImage, int width, int height)
+	void ComputeOctaves(IntegralImage integralImage, int width, int height, HashMap<Integer, HarrisResponse> harrisMap)
 	{
 		int scalePixelSteps = m_scalePixelSteps;
 		int startFilterSize = m_startFilterSize;
@@ -39,12 +40,19 @@ public class Octave {
 		m_octave = new HarrisResponse[4];
 		for(int i = 0; i < 4; i++)
 		{
+			if(harrisMap.containsKey(startFilterSize))
+			{
+				m_octave[i] = harrisMap.get(startFilterSize);
+				startFilterSize += scalePixelSteps;
+				continue;
+			}
 			m_octave[i] = new HarrisResponse(width, height, ((float) startFilterSize / (float) Octave.DEFAULT_FILTER_SIZE) * 1.2f);
 			float[] octavePixels = m_octave[i].GetResponseArray();
 			BoxFilter dxxBoxFilter = BoxFilter.GetSURFxxFilter(startFilterSize);
 			BoxFilter dyyBoxFilter = BoxFilter.GetSURFyyFilter(startFilterSize);
 			BoxFilter dxyBoxFilter = BoxFilter.GetSURFxyFilter(startFilterSize);
 			int halfSize = (int) (startFilterSize * 0.5f + 0.5f);
+			//int halfSize = 0;
 			for (int y = halfSize; y < height - halfSize; y++) {
 				
 				for (int x = halfSize; x < width - halfSize; x++) {
@@ -57,7 +65,7 @@ public class Octave {
 					octavePixels[pos] = (float) Math.abs(Dxx*Dyy - 0.9f * (Dxy * Dxy));
 				}
 			}
-			
+			harrisMap.put(startFilterSize, m_octave[i]);
 			startFilterSize += scalePixelSteps;
 		}
 	}
@@ -96,5 +104,6 @@ public class Octave {
 	{
 		return m_octaveNumber;
 	}
+	
 
 }
