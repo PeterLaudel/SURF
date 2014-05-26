@@ -14,13 +14,15 @@ public class KDTree {
 		Node leftChild;
 		Node rightChild;
 		int axis;
+		int index;
 
-		public Node(float value, int axis, InterestPoint interestPoint, Node leftChild, Node rightChild) {
+		public Node(float value, int axis, InterestPoint interestPoint, Node leftChild, Node rightChild, int index) {
 			this.value = value;
 			this.interestPoint = interestPoint;
 			this.leftChild = leftChild;
 			this.rightChild = rightChild;
 			this.axis = axis;
+			this.index = index;
 		}
 	}
 	
@@ -30,12 +32,17 @@ public class KDTree {
 		Vector<Matches> matchVec =  new Vector<Matches>(neighbors + 1);
 		for(int i = 0; i < neighbors; i++)
 			matchVec.add(new Matches(-1, -1, Float.MAX_VALUE));
+		
+		Vector<KDTreeContext> kdtreeContext = new Vector<KDTree.KDTreeContext>(interestPoints1.size());
+		for(int i = 0; i < interestPoints1.size(); i++)
+			kdtreeContext.add(new KDTreeContext(interestPoints1.get(i), i));
 
 		
-		Node root = ComputeKdTree(interestPoints1, 0);
+		Node root = ComputeKdTree(kdtreeContext, 0);
 		
 		for(int i = 0; i < interestPoints2.size(); i++)
 		{
+			@SuppressWarnings("unchecked")
 			Vector<Matches> tmpMatchVec = (Vector<Matches>) matchVec.clone();
 			NearestNeighbor(root, interestPoints2.get(i), tmpMatchVec, i);
 			for(int j = 0; j < tmpMatchVec.size(); j++)
@@ -47,7 +54,7 @@ public class KDTree {
 		
 	}
 	
-	public void NearestNeighbor(Node node, InterestPoint destination, Vector<Matches> matchVec, int index)
+	private void NearestNeighbor(Node node, InterestPoint destination, Vector<Matches> matchVec, int index)
 	{
 		
 		if(node == null)
@@ -61,7 +68,7 @@ public class KDTree {
 			for(int i = 0; i < matchVec.size(); i++)
 				if(matchVec.get(i).distance > distance)
 				{
-					matchVec.insertElementAt(new Matches(i, index, distance), i);
+					matchVec.insertElementAt(new Matches(node.index, index, distance), i);
 					matchVec.remove(matchVec.size() - 1);
 					break;
 				}
@@ -87,34 +94,47 @@ public class KDTree {
 		
 	}
 
-	public Node ComputeKdTree(Vector<InterestPoint> interestPoints, int depth) {
+	private Node ComputeKdTree(Vector<KDTreeContext> interestPoints, int depth) {
 		if (interestPoints.size() == 0)
 			return null;
 
-		int index = depth % interestPoints.get(0).descriptor.length;
+		int index = depth % interestPoints.get(0).interestPoint.descriptor.length;
 
-		Collections.sort(interestPoints, new InterestPointComparator(index));
+		Collections.sort(interestPoints, new KDTreeContextComparator(index));
 
 		int medianIndex = (int) (interestPoints.size() * 0.5f);
-		InterestPoint ip = interestPoints.get(medianIndex);
+		KDTreeContext kd = interestPoints.get(medianIndex);
 		
-		return new Node(ip.descriptor[index], depth, ip,
-				ComputeKdTree(new Vector<InterestPoint>(interestPoints.subList(0, medianIndex)), depth + 1),
-				ComputeKdTree(new Vector<InterestPoint>(interestPoints.subList(medianIndex + 1, interestPoints.size())), depth + 1));
+		return new Node(kd.interestPoint.descriptor[index], depth, kd.interestPoint,
+				ComputeKdTree(new Vector<KDTreeContext>(interestPoints.subList(0, medianIndex)), depth + 1),
+				ComputeKdTree(new Vector<KDTreeContext>(interestPoints.subList(medianIndex + 1, interestPoints.size())), depth + 1), kd.index);
 
 	}
 	
-	private class InterestPointComparator implements Comparator<InterestPoint>
+	
+	private class KDTreeContext
+	{
+		InterestPoint interestPoint;
+		int index;
+		
+		public KDTreeContext(InterestPoint ip, int index)
+		{
+			interestPoint = ip;
+			this.index = index;
+		}
+	}
+	
+	private class KDTreeContextComparator implements Comparator<KDTreeContext>
 	{
 		private int m_index;
-		public InterestPointComparator(int index)
+		public KDTreeContextComparator(int index)
 		{
 			m_index = index;
 		}
 		@Override
-		public int compare(InterestPoint ip1, InterestPoint ip2) {
-			Float obj1 = ip1.descriptor[m_index];
-			Float obj2 = ip2.descriptor[m_index];
+		public int compare(KDTreeContext ip1, KDTreeContext ip2) {
+			Float obj1 = ip1.interestPoint.descriptor[m_index];
+			Float obj2 = ip2.interestPoint.descriptor[m_index];
 			return obj1.compareTo(obj2);
 		}
 		
