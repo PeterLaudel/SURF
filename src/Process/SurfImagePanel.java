@@ -14,6 +14,7 @@ import java.awt.geom.Line2D;
 import java.util.Vector;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -39,11 +40,13 @@ public class SurfImagePanel extends JPanel {
 	private static final int maxHeight = 600;
 	
 	ImageView m_imageView;
-	ImageView m_octaveView;
+	Image m_image;
 	JPanel m_controlPanel;
 	JSlider m_octaveDepthSlider;
 	JSlider m_octaveLayerSlider;
 	JSlider m_thresholdSlider;
+	
+	JComboBox<String> m_showComboBox;
 	
 	SurfFeatureDetector m_surfDetector;
 	Vector<InterestPoint> m_interestPoints;
@@ -57,6 +60,8 @@ public class SurfImagePanel extends JPanel {
 		m_imageView = new ImageView(maxWidth, maxHeight);
 		m_imageView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
 		
+		m_image = image;
+		
 		m_interestPoints = new Vector<InterestPoint>();
 		IntegralImage ii = new IntegralImage(image);
 		m_surfDetector = new SurfFeatureDetector(2500, 4);
@@ -64,7 +69,6 @@ public class SurfImagePanel extends JPanel {
 		SurfFeatureDescriptor sfd = new SurfFeatureDescriptor();
 		sfd.Compute(ii, m_interestPoints);
 		
-		m_octaveView = new ImageView(maxWidth, maxHeight);
 		m_controlPanel = new JPanel();
 		m_controlPanel.setLayout(new GridLayout(0, 2, 6, 3));
 		
@@ -75,16 +79,47 @@ public class SurfImagePanel extends JPanel {
 		m_octaveDepthSlider = new JSlider(0, 3);
 		m_octaveLayerSlider = new JSlider(0, 3);
 		
-		Image octaveImage = m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue());
-		m_octaveView.setPixels(octaveImage.GetImagePixels(), octaveImage.GetWidth(), octaveImage.GetHeight());
+		m_showComboBox = new JComboBox<String>();
+		m_showComboBox.addItem("Image View");
+		m_showComboBox.addItem("Octave View");
+		m_showComboBox.setSelectedIndex(0);
+		
+		m_showComboBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				switch(m_showComboBox.getSelectedIndex()){
+				case 0:
+					m_imageView.setPixels(m_image.GetImagePixels(), m_image.GetWidth(), m_image.GetHeight());
+					ApplyThreshold(m_interestPoints, (float) m_thresholdSlider.getValue() / (float) m_thresholdSlider.getMaximum());
+					break;
+				case 1:
+					Image octaveImage = m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue());
+					m_imageView.ClearShape();
+					m_imageView.setPixels(octaveImage.GetImagePixels(), octaveImage.GetWidth(), octaveImage.GetHeight());
+					break;
+				}
+				invalidate();
+				repaint();
+				
+				
+			}
+		});
+		
+		
+		//m_octaveView.setPixels(octaveImage.GetImagePixels(), octaveImage.GetWidth(), octaveImage.GetHeight());
 		
 		ChangeListener cl = new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
+				if(m_showComboBox.getSelectedIndex() != 1)
+					return;
+				
 				Image image = m_surfDetector.GetOctaveImage(m_octaveDepthSlider.getValue(), m_octaveLayerSlider.getValue());
-				m_octaveView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
+				m_imageView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
 				invalidate();
 				repaint();
 			}
@@ -139,6 +174,7 @@ public class SurfImagePanel extends JPanel {
         m_controlPanel.add(m_pointCheckBox, c);
         m_controlPanel.add(m_directionCheckBox, c);
         m_controlPanel.add(m_rectCheckBox, c);
+        m_controlPanel.add(m_showComboBox, c);
         
         setLayout(new BorderLayout());
         
@@ -147,9 +183,6 @@ public class SurfImagePanel extends JPanel {
         tmp.add(m_imageView);
         add(tmp, BorderLayout.CENTER);
         
-        tmp = new JPanel();
-        tmp.add(m_octaveView);
-        add(tmp, BorderLayout.SOUTH);
         
         
         invalidate();
