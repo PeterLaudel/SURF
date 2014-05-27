@@ -117,15 +117,22 @@ public class Process extends JPanel {
         SurfImagePanel sip2 = new SurfImagePanel(srcImage2);
         tmp.add(sip2, BorderLayout.CENTER);
         
-        
+        /*
         KDTree kdTree = new KDTree();
 
         Vector<Vector<Matches>> knnMatches = kdTree.KnnMatching(sip.GetInterestPoints(), sip2.GetInterestPoints(), 2);
         Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
         JComponent component = kdTree.DrawMatches(srcImage, sip.GetInterestPoints(), srcImage2, sip2.GetInterestPoints(), matches);
-        JPanel tmp2 = new JPanel();
-        tmp2.add(component);
-        tmp.add(tmp2, BorderLayout.EAST);
+        */
+        
+        
+        //JPanel tmp2 = new JPanel();
+        //tmp2.add(component);
+        
+        MatchImagePanel mip = new MatchImagePanel(sip.GetInterestPoints(), srcImage, sip2.GetInterestPoints(), srcImage2);
+        tmp.add(mip, BorderLayout.SOUTH);
+        
+        
         
         add(tmp);
 

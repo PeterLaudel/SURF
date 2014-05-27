@@ -116,6 +116,31 @@ public class Matching {
 
 		return ss;
 	}
+	
+	public Image GetHorizontalMergedImage(Image image1, Image image2)
+	{
+		Image result = new Image(image1.GetWidth() + image2.GetWidth(), Math.max(image1.GetHeight(), image2.GetHeight()));
+		int[] resultPixel = result.GetImagePixels();
+		int[] image1Pxl = image1.GetImagePixels();
+		int[] image2Pxl = image2.GetImagePixels();
+		
+		
+		
+		for(int y = 0; y < result.GetHeight(); y++)
+		{
+			int resultPos = y * result.GetWidth();
+			int pos1 = y * image1.GetWidth();
+			int pos2 = y * image2.GetWidth();
+			
+			if(y < image1.GetHeight())
+				System.arraycopy(image1Pxl, pos1, resultPixel, resultPos, image1.GetWidth());
+			
+			if(y < image2.GetHeight())
+				System.arraycopy(image2Pxl, pos2, resultPixel, resultPos + image1.GetWidth(), image2.GetWidth());
+		}
+		return result;
+	}
+	
 	class SurfScreen extends JComponent {
 		
 		private static final long serialVersionUID = 1L;
