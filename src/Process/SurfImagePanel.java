@@ -36,8 +36,8 @@ public class SurfImagePanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final int maxWidth = 600;
-	private static final int maxHeight = 600;
+	private static final int maxWidth = 800;
+	private static final int maxHeight = 800;
 	
 	ImageView m_imageView;
 	Image m_image;

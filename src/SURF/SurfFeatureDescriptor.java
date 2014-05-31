@@ -10,89 +10,106 @@ import Imageprocess.Matrix;
 import IntegralImage.BoxFilter;
 import IntegralImage.IntegralImage;
 
-public class SurfFeatureDescriptor {
+/**
+ * Class is for SURF descriptor extraction.
+ * @author Peter Laudel
+ * 
+ * @version 1.0
+ *
+ */
 
-	private Image m_image;
-	
+public class SurfFeatureDescriptor {
 
 	public SurfFeatureDescriptor() {
 		
 	}
 
-	public Image GetImage() {
-		return m_image;
-	}
 
-
-
+	/**
+	 * Compute the descriptors of the given interest points
+	 * @param image [in] the given image
+	 * @param interestPoints [in/out] the interest points where the descriptor part get filled
+	 */
 	public void Compute(Image image, Vector<InterestPoint> interestPoints) {
 
+		//create the integral image
 		IntegralImage integralImage = new IntegralImage(image);
-
+		//compute the descriptor window
 		CreateDescriptorWindow(interestPoints, integralImage);
 	}
 	
+	/**
+	 * Compute the descriptors of the given interest points
+	 * @param integralImage [in] the given integral image of the researched image
+	 * @param interestPoints [in/out] the interest points where the descriptor part get filled
+	 */
 	public void Compute(IntegralImage integralImage, Vector<InterestPoint> interestPoints)
 	{
+		//compute the descriptor window
 		CreateDescriptorWindow(interestPoints, integralImage);
 	}
 
+	/**
+	 * Method for creating the descriptor window. That means the size and the direction of the
+	 * descriptor window gets computed by computing the haar wavelet response in a circle and
+	 * weight it with gaussian. For more details look at the SURF Paper.
+	 * @param interestPoints [in\out] the interest points where the values direction and descriptor get set
+	 * @param integralImage [in] the integral image
+	 */
 	private void CreateDescriptorWindow(Vector<InterestPoint> interestPoints, IntegralImage integralImage) {
-
+		//iterate over each interest point
 		for (int i = 0; i < interestPoints.size(); i++) {
-			
+			//get the interest poit
 			InterestPoint ip = interestPoints.get(i);
-			// ip.x = 90;
-			// ip.y = 90;
+			
+			//compute the circle radius for haar wavelet response
 			float radius = ip.scale * 6;
+			//now compute the search area as a rectangle
 			int Left = (int) Math.round(ip.x - radius);
 			int Right = (int) Math.round(ip.x + radius);
 			int Top = (int) Math.round(ip.y - radius);
 			int Bottom = (int) Math.round(ip.y + radius);
+			
+			//radius² for distance equaltion
 			double radius2 = radius * radius;
 
+			//get the box filter for x and y haar wavelet response
 			BoxFilter xWavelet = BoxFilter.GetWaveletX(ip.scale * 4);
 			BoxFilter yWavelet = BoxFilter.GetWaveletY(ip.scale * 4);
 
+			//sum values floats
 			float xResponse = 0;
 			float yResponse = 0;
 			
+			//compute the gaussian matrix for weight the responses
 			double[][] gaussian = Matrix.get2DGaussianKernel((int) Math.round(radius+1), 2 * ip.scale);
 
+			//angles array
 			ArrayList<Point2D.Float> angles = new ArrayList<Point2D.Float>();
 			for (int j = Top; j <= Bottom; j+= ip.scale) {
 				for (int k = Left; k <= Right; k+= ip.scale) {
+					//compute the distance from the circel center
 					double dist = Math.pow(ip.x - k, 2.0)
 							+ Math.pow(ip.y - j, 2.0);
+					//check if point is inside the circle radius
 					if (dist <= radius2) {
-						int x = (int) Math.round(k);
-						int y = (int) Math.round(j);
+						//get the wavelet response for x and y
+						xResponse = integralImage.ApplyBoxFilter(xWavelet, k,
+								j);
+						yResponse = integralImage.ApplyBoxFilter(yWavelet, k,
+								j);
 
-						xResponse = integralImage.ApplyBoxFilter(xWavelet, x,
-								y);
-						yResponse = integralImage.ApplyBoxFilter(yWavelet, x,
-								y);
-
-						int idxX = Math.abs(j - ip.y);
-						int idxY = Math.abs(k - ip.x);
+						//compute the index position in the 2x2 gaussian array
+						int idxX = Math.abs(k - ip.x);
+						int idxY = Math.abs(j - ip.y);
+						
+						//weight the response
 						xResponse *= gaussian[idxX][idxY];
 						yResponse *= gaussian[idxX][idxY];
 
+						//add the "gradient" to the angles
 						if (xResponse != 0 || yResponse != 0)
 							angles.add(new Point2D.Float(xResponse, yResponse));
-						/*
-						 * System.out.println("xResponse: " + xResponse +
-						 * "yResponse: " + yResponse);
-						 * 
-						 * 
-						 * float ang = (float) (Math.atan2(yResponse,
-						 * xResponse)); if(j < 0 || k < 0 || j>=
-						 * m_image.GetHeight() || k >= m_image.GetWidth())
-						 * continue; int posTmp = j * m_image.GetWidth() + k;
-						 * int response = (int) xResponse +128;
-						 * imagePixels[posTmp] = 0xFF000000 | (response << 16) |
-						 * (response << 8) | response;
-						 */
 					}
 				}
 			}
@@ -154,60 +171,86 @@ public class SurfFeatureDescriptor {
 		
 	}
 	
-	void CreateDescriptor(InterestPoint ip, IntegralImage integralImage)
+	/**
+	 * Method for create the descriptor of the given feature point.
+	 * @param ip [in\out] the current interest point
+	 * @param integralImage [in] the current integral image
+	 */
+	private void CreateDescriptor(InterestPoint ip, IntegralImage integralImage)
 	{	
+		//the half size of the descriptor rect
 		float halfSize = 20.0f* ip.scale;
+		//the intial position
 		Point2D dirX = new Point2D.Float(1.0f, 0.0f);
 		Point2D dirY = new Point2D.Float(0.0f, 1.0f);
+		//the positions
 		Point2D pos = new Point2D.Float(ip.x, ip.y);
 
+		//rotate the initial vectors for computing the rectangle direction
 		AffineTransform at = new AffineTransform();
 		at.rotate(ip.orientation, 0.0f, 0.0f);
 		at.transform(dirX, dirX);
 		at.transform(dirY, dirY);
 		
+		//create the box filters for haar wavelet response
 		BoxFilter xWavelet = BoxFilter.GetWaveletX(2 * ip.scale);
 		BoxFilter yWavelet = BoxFilter.GetWaveletY(2 * ip.scale);
 		
-		
+		//create the gauss kernel for weights
 		double[][] gauss = Matrix.get2DGaussianKernel(40, 3.3f * ip.scale);
 		
+		//now go through the descriptor rectangle
 		for(float i = -1.0f; i <1.0f; i += 0.1f)
 			for(float j = -1.0f; j < 1.0f; j += 0.1f)
 			{
+				//compute the step which has to be done
 				float stepX= halfSize * i;
 				float stepY= halfSize * j;
 				
+				//now add the translation which has to get done
 				AffineTransform atTmp = new AffineTransform();
-				atTmp.translate(stepX * dirX.getX(), stepX * dirX.getY());
-				atTmp.translate(stepY * dirY.getX(), stepY * dirY.getY());
+				atTmp.translate(stepX * dirX.getX(), stepX * dirX.getY()); // in x direction
+				atTmp.translate(stepY * dirY.getX(), stepY * dirY.getY()); // in y direction
+				//now shift from the center to the target pos
 				Point2D targetPos = new Point2D.Float();
 				atTmp.transform(pos, targetPos);
 				
+				//compute the response of the current position
 				float xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				float yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				
+				//normalize the index and shift it over zero to a positive value
 				float normalizedI = ((i + 1.0f) / 2.0f);
 				float normalizedJ = ((j + 1.0f) / 2.0f);
+				
+				// now we have to compute the index position in the descriptor array
+				// or the positin in the splitted descriptor rectangle (see paper)
 				int idx1 = (int) (normalizedI * 4.0f);
 				int idx2 = (int) (normalizedJ * 4.0f);
 				
+				//compute the position in the descriptor array
 				int idx = 4 * (idx1 + idx2 * 4);
 				
+				//now find the weight and weight the response
 				double gaussWeight = gauss[(int) (normalizedI * 40.0f)][(int) (normalizedJ * 40.0f)];
 				xResponse *= gaussWeight;
 				yResponse *= gaussWeight;
 				
+				//fill the descriptor vector
 				ip.descriptor[idx] += xResponse;
 				ip.descriptor[idx+1] += Math.abs(xResponse);
 				ip.descriptor[idx+2] += yResponse;
 				ip.descriptor[idx+3] += Math.abs(yResponse);
 			}
 		
-		
+		//normalize the descriptor vector to make it invariant against brightness differnce
 		NormalizeVector(ip.descriptor);
 	}
 	
+	/**
+	 * Method for normalize the vector
+	 * @param vector the descriptor array which get normalized
+	 */
 	private void NormalizeVector(float[] vector)
 	{
 		float tmp = 0;
@@ -220,24 +263,5 @@ public class SurfFeatureDescriptor {
 			
 		
 	}
-
-	/*
-	 * private ArrayList<Integer> FindLocalMaximum(Image image) {
-	 * ArrayList<Integer> list = new ArrayList<Integer>(); int n = 1; int step =
-	 * 2*n +1;
-	 * 
-	 * for(int i = n; i < image.GetWidth()-n; i+=step) for(int j = n; j <
-	 * image.GetHeight()-n; j+=step) { int mi = i; int mj = j;
-	 * 
-	 * for(int i2 = i; i2 < i + n; i2++) for(int j2 = j; j2 < j + n; j2++)
-	 * if(image.GetPixel(i2, j2) > image.GetPixel(mi, mj)) { mi = i2; mj = j2; }
-	 * boolean found = true; failed: for(int i2 = mi - n; i2 < mi + n; i2++)
-	 * for(int j2 = mj - n; j2 < mj + n; j2++) if(image.GetPixel(i2, j2) >
-	 * image.GetPixel(mi, mj)) { found = false; break failed; }
-	 * 
-	 * if(found) { int pos = mj * image.GetWidth() + mi; list.add(pos); } }
-	 * 
-	 * return list; }
-	 */
 
 }

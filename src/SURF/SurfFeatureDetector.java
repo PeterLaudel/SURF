@@ -9,16 +9,32 @@ import Imageprocess.Image;
 import IntegralImage.IntegralImage;
 
 
+
+/**
+ * This is a class for the detection of SURF Feautures of an Image.
+ * For detecting Feauture Points please call detect.
+ * 
+ * @author Peter Laudel
+ * 
+ * @version 1.0
+ * 
+ *
+ *
+ */
 public class SurfFeatureDetector {
 	
-	private int m_number;
-	private Octave[] m_octaves;
-	private int m_octaveDepth;
-	private float m_max;
 	
-
+	private int m_number; //< number of to detectet features
+	private Octave[] m_octaves; //< the octaves
+	private int m_octaveDepth; //< the octave depth (3 or 4 is useful)
+	private float m_max; //< the maximum detected response after detecting feature points
+	
+	/**
+	 * Constructor for creating Surf Feature Detector.
+	 * @param number of to detected features
+	 * @param octaveDepth the octave depth (3 or 4 is useful)
+	 */
 	public SurfFeatureDetector(int number, int octaveDepth) {
-		// TODO Auto-generated constructor stub
 		
 		m_number = number;
 		m_octaveDepth = octaveDepth;
@@ -30,73 +46,125 @@ public class SurfFeatureDetector {
 		m_max = Float.MIN_VALUE;
 	}
 	
+	/**
+	 * Detect Method for SURF feauture detecting of the given image.
+	 * @param image [in] for feature detecting
+	 * @param interestPoints [out] the interest points array wich get filled 
+	 */
 	public void Detect(Image image, Vector<InterestPoint> interestPoints)
 	{
+		//hashmap for doubled computed harris response layers in the octave
 		HashMap<Integer, HarrisResponse> harrisResponse= new HashMap<Integer, HarrisResponse>();
+		
+		//create the integral image
 		IntegralImage integralImage = new IntegralImage(image);
 		for (int i = 0; i < m_octaves.length; i++) {
+			//compute the single octaves
 			m_octaves[i].ComputeOctaves(integralImage, image.GetWidth(), image.GetHeight(), harrisResponse);
 		}
-		
+		 //find the local maxima and optimize the interest points vector by memory
 		FindLocalMaximum(interestPoints);
 		interestPoints.trimToSize();
 	}
 	
+	/**
+	 * Detect Method for SURF feauture detecting of the given image.
+	 * This Method is usefull for following feature descriptor extraction, 
+	 * need only to compute on integral image.
+	 * @param integralImage [in] for feature detecting
+	 * @param interestPoints [out] the interest points array wich get filled 
+	 */
 	public void Detect(IntegralImage integralImage, int width, int height, Vector<InterestPoint> interestPoints)
 	{
+		//hashmap for doubled computed harris response layers in the octave
 		HashMap<Integer, HarrisResponse> harrisResponse= new HashMap<Integer, HarrisResponse>();
+		//compute the single octaves
 		for (int i = 0; i < m_octaves.length; i++) {
 			m_octaves[i].ComputeOctaves(integralImage, width, height, harrisResponse);
 		}
 		
+		 //find the local maxima and optimize the interest points vector by memory
 		FindLocalMaximum(interestPoints);
 		interestPoints.trimToSize();
 	}
 	
+	/**
+	 * Getter Method for the octave depth.
+	 * @return the current octave depth.
+	 */
 	public int GetOctaveDepth() {
 		return m_octaveDepth;
 	}
 
+	/**
+	 * Getter for get the octave array
+	 * @return the octave array. Could be empty if there wasn't a detecting yet
+	 */
 	public Octave[] GetOctaves() {
 		return m_octaves;
 	}
 	
+	/**
+	 * Get the maximum computed response. Need it for thresholding.
+	 * @return the highest found maximum
+	 */
 	public float GetMax()
 	{
 		return m_max;
 	}
 	
+	/**
+	 * Get the set number of to found feature points.
+	 * @return number of feature points.
+	 */
 	public int GetNumber()
 	{
 		return m_number;
 	}
 	
+	/**
+	 * Method for local maxima estimation.
+	 * @param interestPoints [out] vector of interest points.
+	 */
 	private void FindLocalMaximum(Vector<InterestPoint> interestPoints) {
+		//vector for neighborhood translation
 		int[] neighborhood = new int[] { 1, 0, -1 };
+		//iterate ocer every octave
 		for (int i = 0; i < m_octaves.length; i++) {
+			//get the the response layers of the single octave
 			HarrisResponse[] octaveLayer = m_octaves[i].GetOctave();
+			//iterate in the middle layer of the octave to found local maxima with 3x3x3 neighborhood
 			for (int j = 1; j < octaveLayer.length - 1; j++) {
+				//get the current response layer
 				HarrisResponse octaveLayerImage = octaveLayer[j];
+				//compute the area offset (depents on the filter size is more or less the border handling)
 				int searchAreaOffset = (int) (octaveLayer[j + 1].GetFilterSize() * 0.5f + 0.5f);
+				//now search in the search area for a local maxima
 				for (int x = searchAreaOffset; x < octaveLayerImage.GetWidth() - searchAreaOffset; x++)
 					for (int y = searchAreaOffset; y < octaveLayerImage.GetHeight() - searchAreaOffset; y++) {
 						boolean found = true;
+						//get the response of the octave layer position
 						float response = octaveLayerImage.GetResponse(x, y);
+						// now check the neighbors for a local maxima
 						failed: 
 						for (int u = 0; u < neighborhood.length; u++)
 							for (int v = 0; v < neighborhood.length; v++)
 								for (int w = 0; w < neighborhood.length; w++) {
 									int layer = j + neighborhood[w];
+									//if one of the neighbors response is higher then the current response leave the neighbor loops
 									if (response <= octaveLayer[layer].GetResponse((x + neighborhood[u]), (y + neighborhood[v]))
 										&& !(neighborhood[u] == 0 && neighborhood[v] == 0 && neighborhood[w] == 0)) {
 										found = false;
 										break failed;
 									}
 								}
+						
+						//if there was a local maxima add this as a interest points
 						if (found)
 						{
 							interestPoints.add(new InterestPoint(x, y, octaveLayer[j]
 									.GetScale(), response));
+							//check for maximum response
 							m_max = Math.max(m_max, response);
 							
 						}
@@ -104,10 +172,11 @@ public class SurfFeatureDetector {
 			}
 		}
 	}
+	
+	//find local maxima after paper implementation not finished yet
 	private  Vector<Integer>  FindLocalMaximum(Image image)
 	{
 		 Vector<Integer> list = new Vector<Integer>();
-	 	   int[] pixels = image.GetImagePixels();
 	 	   int n = 1;
 	 	   int step = 2*n + 1;
 	 	   
