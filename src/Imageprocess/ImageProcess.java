@@ -1,5 +1,13 @@
 package Imageprocess;
 
+/**
+ * Method for basic Image processing methods.
+ * @author Peter Laudel
+ * 
+ * @version 1.0
+ *
+ */
+
 public class ImageProcess {
 	
 	
@@ -212,6 +220,11 @@ public class ImageProcess {
     	return new Image(akkumulatorArray, arrayWidth, arrayHeight);
 	}
     
+   
+   /**
+    * Method for cast a Image to an Gray RGB Image.
+    * @param image the changing image
+    */
     public static void CastToRGB(Image image)
     {
     	//
@@ -225,6 +238,11 @@ public class ImageProcess {
     		}
     }
     
+    /**
+     * Method for cast a Image to an Gray RGB Image an create a copy
+     * @param image
+     * @return the casted Image
+     */
     public static Image CastToRGBCopy(Image image)
     {
     	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
@@ -232,7 +250,12 @@ public class ImageProcess {
     	return result;
     }
     
-    
+    /**
+     * Normalize a Image and creates a copy. Normalize means that the values get 
+     * resized between 0..255
+     * @param image which get copied and normalized
+     * @return the normalized image
+     */
     public static Image NormalizeImageCopy(Image image)
     {
     	Image result = new Image(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
@@ -240,6 +263,11 @@ public class ImageProcess {
     	return result;
     }
     
+    /**
+     * Normalize a Image. Normalize means that the values get 
+     * resized between 0..255
+     * @param image which get normalized
+     */
     public static void NormalizeImage(Image image)
     {
     	
@@ -249,6 +277,13 @@ public class ImageProcess {
     	NormalizeImage(image, min, max);
     }
     
+    /**
+     * Normalize a Image. Normalize means that the values get 
+     * resized between 0..255
+     * @param image the resized image
+     * @param min the minimum value in the image
+     * @param max the maximum value in the image
+     */
     public static void NormalizeImage(Image image, int min, int max)
     {
     	int[] pixels = image.GetImagePixels();
@@ -261,6 +296,11 @@ public class ImageProcess {
     		}
     }
     
+    /**
+     * Method for find the maximum in an Integer array
+     * @param array of integer values
+     * @return the maximum value in the array
+     */
     private static int GetMax(int[] array)
     {
     	int max = Integer.MIN_VALUE;
@@ -269,6 +309,11 @@ public class ImageProcess {
     	return max;
     }
     
+    /**
+     * Method for find the minimum in an Integer array
+     * @param array of integer values
+     * @return the minum value in the array
+     */
     private static int GetMin(int[] array)
     {
     	int min = Integer.MAX_VALUE;

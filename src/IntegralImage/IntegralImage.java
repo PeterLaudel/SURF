@@ -6,15 +6,25 @@ import java.util.Vector;
 import Imageprocess.Image;
 import Imageprocess.SymmetrizationImage;
 
+/**
+ * Class which create an integral Image
+ * @author Peter Laudel
+ *
+ * @version 1.0 
+ */
 
 
 public class IntegralImage {
 	
-	Image m_image;
-	Image m_integralImage;
+	Image m_image; //< the original image
+	Image m_integralImage; //< the computed integral image
 	
-	private int m_offset;
+	private int m_offset; //< the offset when it is not a SymmetrizationImage it is normally 1
 	
+	/**
+	 * Constructor for integral image
+	 * @param image where the integral image get computed
+	 */
 	public IntegralImage(Image image)
 	{
 		m_image = image;
@@ -22,6 +32,10 @@ public class IntegralImage {
 		m_offset = 1;
 	}
 	
+	/**
+	 * Constructor for integral image by using a symmetrization image
+	 * @param image here input the symmetrization image
+	 */
 	public IntegralImage(SymmetrizationImage image)
 	{
 		m_image = image;
@@ -29,6 +43,12 @@ public class IntegralImage {
 		m_offset = image.GetOffset() + 1;
 	}
 	
+	
+	/**
+	 * Method which compute the integral image
+	 * @param srcImage the source image
+	 * @return the computed integral image
+	 */
 	private Image ComputeIntegralImage(Image srcImage)
     {
 		int height = srcImage.GetHeight() + 1;
@@ -46,23 +66,8 @@ public class IntegralImage {
 				int b = (y - 1) * width + x;
 				int c = y * width + (x - 1);
 				dstPixels[pos] = dstPixels[b] + dstPixels[c] + ((srcPixels[pos2]>>16)&0xFF) - dstPixels[a];
-				continue;
-
     		}
     	}
-    	/*
-    	for(int y = 0; y < height; y++)
-    	{
-    		String s = new String();
-    		for(int x = 0; x < width; x++)
-    		{
-    			int pos	= y * width + x;
-    			s += "" + dstPixels[pos]+ ", ";
-    		}
-    		System.out.println(s+ "\n");
-    	}
-    	*/
-    	
     	
     	return new Image(dstPixels, width, height);
     }
@@ -125,6 +130,7 @@ public class IntegralImage {
     	return result / boxFilter.GetWeight();
     }
     
+
     public int GetWidth()
     {
     	return m_integralImage.GetWidth() - 1;

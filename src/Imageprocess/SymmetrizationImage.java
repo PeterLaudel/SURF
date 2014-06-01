@@ -1,10 +1,23 @@
 package Imageprocess;
 
+/**
+ * Class for creating an Image which is mirrored at his borders.
+ * @author Nilsson
+ *
+ * @version 1.0
+ */
 
 public class SymmetrizationImage extends Image{
 
-	private int m_offset;
+	private int m_offset; //< size how much get mirrored at the border of the image
 
+	/**
+	 * Constructer which create a symmetrization Image by initialization. 
+	 * @param pixels which get mirrored
+	 * @param width the original image width
+	 * @param height the original image height
+	 * @param offset size how much get mirrored at the border of the image
+	 */
 	public SymmetrizationImage(int[] pixels, int width, int height, int offset) 
 	{
 		super(pixels, width, height);
@@ -21,6 +34,12 @@ public class SymmetrizationImage extends Image{
 		ComputeSymmetrizationImage(pixels, width, height);
 	}
 	
+	/**
+	 * Method for computing the mirrored border
+	 * @param pixels Image pixel which get mirrored
+	 * @param width the original image width
+	 * @param height the original image height
+	 */
 	private void ComputeSymmetrizationImage(int[] pixels, int width, int height)
 	{
 		int sizeX = width + m_offset;
