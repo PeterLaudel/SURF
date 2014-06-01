@@ -54,6 +54,7 @@ public class SurfImagePanel extends JPanel {
 	private JCheckBox m_pointCheckBox;
 	private JCheckBox m_directionCheckBox;
 	private JCheckBox m_rectCheckBox;
+
 	
 	public SurfImagePanel(Image image)
 	{
@@ -62,12 +63,25 @@ public class SurfImagePanel extends JPanel {
 		
 		m_image = image;
 		
+		String outputString = new String();
+		outputString += "SURF ";
+		
 		m_interestPoints = new Vector<InterestPoint>();
 		IntegralImage ii = new IntegralImage(image);
 		m_surfDetector = new SurfFeatureDetector(2500, 4);
+		
+		long startTime = System.currentTimeMillis();
 		m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);
+		outputString += "detection: " + (System.currentTimeMillis() - startTime) + " ms  ";
+		
+		
 		SurfFeatureDescriptor sfd = new SurfFeatureDescriptor();
+		
+		startTime = System.currentTimeMillis();
 		sfd.Compute(ii, m_interestPoints);
+		outputString += "descriptor: " + (System.currentTimeMillis() - startTime) + " ms  ";
+		
+		outputString += "count: " + m_interestPoints.size();
 		
 		m_controlPanel = new JPanel();
 		m_controlPanel.setLayout(new GridLayout(0, 2, 6, 3));
@@ -179,11 +193,16 @@ public class SurfImagePanel extends JPanel {
         setLayout(new BorderLayout());
         
         add(m_controlPanel, BorderLayout.NORTH);
-        JPanel tmp = new JPanel();
-        tmp.add(m_imageView);
+        JPanel tmp2 = new JPanel();
+        tmp2.add(m_imageView);
+        JPanel tmp = new JPanel(new BorderLayout());
+        tmp.add(tmp2, BorderLayout.CENTER);
+        
+        
+        JLabel infoLabel  = new JLabel(outputString);
+        tmp.add(infoLabel, BorderLayout.SOUTH);
+        
         add(tmp, BorderLayout.CENTER);
-        
-        
         
         invalidate();
         repaint();
