@@ -39,9 +39,19 @@ public class MatchImagePanel extends JPanel {
 	{
 		super(new BorderLayout());
 		KDTree kdTree = new KDTree();
-
+		
+		String outputString = new String();
+		
+		outputString += "Matching ";
+		
+		long startTime = System.currentTimeMillis();
 		Vector<Vector<Matches>> knnMatch = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
+		outputString += "matching: " + (System.currentTimeMillis() - startTime) + " ms  " + "befor filtering: " + knnMatch.size() + " ";
+		
+		startTime = System.currentTimeMillis();
 		m_matches = FeatureMatchFilter.DoRatioTest(knnMatch);
+		outputString += "filter: " + (System.currentTimeMillis() - startTime) + " ms  ";
+		outputString += "matches: " + m_matches.size();
 		Image mergedImage = kdTree.GetHorizontalMergedImage(image1, image2);
 		
 		m_matchView = new ImageView(maxWidth, maxHeight);
@@ -75,6 +85,7 @@ public class MatchImagePanel extends JPanel {
 		tmp.add(m_matchView);
 		add(controls, BorderLayout.NORTH);
 		add(tmp, BorderLayout.CENTER);
+		add(new JLabel(outputString), BorderLayout.SOUTH);
 		
 		ApplyThreshold(1.0f);
 	}

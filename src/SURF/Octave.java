@@ -95,7 +95,7 @@ public class Octave {
 					float Dxy =  (integralImage.ApplyBoxFilter(dxyBoxFilter, x, y));
 					
 					//now comute the response
-					octavePixels[pos] = (float) Math.abs(Dxx*Dyy - 0.9f * (Dxy * Dxy));
+					octavePixels[pos] = Dxx*Dyy - 0.9f * (Dxy * Dxy);
 				}
 			}
 			harrisMap.put(startFilterSize, m_octave[i]);

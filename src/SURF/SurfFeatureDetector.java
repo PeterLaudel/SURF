@@ -145,6 +145,7 @@ public class SurfFeatureDetector {
 						boolean found = true;
 						//get the response of the octave layer position
 						float response = octaveLayerImage.GetResponse(x, y);
+						float responseAbs = Math.abs(response);
 						// now check the neighbors for a local maxima
 						failed: 
 						for (int u = 0; u < neighborhood.length; u++)
@@ -152,7 +153,7 @@ public class SurfFeatureDetector {
 								for (int w = 0; w < neighborhood.length; w++) {
 									int layer = j + neighborhood[w];
 									//if one of the neighbors response is higher then the current response leave the neighbor loops
-									if (response <= octaveLayer[layer].GetResponse((x + neighborhood[u]), (y + neighborhood[v]))
+									if (responseAbs <= Math.abs(octaveLayer[layer].GetResponse((x + neighborhood[u]), (y + neighborhood[v])))
 										&& !(neighborhood[u] == 0 && neighborhood[v] == 0 && neighborhood[w] == 0)) {
 										found = false;
 										break failed;
@@ -163,7 +164,7 @@ public class SurfFeatureDetector {
 						if (found)
 						{
 							interestPoints.add(new InterestPoint(x, y, octaveLayer[j]
-									.GetScale(), response));
+									.GetScale(), response, (response < 0)));
 							//check for maximum response
 							m_max = Math.max(m_max, response);
 							

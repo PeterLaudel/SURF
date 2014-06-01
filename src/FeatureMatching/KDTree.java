@@ -34,20 +34,37 @@ public class KDTree extends Matching{
 		for(int i = 0; i < neighbors; i++)
 			matchVec.add(new Matches(-1, -1, Float.MAX_VALUE));
 		
-		Vector<KDTreeContext> kdtreeContext = new Vector<KDTree.KDTreeContext>(interestPoints1.size());
+		Vector<KDTreeContext> kdtreeContextPositive = new Vector<KDTree.KDTreeContext>(interestPoints1.size());
+		Vector<KDTreeContext> kdtreeContextNegative = new Vector<KDTree.KDTreeContext>(interestPoints1.size());
 		for(int i = 0; i < interestPoints1.size(); i++)
-			kdtreeContext.add(new KDTreeContext(interestPoints1.get(i), i));
+		{
+			InterestPoint ip = interestPoints1.get(i);
+			if(ip.negative)
+				kdtreeContextNegative.add(new KDTreeContext(ip, i));
+			else
+			    kdtreeContextPositive.add(new KDTreeContext(ip, i));
+		}
+			
 
 		
-		Node root = ComputeKdTree(kdtreeContext, 0);
+		
+		Node rootNeg = ComputeKdTree(kdtreeContextNegative, 0);
+		Node rootPos = ComputeKdTree(kdtreeContextPositive, 0);
 		
 		for(int i = 0; i < interestPoints2.size(); i++)
 		{
 			@SuppressWarnings("unchecked")
 			Vector<Matches> tmpMatchVec = (Vector<Matches>) matchVec.clone();
-			NearestNeighbor(root, interestPoints2.get(i), tmpMatchVec, i);
+			InterestPoint ip = interestPoints2.get(i);
+			
+			if(ip.negative)
+				NearestNeighbor(rootNeg, ip, tmpMatchVec, i);
+			else
+				NearestNeighbor(rootPos, ip, tmpMatchVec, i);
+			
 			for(int j = 0; j < tmpMatchVec.size(); j++)
 				tmpMatchVec.get(j).distance = (float) Math.sqrt(tmpMatchVec.get(j).distance);
+			
 			result.add(tmpMatchVec);
 		}
 		
