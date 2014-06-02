@@ -5,12 +5,7 @@ package Process;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.io.File;
 import java.util.Vector;
 
@@ -74,7 +69,7 @@ public class Process extends JPanel {
         JPanel tmp = new JPanel(new BorderLayout());
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -97,7 +92,7 @@ public class Process extends JPanel {
 		
 		Image srcImage = new Image(dstPixels, width, height);
 		
-		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
+		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003_180.jpg");
 		srcView = new ImageView(input);
 		// get pixels arrays
 		
@@ -440,7 +435,7 @@ public class Process extends JPanel {
     	IntegralImage ii = new IntegralImage(image);
     	
     	
-    	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
+    	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003rotate.jpg");
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         ImageView tmpView= new ImageView(input);
         
@@ -493,7 +488,7 @@ public class Process extends JPanel {
     	//addImageView(surf.GetOctaveImage(2, 2));
     	return image.GetImagePixels();
     }
-    
+    /*
     void ApplyThreshold(Vector<InterestPoint> interestPoints, float threshold)
     {
     	dstView.ClearShape();
@@ -528,6 +523,7 @@ public class Process extends JPanel {
     		}
     	}
     }
+    */
     
 
 }

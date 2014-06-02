@@ -1,6 +1,7 @@
 package Process;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Shape;
@@ -102,9 +103,13 @@ public class MatchImagePanel extends JPanel {
     		Shape s;
     		InterestPoint ip1 = m_interestPoints1.get(match.idx1);
     		InterestPoint ip2 = m_interestPoints2.get(match.idx2);
+    		
+    		float r = (float) Math.random();
+    		float g = (float) Math.random();
+    		float b = (float) Math.random();
 
     		s = new Line2D.Float(ip1.x, ip1.y, ip2.x+m_offset, ip2.y);
-    		m_matchView.AddShape(s);
+    		m_matchView.AddShape(s, new Color(r, g, b));
 
     	}
 	}

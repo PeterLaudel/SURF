@@ -1,6 +1,7 @@
 package Process;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -224,26 +225,31 @@ public class SurfImagePanel extends JPanel {
     		
     		float size = (ip.scale * 20.0f) * 0.5f;
     		
+    		float r = (float) Math.random();
+    		float g = (float) Math.random();
+    		float b = (float) Math.random();
+    		
+    		Color color = new Color(r, g, b);
+    		
     		AffineTransform at = new AffineTransform();
     		at.rotate(ip.orientation, ip.x, ip.y);
     		Shape s;
     		if(m_rectCheckBox.isSelected())
     		{
     			s = at.createTransformedShape(new Rectangle((int) (ip.x - size), (int) (ip.y - size), (int) (size*2), (int) (size*2)));
-    			m_imageView.AddShape(s);
+    			m_imageView.AddShape(s, color);
     		}
-    	
     		
     		if(m_directionCheckBox.isSelected())
     		{
     			s = at.createTransformedShape(new Line2D.Float(ip.x, ip.y, ip.x+size, ip.y));
-    			m_imageView.AddShape(s);
+    			m_imageView.AddShape(s, color);
     		}
     		
     		if( m_pointCheckBox.isSelected())
     		{
     			s = new Ellipse2D.Float((float) ip.x, (float) ip.y, 2.0f, 2.0f);
-    			m_imageView.AddShape(s);
+    			m_imageView.AddShape(s, color);
     		}
     	}
     }

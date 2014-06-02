@@ -32,6 +32,7 @@ public class ImageView extends JScrollPane{
 	int pixels[] = null;		// pixel array in ARGB format
 	
 	ArrayList<Shape> m_shapes;
+	ArrayList<Color> m_color;
 	
 	public ImageView(int width, int height) {
 		// construct empty image of given size
@@ -171,6 +172,7 @@ public class ImageView extends JScrollPane{
 		screen = new ImageScreen(bi);
 		setViewportView(screen);
 		m_shapes = new ArrayList<Shape>();
+		m_color = new ArrayList<Color>();
 		maxSize = new Dimension(getPreferredSize());
 		
 		if(borderX < 0) borderX = maxSize.width - bi.getWidth();
@@ -185,9 +187,10 @@ public class ImageView extends JScrollPane{
 		if(pixels != null) screen.image.getRGB(0, 0, getImgWidth(), getImgHeight(), pixels, 0, getImgWidth());
 	}
 	
-	public void AddShape(Shape s)
+	public void AddShape(Shape s, Color color)
 	{
 		m_shapes.add(s);
+		m_color.add(color);
 		screen.invalidate();
 		screen.repaint();
 	}
@@ -218,7 +221,7 @@ public class ImageView extends JScrollPane{
 			
 			for(int i = 0; i < m_shapes.size(); i++)
 			{
-				g2d.setColor(Color.RED);
+				g2d.setColor(m_color.get(i));
 				g2d.draw(m_shapes.get(i));
 			}
 

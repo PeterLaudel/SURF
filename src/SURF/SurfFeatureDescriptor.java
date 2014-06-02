@@ -179,7 +179,7 @@ public class SurfFeatureDescriptor {
 	private void CreateDescriptor(InterestPoint ip, IntegralImage integralImage)
 	{	
 		//the half size of the descriptor rect
-		float halfSize = 20.0f* ip.scale;
+		float halfSize = 10.0f* ip.scale;
 		//the intial position
 		Point2D dirX = new Point2D.Float(1.0f, 0.0f);
 		Point2D dirY = new Point2D.Float(0.0f, 1.0f);
@@ -199,6 +199,8 @@ public class SurfFeatureDescriptor {
 		//create the gauss kernel for weights
 		double[][] gauss = Matrix.get2DGaussianKernel(40, 3.3f * ip.scale);
 		
+		Image image = integralImage.GetImage();
+		
 		//now go through the descriptor rectangle
 		for(float i = -1.0f; i <1.0f; i += 0.1f)
 			for(float j = -1.0f; j < 1.0f; j += 0.1f)
@@ -215,9 +217,27 @@ public class SurfFeatureDescriptor {
 				Point2D targetPos = new Point2D.Float();
 				atTmp.transform(pos, targetPos);
 				
+				float xResponse = 0, yResponse = 0;
+				
+				for(float x = -ip.scale; x < ip.scale; x++)
+					for(float y = -ip.scale; y < ip.scale; y++)
+					{
+						atTmp = new AffineTransform();
+						atTmp.translate(x * dirX.getX(), x * dirX.getY()); // in x direction
+						atTmp.translate(y * dirY.getX(), y * dirY.getY()); // in y direction
+						Point2D waveletPos = new Point2D.Float();
+						atTmp.transform(targetPos, waveletPos);
+						float value = 0;
+						if(waveletPos.getX() >= 0 && waveletPos.getX() < image.GetWidth() && waveletPos.getY() >= 0 && waveletPos.getY() < image.GetHeight())
+							value = image.GetPixel((int) waveletPos.getX(), (int) waveletPos.getY());
+						
+						xResponse += (y < 0) ? -value : value;
+						yResponse += (x < 0) ? -value : value;
+					}
+				
 				//compute the response of the current position
-				float xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
-				float yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				//float xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				//float yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
 				
 				//normalize the index and shift it over zero to a positive value
 				float normalizedI = ((i + 1.0f) / 2.0f);

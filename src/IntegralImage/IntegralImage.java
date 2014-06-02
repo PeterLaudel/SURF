@@ -140,4 +140,9 @@ public class IntegralImage {
     {
     	return m_integralImage.GetHeight() - 1;
     }
+    
+    public Image GetImage()
+    {
+    	return m_image;
+    }
 }
