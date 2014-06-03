@@ -46,7 +46,7 @@ public class Matching {
 	}
 	
 
-	public float GetEuclidianDistance(InterestPoint ip1, InterestPoint ip2)
+	public static float GetEuclidianDistance(InterestPoint ip1, InterestPoint ip2)
 	{
 		float[] descriptor1 = ip1.descriptor;
 		float[] descriptor2 = ip2.descriptor;
