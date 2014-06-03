@@ -9,14 +9,12 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.util.Vector;
 
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -42,7 +40,6 @@ public class Process extends JPanel {
 	private static JFrame frame;
 	
 	private ImageView srcView;			// source image view
-	private ImageView octaveView;
 	private ImageView dstView;			// scaled image view
 	
 	private JLabel statusLine;			// to print some status text
@@ -50,13 +47,6 @@ public class Process extends JPanel {
 	JPanel images = new JPanel(new FlowLayout());
 	private double parameter1 = 1;		// initial scaling factor
 	
-	private JSlider m_octaveDepthSlider;
-	private JSlider m_octaveLayerSlider;
-	private JSlider m_thresholdSlider;
-
-	private JCheckBox m_pointCheckBox;
-	private JCheckBox m_directionCheckBox;
-	private JCheckBox m_rectCheckBox;
 	
 	private SurfFeatureDetector m_surfDetector;
 	private SurfFeatureDescriptor m_surfDescriptor;
@@ -92,7 +82,7 @@ public class Process extends JPanel {
 		
 		Image srcImage = new Image(dstPixels, width, height);
 		
-		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003_180.jpg");
+		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003rotate.jpg");
 		srcView = new ImageView(input);
 		// get pixels arrays
 		
@@ -449,7 +439,6 @@ public class Process extends JPanel {
     	m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);
     	m_surfDescriptor.Compute(ii, m_interestPoints);
     	
-    	Matching matching = new Matching();
     	//Vector<Matches> matches = new Vector<Matches>();
     	//matching.Match(tmpIp, m_interestPoints, matches);
     	
@@ -457,9 +446,9 @@ public class Process extends JPanel {
     	
     	KDTree kdtree = new KDTree();
     	
-    	Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
-    	Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
-    	images.add(kdtree.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
+    	//Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
+    	//Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);
+    	//images.add(kdtree.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
     	
     	//dstView.setPixels(result.GetImagePixels(), result.GetWidth(), result.GetHeight());
     	
