@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -29,14 +30,14 @@ public class MatchImagePanel extends JPanel {
 	private static final int maxHeight = 600;
 	
 	JSlider m_thresholdSlider;
-	Vector<Matches> m_matches;
-	Vector<InterestPoint> m_interestPoints1;
-	Vector<InterestPoint> m_interestPoints2;
+	List<Matches> m_matches;
+	List<InterestPoint> m_interestPoints1;
+	List<InterestPoint> m_interestPoints2;
 	
 	int m_offset;
 	
 	
-	public MatchImagePanel(Vector<InterestPoint> interestPoints1, Image image1, Vector<InterestPoint> interestPoints2, Image image2)
+	public MatchImagePanel(List<InterestPoint> interestPoints1, Image image1, List<InterestPoint> interestPoints2, Image image2)
 	{
 		super(new BorderLayout());
 		KDTree kdTree = new KDTree();
@@ -46,7 +47,7 @@ public class MatchImagePanel extends JPanel {
 		outputString += "Matching ";
 		
 		long startTime = System.currentTimeMillis();
-		Vector<Vector<Matches>> knnMatch = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
+		List<List<Matches>> knnMatch = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
 		outputString += "matching: " + (System.currentTimeMillis() - startTime) + " ms  " + "befor filtering: " + knnMatch.size() + " ";
 		
 		startTime = System.currentTimeMillis();
