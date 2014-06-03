@@ -21,7 +21,6 @@ import IntegralImage.IntegralImage;
 public class SurfFeatureDescriptor {
 
 	public SurfFeatureDescriptor() {
-		
 	}
 
 
@@ -36,6 +35,8 @@ public class SurfFeatureDescriptor {
 		IntegralImage integralImage = new IntegralImage(image);
 		//compute the descriptor window
 		CreateDescriptorWindow(interestPoints, integralImage);
+		
+		
 	}
 	
 	/**
@@ -192,17 +193,16 @@ public class SurfFeatureDescriptor {
 		at.transform(dirX, dirX);
 		at.transform(dirY, dirY);
 		
-		//create the box filters for haar wavelet response
-		BoxFilter xWavelet = BoxFilter.GetWaveletX(2 * ip.scale);
-		BoxFilter yWavelet = BoxFilter.GetWaveletY(2 * ip.scale);
-		
 		//create the gauss kernel for weights
-		double[][] gauss = Matrix.get2DGaussianKernel(40, 3.3f * ip.scale);
+		double[][] gauss = Matrix.get2DGaussianKernel(20, 3.3f * ip.scale);
 		
 		Image image = integralImage.GetImage();
 		
+		//BoxFilter xWavelet = BoxFilter.GetWaveletX(2 * ip.scale);
+		//BoxFilter yWavelet = BoxFilter.GetWaveletY(2 * ip.scale);
+		
 		//now go through the descriptor rectangle
-		for(float i = -1.0f; i <1.0f; i += 0.1f)
+		for(float i = -1.0f; i < 1.0f; i += 0.1f)
 			for(float j = -1.0f; j < 1.0f; j += 0.1f)
 			{
 				//compute the step which has to be done
@@ -217,27 +217,34 @@ public class SurfFeatureDescriptor {
 				Point2D targetPos = new Point2D.Float();
 				atTmp.transform(pos, targetPos);
 				
+				//now compute the response
 				float xResponse = 0, yResponse = 0;
-				
+				//we have to scan an area of an rectangle of 2 * ip.scal
 				for(float x = -ip.scale; x < ip.scale; x++)
 					for(float y = -ip.scale; y < ip.scale; y++)
 					{
+						//create new affine transformation
 						atTmp = new AffineTransform();
+						//compute the wavelet pos
 						atTmp.translate(x * dirX.getX(), x * dirX.getY()); // in x direction
 						atTmp.translate(y * dirY.getX(), y * dirY.getY()); // in y direction
 						Point2D waveletPos = new Point2D.Float();
+						//shift now from the targetpos to the waveletpos
 						atTmp.transform(targetPos, waveletPos);
+						
+						//get the value if it is inside the picture
 						float value = 0;
 						if(waveletPos.getX() >= 0 && waveletPos.getX() < image.GetWidth() && waveletPos.getY() >= 0 && waveletPos.getY() < image.GetHeight())
 							value = image.GetPixel((int) waveletPos.getX(), (int) waveletPos.getY());
 						
+						//add or subtract the value
 						xResponse += (y < 0) ? -value : value;
 						yResponse += (x < 0) ? -value : value;
 					}
 				
-				//compute the response of the current position
-				//float xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
-				//float yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				//xResponse = integralImage.ApplyBoxFilter(xWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				//yResponse = integralImage.ApplyBoxFilter(yWavelet, (int) Math.round(targetPos.getX()), (int) Math.round(targetPos.getY()));
+				 				
 				
 				//normalize the index and shift it over zero to a positive value
 				float normalizedI = ((i + 1.0f) / 2.0f);
@@ -252,7 +259,7 @@ public class SurfFeatureDescriptor {
 				int idx = 4 * (idx1 + idx2 * 4);
 				
 				//now find the weight and weight the response
-				double gaussWeight = gauss[(int) (normalizedI * 40.0f)][(int) (normalizedJ * 40.0f)];
+				double gaussWeight = gauss[(int) (normalizedI * gauss.length)][(int) (normalizedJ * gauss.length)];
 				xResponse *= gaussWeight;
 				yResponse *= gaussWeight;
 				
@@ -280,8 +287,8 @@ public class SurfFeatureDescriptor {
 		float length = (float) Math.sqrt(tmp);
 		for(int i = 0; i < vector.length; i++)
 			vector[i] /= length;
-			
-		
+
 	}
+	
 
 }
