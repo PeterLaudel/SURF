@@ -2,6 +2,7 @@ package SURF;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import Features.InterestPoint;
@@ -29,7 +30,7 @@ public class SurfFeatureDescriptor {
 	 * @param image [in] the given image
 	 * @param interestPoints [in/out] the interest points where the descriptor part get filled
 	 */
-	public void Compute(Image image, Vector<InterestPoint> interestPoints) {
+	public void Compute(Image image, List<InterestPoint> interestPoints) {
 
 		//create the integral image
 		IntegralImage integralImage = new IntegralImage(image);
@@ -44,7 +45,7 @@ public class SurfFeatureDescriptor {
 	 * @param integralImage [in] the given integral image of the researched image
 	 * @param interestPoints [in/out] the interest points where the descriptor part get filled
 	 */
-	public void Compute(IntegralImage integralImage, Vector<InterestPoint> interestPoints)
+	public void Compute(IntegralImage integralImage, List<InterestPoint> interestPoints)
 	{
 		//compute the descriptor window
 		CreateDescriptorWindow(interestPoints, integralImage);
@@ -57,7 +58,7 @@ public class SurfFeatureDescriptor {
 	 * @param interestPoints [in\out] the interest points where the values direction and descriptor get set
 	 * @param integralImage [in] the integral image
 	 */
-	private void CreateDescriptorWindow(Vector<InterestPoint> interestPoints, IntegralImage integralImage) {
+	private void CreateDescriptorWindow(List<InterestPoint> interestPoints, IntegralImage integralImage) {
 		//iterate over each interest point
 		for (int i = 0; i < interestPoints.size(); i++) {
 			//get the interest poit

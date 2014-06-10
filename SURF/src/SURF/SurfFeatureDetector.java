@@ -81,7 +81,7 @@ public class SurfFeatureDetector {
 	 * @param integralImage [in] for feature detecting
 	 * @param interestPoints [out] the interest points array wich get filled 
 	 */
-	public void Detect(IntegralImage integralImage, int width, int height, Vector<InterestPoint> interestPoints)
+	public void Detect(IntegralImage integralImage, int width, int height, List<InterestPoint> interestPoints)
 	{
 		//hashmap for doubled computed harris response layers in the octave
 		HashMap<Integer, HarrisResponse> harrisResponse= new HashMap<Integer, HarrisResponse>();
