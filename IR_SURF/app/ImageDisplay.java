@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import PicPropertys.Pic;
+
 class ImageDisplay {
 	BufferedImage bimage; // BufferendImage in das gezeichnet wird
 	private int hCanvas; // Hoehe und Breite der Zeichenflaeche

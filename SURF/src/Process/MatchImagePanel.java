@@ -7,7 +7,6 @@ import java.awt.Insets;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,11 +14,13 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.KDTree;
 import FeatureMatching.Matches;
 import Features.InterestPoint;
 import Imageprocess.Image;
+import SURF.SurfFeatureDetector;
 
 
 @SuppressWarnings("serial")
@@ -43,15 +44,19 @@ public class MatchImagePanel extends JPanel {
 		KDTree kdTree = new KDTree();
 		
 		String outputString = new String();
-		
+		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		outputString += "Matching ";
-		
+
 		long startTime = System.currentTimeMillis();
-		List<List<Matches>> knnMatch = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
-		outputString += "matching: " + (System.currentTimeMillis() - startTime) + " ms  " + "befor filtering: " + knnMatch.size() + " ";
+		//List<List<Matches>> matches = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
+		
+		List<Matches> matches = BruteForceMatching.BFMatch(interestPoints1, interestPoints2);
+		List<Matches> matches2 = BruteForceMatching.BFMatch(interestPoints2, interestPoints1);
+		outputString += "matching: " + (System.currentTimeMillis() - startTime) + " ms  " + "befor filtering: " + matches.size() + " ";
 		
 		startTime = System.currentTimeMillis();
-		m_matches = FeatureMatchFilter.DoRatioTest(knnMatch);
+		//m_matches = FeatureMatchFilter.DoRatioTest(matches);
+		m_matches = FeatureMatchFilter.DoSymmetryTest(matches, matches2);
 		outputString += "filter: " + (System.currentTimeMillis() - startTime) + " ms  ";
 		outputString += "matches: " + m_matches.size();
 		Image mergedImage = kdTree.GetHorizontalMergedImage(image1, image2);

@@ -59,7 +59,7 @@ public class Process extends JPanel {
         JPanel tmp = new JPanel(new BorderLayout());
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003rotate.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -82,7 +82,7 @@ public class Process extends JPanel {
 		
 		Image srcImage = new Image(dstPixels, width, height);
 		
-		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003rotate.jpg");
+		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003big.jpg");
 		srcView = new ImageView(input);
 		// get pixels arrays
 		
@@ -425,7 +425,7 @@ public class Process extends JPanel {
     	IntegralImage ii = new IntegralImage(image);
     	
     	
-    	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003rotate.jpg");
+    	File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\SURF\\image003.jpg");
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         ImageView tmpView= new ImageView(input);
         

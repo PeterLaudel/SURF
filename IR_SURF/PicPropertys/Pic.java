@@ -1,34 +1,34 @@
-package app;
+package PicPropertys;
 
 import java.awt.image.BufferedImage;
 
 public class Pic extends Object{
 	
-	int rank;                 	// Position bei sortierter 1D-Reihenfolge
+	public int rank;                 	// Position bei sortierter 1D-Reihenfolge
 	
-	double[] featureVector;
+	public double[] featureVector;
 	
 	// Originalgroesse des Bildes
-	int origWidth; 
-	int origHeight;
+	public int origWidth; 
+	public int origHeight;
 	
 	// Zeichenpositionen 
-	int xStart = 0;
-	int xLen = 0;
-	int yStart = 0;
-	int yLen = 0;
+	public int xStart = 0;
+	public int xLen = 0;
+	public int yStart = 0;
+	public int yLen = 0;
 	
 	
-	BufferedImage bImage;
+	public BufferedImage bImage;
 	
-	String name;
-	String type;
-	int typeOcc;
-	int id;
-	boolean isSelected;
+	public String name;
+	public String type;
+	public int typeOcc;
+	public int id;
+	public boolean isSelected;
 	
 	// zur Visualisierung
-	BufferedImage featureImage;
+	public BufferedImage featureImage;
 
 	public double distance;
 }

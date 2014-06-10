@@ -1,4 +1,4 @@
-package app;
+package Sorter;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import PicPropertys.Pic;
+import app.Sorter;
 
 
 

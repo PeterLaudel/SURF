@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
 
+import PicPropertys.Pic;
 import app.IR_Project.MyCanvas;
 
 public class TestAlgorithm {

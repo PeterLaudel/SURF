@@ -1,5 +1,7 @@
 package Imageprocess;
 
+import java.util.Vector;
+
 public class Matrix {
 	
 	/**
@@ -78,6 +80,12 @@ public class Matrix {
     			kernel[x][y] /= sum;
     	
     	return kernel; //return ready kernel
+    }
+    
+    static float[][] getGaussianKernel(float sigma)
+    {
+    	//List<List<Float>> list = new Vector<Vector<Float>>();
+    	return null;
     }
 
     /**

@@ -34,13 +34,18 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.MouseInputAdapter;
 
+import PicPropertys.Pic;
+import Sorter.Sorter_ColorMean;
+import Sorter.Sorter_ColorMean2;
+import Sorter.Sorter_SURF;
+
 
 
 class IR_Project implements ActionListener{
 
 	// Einstellbare Parameter:
 
-	private final String startDirectory = "C:/Workspaces/IR/IR_Project_new/images";
+	private final String startDirectory = "./images/";
 
 	
 
@@ -100,6 +105,11 @@ class IR_Project implements ActionListener{
 		mI_colorMean2.addActionListener(this);
 		methodMenu.add(mI_colorMean2);
 		buttonGroup.add(mI_colorMean2);
+		
+		JRadioButtonMenuItem mI_surf = new JRadioButtonMenuItem("SURF", true);
+		mI_surf.addActionListener(this);
+		methodMenu.add(mI_surf);
+		buttonGroup.add(mI_surf);
 
 
 		JMenu settingsMenu = new JMenu("Einstellungen");
@@ -158,6 +168,11 @@ class IR_Project implements ActionListener{
 		else if (event.getActionCommand() == "ColorMean2") {
 			sortMethod = "ColorMean2";
 			sorter = new Sorter_ColorMean2(pics);
+		}
+		else if(event.getActionCommand() == "SURF")
+		{
+			sortMethod = "SURF";
+			sorter = new Sorter_SURF(pics);
 		}
 
 		else if (event.getActionCommand() == "Alle") {
