@@ -1,6 +1,10 @@
 package SURF;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import Features.InterestPoint;
@@ -63,8 +67,11 @@ public class SurfFeatureDetector {
 			m_octaves[i].ComputeOctaves(integralImage, image.GetWidth(), image.GetHeight(), harrisResponse);
 		}
 		 //find the local maxima and optimize the interest points vector by memory
-		FindLocalMaximum(interestPoints);
-		interestPoints.trimToSize();
+		Map<Float, InterestPoint> resultMap = new TreeMap<Float, InterestPoint>();
+		
+		FindLocalMaximum(resultMap);
+		List<InterestPoint> result = (Vector<InterestPoint>) resultMap.values();
+		interestPoints.addAll(result.subList(0, Math.max(result.size(), m_number)));
 	}
 	
 	/**
@@ -84,8 +91,11 @@ public class SurfFeatureDetector {
 		}
 		
 		 //find the local maxima and optimize the interest points vector by memory
-		FindLocalMaximum(interestPoints);
-		interestPoints.trimToSize();
+		Map<Float, InterestPoint> resultMap = new TreeMap<Float, InterestPoint>();
+		
+		FindLocalMaximum(resultMap);
+		List<InterestPoint> result = new Vector<InterestPoint>(resultMap.values());
+		interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
 	}
 	
 	/**
@@ -126,7 +136,7 @@ public class SurfFeatureDetector {
 	 * Method for local maxima estimation.
 	 * @param interestPoints [out] vector of interest points.
 	 */
-	private void FindLocalMaximum(Vector<InterestPoint> interestPoints) {
+	private void FindLocalMaximum(Map<Float, InterestPoint> interestPoints) {
 		//vector for neighborhood translation
 		int[] neighborhood = new int[] { 1, 0, -1 };
 		//iterate ocer every octave
@@ -163,7 +173,7 @@ public class SurfFeatureDetector {
 						//if there was a local maxima add this as a interest points
 						if (found)
 						{
-							interestPoints.add(new InterestPoint(x, y, octaveLayer[j]
+							interestPoints.put(Math.abs(response), new InterestPoint(x, y, octaveLayer[j]
 									.GetScale(), response, (response < 0)));
 							//check for maximum response
 							m_max = Math.max(m_max, response);
