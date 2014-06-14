@@ -1,5 +1,6 @@
 package Imageprocess;
 
+import java.util.List;
 import java.util.Vector;
 
 public class Matrix {
@@ -82,10 +83,39 @@ public class Matrix {
     	return kernel; //return ready kernel
     }
     
-    static float[][] getGaussianKernel(float sigma)
+    public static float[][] getGaussianKernel(float sigma)
     {
     	//List<List<Float>> list = new Vector<Vector<Float>>();
-    	return null;
+    	double calculatedEuler = 1.0 / Math.sqrt(2.0 * Math.PI * sigma);
+    	List<Double> values = new Vector<Double>();
+    	int i;
+    	for(i = 0; ; i++)
+    	{
+    		double distance = -(((i * i)) / (2.0 * sigma * sigma));
+    		double value = calculatedEuler * Math.exp(distance);
+    		
+    		if(value < 0.0001)
+    			break;
+    		
+    		values.add(value);
+    	}
+    	
+    	float[][] kernel = new float[i * 2][i * 2];
+    	float sum = 0;
+    	for(int x = -i; x < i; x++)
+    		for(int y = -i; y < i; y++)
+    		{
+    			double distance = -(((x * x) + (y * y)) / (2.0 * sigma * sigma));
+    			float value = (float) (calculatedEuler * Math.exp(distance)); 
+    			kernel[x + i][y + i] = value;
+    			sum += value;
+    		}
+    	
+    	for(int x = 0; x < kernel.length; x++)
+    		for(int y = 0; y < kernel[x].length; y++)
+    			kernel[x][y] /= sum;
+    	
+    	return kernel;
     }
 
     /**

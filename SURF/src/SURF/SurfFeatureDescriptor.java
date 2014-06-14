@@ -84,7 +84,7 @@ public class SurfFeatureDescriptor {
 			float yResponse = 0;
 			
 			//compute the gaussian matrix for weight the responses
-			double[][] gaussian = Matrix.get2DGaussianKernel((int) Math.round(radius+1), 2 * ip.scale);
+			float[][] gaussian = Matrix.getGaussianKernel(2 * ip.scale);
 
 			//angles array
 			ArrayList<Point2D.Float> angles = new ArrayList<Point2D.Float>();
@@ -195,7 +195,7 @@ public class SurfFeatureDescriptor {
 		at.transform(dirY, dirY);
 		
 		//create the gauss kernel for weights
-		double[][] gauss = Matrix.get2DGaussianKernel(20, 3.3f * ip.scale);
+		float[][] gauss = Matrix.getGaussianKernel(3.3f * ip.scale);
 		
 		Image image = integralImage.GetImage();
 		
