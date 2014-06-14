@@ -2,8 +2,10 @@ package app;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +19,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import Features.InterestPoint;
 import PicPropertys.PicSurf;
@@ -29,12 +33,78 @@ public class SurfXMLFile {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 	}
-	public Map<String, InterestPoint> ReadSurfXMLFile()
+	public Map<String, List<InterestPoint>> ReadSurfXMLFile()
 	{
-		
-		
+		try {
+			 
+				File fXmlFile = new File(m_path + "/surfDescription.xml");
+				if(!fXmlFile.exists())
+					return null;
+				
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(fXmlFile);
+			 
+				//optional, but recommended
+				//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+				doc.getDocumentElement().normalize();
+			 
+				//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+			 
+				NodeList nList = doc.getElementsByTagName("image");
+			 
+				System.out.println("----------------------------");
+				
+				Map<String, List<InterestPoint>> resultMap = new HashMap<String, List<InterestPoint>>(nList.getLength());
+			 
+				for (int temp = 0; temp < nList.getLength(); temp++) {
+			 
+					Node nNode = nList.item(temp);
+			 
+					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			 
+						Element eElement = (Element) nNode;
+			 
+						String name = eElement.getAttribute("name");
+						
+						List<InterestPoint> ipList = new Vector<InterestPoint>();
+						
+						NodeList ipNodeList = eElement.getElementsByTagName("interestPoint");
+						for(int i = 0; i < ipNodeList.getLength(); i++)
+						{
+							Element ipElement = (Element) ipNodeList.item(i);
+							int x = Integer.parseInt(ipElement.getAttribute("x"));
+							int y = Integer.parseInt(ipElement.getAttribute("y"));
+							
+							Boolean negative = Boolean.parseBoolean(ipElement.getElementsByTagName("negative").item(0).getTextContent());
+							float scale = Float.parseFloat(ipElement.getElementsByTagName("scale").item(0).getTextContent());
+							float value = Float.parseFloat(ipElement.getElementsByTagName("value").item(0).getTextContent());
+							
+							InterestPoint ip = new InterestPoint(x, y, scale, value, negative);
+							ip.orientation = Float.parseFloat(ipElement.getElementsByTagName("orientation").item(0).getTextContent());
+							ip.descriptor = fromString(ipElement.getElementsByTagName("descriptor").item(0).getTextContent());
+							ipList.add(ip);
+						}
+						resultMap.put(name, ipList);
+					}
+				}
+				return resultMap;
+		    } catch (Exception e) {
+		    	e.printStackTrace();
+		    }
 		
 		return null;
+		
+	}
+	
+	private float[] fromString(String string)
+	{
+	    String[] strings = string.replace("[", "").replace("]", "").split(", ");
+	    float result[] = new float[strings.length];
+	    for (int i = 0; i < result.length; i++) {
+	      result[i] = Float.parseFloat(strings[i]);
+	    }
+	    return result;
 	}
 	
 	public void WriteXMLFile(PicSurf []surfPics)
@@ -102,7 +172,7 @@ public class SurfXMLFile {
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(new File(m_path + "/surf_disc.xml"));
+				StreamResult result = new StreamResult(new File(m_path + "/surfDescription.xml"));
 		 
 				// Output to console for testing
 				// StreamResult result = new StreamResult(System.out);

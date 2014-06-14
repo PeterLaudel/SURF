@@ -1,27 +1,24 @@
 package Sorter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import app.Sorter;
-import app.SurfXMLFile;
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.Matches;
+import Features.InterestPoint;
 import Imageprocess.Image;
 import IntegralImage.IntegralImage;
 import PicPropertys.Pic;
 import PicPropertys.PicSurf;
 import SURF.SurfFeatureDescriptor;
 import SURF.SurfFeatureDetector;
+import app.Sorter;
+import app.SurfXMLFile;
 
 public class Sorter_SURF implements Sorter {
 	
@@ -43,10 +40,16 @@ public class Sorter_SURF implements Sorter {
 	public void getFeatureVectors() {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
-		
+		SurfXMLFile sxmlf = new SurfXMLFile(m_path);
+		Map<String, List<InterestPoint>> fileMap = sxmlf.ReadSurfXMLFile();
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
+			if(fileMap != null && fileMap.containsKey(surfpic.pic.name))
+			{
+				surfpic.interestPoints = fileMap.get(surfpic.pic.name);
+				continue;
+			}
 			
 			Image image = new Image(surfpic.pic.bImage.getWidth(), surfpic.pic.bImage.getHeight());
 			surfpic.pic.bImage.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
@@ -55,8 +58,8 @@ public class Sorter_SURF implements Sorter {
 			sfdesc.Compute(ii, surfpic.interestPoints);
 		}
 		
-		SurfXMLFile sxmlf = new SurfXMLFile(m_path);
-		sxmlf.WriteXMLFile(m_picSurf);
+		if(fileMap == null)
+			sxmlf.WriteXMLFile(m_picSurf);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import Features.InterestPoint;
 import Imageprocess.Image;
