@@ -96,8 +96,6 @@ public class SurfXMLFile {
 						String descString = Arrays.toString(ip.descriptor);
 						descriptor.appendChild(doc.createTextNode(descString));
 						ipElement.appendChild(descriptor);
-						
-						
 					}
 				}
 				// write the content into xml file
