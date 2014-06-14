@@ -9,6 +9,8 @@
 *.ear
 *.png
 *.jpg
+*.xml
+*.txt
 
 .metadata/
 
