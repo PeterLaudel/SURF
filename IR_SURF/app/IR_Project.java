@@ -46,7 +46,7 @@ class IR_Project implements ActionListener{
 	// Einstellbare Parameter:
 
 	private final String startDirectory = "./images/";
-
+	private String path;
 	
 
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +84,7 @@ class IR_Project implements ActionListener{
 	private IR_Project() 	{
 		//Fenstertitel festlegen
 		String str = "IR Project";
+		
 
 		//Menus erzeugen
 		testMenu = new JMenu("Testen");
@@ -172,7 +173,7 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SURF")
 		{
 			sortMethod = "SURF";
-			sorter = new Sorter_SURF(pics);
+			sorter = new Sorter_SURF(pics, path);
 		}
 
 		else if (event.getActionCommand() == "Alle") {
@@ -230,12 +231,16 @@ class IR_Project implements ActionListener{
 			// Nur komplette Ordner koennen ausgewaehlt werden
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int returnVal = fc.showOpenDialog(this);
+			
 
 			if (returnVal != JFileChooser.APPROVE_OPTION)
 				System.exit(-1);
+			
+			
 
 			// Liest alle Dateien des Ordners und schreibt sie in ein Array
 			folder = fc.getSelectedFile();
+			path = folder.getPath();
 			File[] files = folder.listFiles();
 
 			int expectedNumberOfImages = 0; 
