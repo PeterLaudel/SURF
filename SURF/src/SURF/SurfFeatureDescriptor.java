@@ -234,8 +234,10 @@ public class SurfFeatureDescriptor {
 						
 						//get the value if it is inside the picture
 						float value = 0;
-						if(waveletPos.getX() >= 0 && waveletPos.getX() < image.GetWidth() && waveletPos.getY() >= 0 && waveletPos.getY() < image.GetHeight())
-							value = image.GetPixel((int) waveletPos.getX(), (int) waveletPos.getY());
+						int xPos = (int) Math.min(Math.max(0, waveletPos.getX()),  image.GetWidth() - 1);
+						int yPos = (int) Math.min(Math.max(0, waveletPos.getY()),  image.GetHeight() - 1);
+
+						value = image.GetPixel(xPos, yPos);
 						
 						//add or subtract the value
 						xResponse += (y < 0) ? -value : value;
