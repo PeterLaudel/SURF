@@ -3,6 +3,8 @@ package FeatureMatching;
 import java.util.List;
 import java.util.Vector;
 
+import Features.InterestPoint;
+
 public class FeatureMatchFilter {
 	
 	public static List<Matches> DoRatioTest(List<List<Matches>> knnMatches)
@@ -52,6 +54,60 @@ public class FeatureMatchFilter {
 		}
 
 		return resultMatches;
+	}
+	
+	public static List<Matches> DoSurfResponseTest(List<Matches> matches, List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
+	{
+		List<Matches> result = new Vector<Matches>();
+		
+		for(int i = 0; i < matches.size(); i++)
+		{
+			Matches match = matches.get(i);
+			InterestPoint ip1 = interestPoints1.get(match.idx1);
+			InterestPoint ip2 = interestPoints2.get(match.idx2);
+			
+			if(ip1.negative != ip2.negative)
+				continue;
+			
+			result.add(match);
+		}
+		
+		return result;
+	}
+	
+	public static List<Matches> DoDistanceThreshold(List<Matches> matches, float threshold)
+	{
+		List<Matches> result = new Vector<Matches>();
+		
+		for(int i = 0; i < matches.size(); i++)
+		{
+			Matches match = matches.get(i);
+			if(match.distance < threshold)
+				result.add(match);
+		}
+		return result;
+	}
+	
+	
+	public static List<Matches> DoResponseRatioTest(List<Matches> matches, List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
+	{
+		List<Matches> result = new Vector<Matches>();
+		
+		for(int i = 0; i < matches.size(); i++)
+		{
+			Matches match = matches.get(i);
+			InterestPoint ip1 = interestPoints1.get(match.idx1);
+			InterestPoint ip2 = interestPoints2.get(match.idx2);
+			float valAbs1 = Math.abs(ip1.value);
+			float valAbs2 = Math.abs(ip2.value);
+			float responseMax = Math.max(valAbs1, valAbs2);
+			float responseMin = Math.min(valAbs1, valAbs2);
+			if(responseMax / responseMin > 0.8)
+				continue;
+			
+			result.add(match);
+		}
+		return result;
 	}
 
 }

@@ -30,13 +30,10 @@ public class SurfFeatureDescriptor {
 	 * @param interestPoints [in/out] the interest points where the descriptor part get filled
 	 */
 	public void Compute(Image image, List<InterestPoint> interestPoints) {
-
 		//create the integral image
 		IntegralImage integralImage = new IntegralImage(image);
 		//compute the descriptor window
 		CreateDescriptorWindow(interestPoints, integralImage);
-		
-		
 	}
 	
 	/**
@@ -233,11 +230,9 @@ public class SurfFeatureDescriptor {
 						atTmp.transform(targetPos, waveletPos);
 						
 						//get the value if it is inside the picture
-						float value = 0;
 						int xPos = (int) Math.min(Math.max(0, waveletPos.getX()),  image.GetWidth() - 1);
 						int yPos = (int) Math.min(Math.max(0, waveletPos.getY()),  image.GetHeight() - 1);
-
-						value = image.GetPixel(xPos, yPos);
+						float value = image.GetPixel(xPos, yPos);
 						
 						//add or subtract the value
 						xResponse += (y < 0) ? -value : value;

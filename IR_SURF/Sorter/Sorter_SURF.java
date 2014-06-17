@@ -109,9 +109,13 @@ public class Sorter_SURF implements Sorter {
 	
 	class DistComparator implements Comparator<Object> {
 		public int compare( java.lang.Object p1, java.lang.Object p2 ) {
-			double d1 = ((Pic) p1).distance;
-			double d2 = ((Pic) p2).distance;	
+			Double d1 = ((Pic) p1).distance;
+			Double d2 = ((Pic) p2).distance;
+			
+			
 
+			
+			
 			if( d1 < d2 ) 
 				return -1;
 			else if( d1 > d2 ) 
@@ -120,6 +124,7 @@ public class Sorter_SURF implements Sorter {
 				return 0;
 			else 
 				return 1;
+			
 		}
 	}
 
