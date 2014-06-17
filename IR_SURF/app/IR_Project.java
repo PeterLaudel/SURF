@@ -38,6 +38,7 @@ import PicPropertys.Pic;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
 import Sorter.Sorter_SURF;
+import Sorter.Sorter_SurfDistance;
 
 
 
@@ -111,6 +112,11 @@ class IR_Project implements ActionListener{
 		mI_surf.addActionListener(this);
 		methodMenu.add(mI_surf);
 		buttonGroup.add(mI_surf);
+		
+		JRadioButtonMenuItem mI_surfDistance = new JRadioButtonMenuItem("SurfDistance", true);
+		mI_surfDistance.addActionListener(this);
+		methodMenu.add(mI_surfDistance);
+		buttonGroup.add(mI_surfDistance);
 
 
 		JMenu settingsMenu = new JMenu("Einstellungen");
@@ -175,7 +181,11 @@ class IR_Project implements ActionListener{
 			sortMethod = "SURF";
 			sorter = new Sorter_SURF(pics, path);
 		}
-
+		else if(event.getActionCommand() == "SurfDistance")
+		{
+			sortMethod = "SurfDistance";
+			sorter = new Sorter_SurfDistance(pics, path);
+		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");
 			System.out.println("sortmethod: " + sortMethod);

@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
+import FeatureMatching.KDTree;
 import FeatureMatching.Matches;
 import Features.InterestPoint;
 import Imageprocess.Image;
@@ -20,12 +21,12 @@ import SURF.SurfFeatureDetector;
 import app.Sorter;
 import app.SurfXMLFile;
 
-public class Sorter_SURF implements Sorter {
+public class Sorter_SurfDistance implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
 
-	public Sorter_SURF(Pic[] pics, String path) {
+	public Sorter_SurfDistance(Pic[] pics, String path) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
@@ -86,16 +87,31 @@ public class Sorter_SURF implements Sorter {
 		for (int n = 0; n < number; n++) {
 			PicSurf actPic = m_picSurf[n]; 
 			if (actPic != null) {
-				List<Matches> match1 = BruteForceMatching.BFMatch(actPic.interestPoints, queryPic.interestPoints);
-				//List<Matches> match2 = BruteForceMatching.BFMatch(queryPic.interestPoints, actPic.interestPoints);
+				
+				//KDTree kdtree = new KDTree();
+				//List<List<Matches>> knnMatch1 = kdtree.KnnMatching(actPic.interestPoints, queryPic.interestPoints, 2);
+				//List<List<Matches>> knnMatch2 = kdtree.KnnMatching(queryPic.interestPoints, actPic.interestPoints, 2);
+				
+				//List<Matches> match1 = FeatureMatchFilter.DoRatioTest(knnMatch1);
+				//List<Matches> match2 = FeatureMatchFilter.DoRatioTest(knnMatch2);
 				
 				//List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
+				
+				List<Matches> match1 = BruteForceMatching.BFMatch(actPic.interestPoints, queryPic.interestPoints);
+				List<Matches> match2 = BruteForceMatching.BFMatch(queryPic.interestPoints, actPic.interestPoints);
+				
+				List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 				//finalMatch = FeatureMatchFilter.
 				//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
-				List<Matches> finalMatch = FeatureMatchFilter.DoDistanceThreshold(match1, 0.075f);
+				//List<Matches> finalMatch = FeatureMatchFilter.DoDistanceThreshold(match1, 0.075f);
 				//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 				//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
-				actPic.pic.distance = actPic.interestPoints.size() -  finalMatch.size();
+				
+				float distance = 0;
+				for(int i = 0; i < finalMatch.size(); i++)
+					distance += finalMatch.get(i).distance;
+				
+				actPic.pic.distance = distance / finalMatch.size();
 				resultList.add(actPic.pic);
 			}
 		}

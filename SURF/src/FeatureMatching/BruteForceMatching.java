@@ -13,11 +13,18 @@ public class BruteForceMatching {
 		
 		for(int i = 0; i < interestPoints1.size(); i++)
 		{
+			InterestPoint ip1 = interestPoints1.get(i);
 			float tmpDistance = Float.MAX_VALUE;
 			int tmpIndex = -1;
 			for(int j = 0; j < interestPoints2.size(); j++)
 			{
-				float distance = Matching.GetEuclidianDistance(interestPoints1.get(i), interestPoints2.get(j));
+				
+				InterestPoint ip2 = interestPoints2.get(j);
+				
+				if(ip1.negative != ip2.negative)
+					continue;
+				
+				float distance = Matching.GetEuclidianDistance(ip1, ip2);
 				
 				if(distance < tmpDistance)
 				{
@@ -25,7 +32,8 @@ public class BruteForceMatching {
 					tmpDistance = distance;
 				}
 			}
-			result.add(new Matches(i, tmpIndex, tmpDistance));
+			if(tmpIndex != -1)
+				result.add(new Matches(i, tmpIndex, tmpDistance));
 		}
 		
 		return result;
