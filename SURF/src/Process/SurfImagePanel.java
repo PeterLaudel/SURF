@@ -233,9 +233,7 @@ public class SurfImagePanel extends JPanel {
     		
     		AffineTransform at = new AffineTransform();
     		at.rotate(ip.orientation, ip.x, ip.y);
-    		int k = 0;
-    		if(ip.orientation <0)
-    			k++;
+
     		Shape s;
     		if(m_rectCheckBox.isSelected())
     		{

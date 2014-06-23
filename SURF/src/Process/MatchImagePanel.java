@@ -20,7 +20,6 @@ import FeatureMatching.KDTree;
 import FeatureMatching.Matches;
 import Features.InterestPoint;
 import Imageprocess.Image;
-import SURF.SurfFeatureDetector;
 
 
 @SuppressWarnings("serial")
@@ -44,7 +43,6 @@ public class MatchImagePanel extends JPanel {
 		KDTree kdTree = new KDTree();
 		
 		String outputString = new String();
-		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		outputString += "Matching ";
 
 		long startTime = System.currentTimeMillis();

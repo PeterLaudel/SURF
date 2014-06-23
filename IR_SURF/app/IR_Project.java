@@ -38,6 +38,7 @@ import PicPropertys.Pic;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
 import Sorter.Sorter_SURF;
+import Sorter.Sorter_SurfDistance;
 import Sorter.Sorter_XMLFile;
 
 
@@ -117,6 +118,11 @@ class IR_Project implements ActionListener{
 		mI_surfDistance.addActionListener(this);
 		methodMenu.add(mI_surfDistance);
 		buttonGroup.add(mI_surfDistance);
+		
+		JRadioButtonMenuItem mI_surfFile = new JRadioButtonMenuItem("SurfFile", true);
+		mI_surfFile.addActionListener(this);
+		methodMenu.add(mI_surfFile);
+		buttonGroup.add(mI_surfFile);
 
 
 		JMenu settingsMenu = new JMenu("Einstellungen");
@@ -184,7 +190,12 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SurfDistance")
 		{
 			sortMethod = "SurfDistance";
-			//sorter = new Sorter_SurfDistance(pics, path);
+			sorter = new Sorter_SurfDistance(pics, path);
+			//sorter = new Sorter_XMLFile(pics, path, "test.xml");
+		}
+		else if(event.getActionCommand() == "SurfFile")
+		{
+			sortMethod = "SurfFile";
 			sorter = new Sorter_XMLFile(pics, path, "test.xml");
 		}
 		else if (event.getActionCommand() == "Alle") {

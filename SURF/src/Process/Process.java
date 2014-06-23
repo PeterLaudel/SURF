@@ -18,10 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import FeatureMatching.FeatureMatchFilter;
-import FeatureMatching.KDTree;
-import FeatureMatching.Matches;
-import FeatureMatching.Matching;
 import Features.InterestPoint;
 import Imageprocess.Image;
 import Imageprocess.ImageProcess;
@@ -444,7 +440,7 @@ public class Process extends JPanel {
     	
     	//images.add(matching.DrawMatches(tmpImage, tmpIp, image, m_interestPoints, matches));
     	
-    	KDTree kdtree = new KDTree();
+    	//KDTree kdtree = new KDTree();
     	
     	//Vector<Vector<Matches>> knnMatches= kdtree.KnnMatching(tmpIp, m_interestPoints, 2);
     	//Vector<Matches> matches = FeatureMatchFilter.DoRatioTest(knnMatches);

@@ -8,8 +8,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import PicPropertys.Pic;
-import PicPropertys.PicSurf;
-import Sorter.Sorter_SurfDistance.DistComparator;
 import app.MatchXMLFile;
 import app.Sorter;
 
@@ -19,6 +17,8 @@ public class Sorter_XMLFile implements Sorter {
 	String m_path;
 	Sorter m_sorter;
 	String m_filename;
+	MatchXMLFile m_matchXMLFile;
+	Map<Integer, Map<Integer, Float>> m_matches;
 
 	public Sorter_XMLFile(Pic[] pics, String path, String filename) {
 		// TODO Auto-generated constructor stub
@@ -26,8 +26,10 @@ public class Sorter_XMLFile implements Sorter {
 		m_filename = filename;
 		m_path = path;
 		m_pics = pics;
+		MatchXMLFile m_matchXMLFile = new MatchXMLFile(m_path, m_filename);
+		m_matches = m_matchXMLFile.ReadMatches();
 		
-		getFeatureVectors();
+		//m_sorter.getFeatureVectors();
 	}
 
 	@Override
@@ -38,9 +40,6 @@ public class Sorter_XMLFile implements Sorter {
 	@Override
 	public void sortBySimilarity() {
 		
-		MatchXMLFile matchXMLFile = new MatchXMLFile(m_path, m_filename);
-	
-		Map<Integer, Map<Integer, Float>> matches = matchXMLFile.ReadMatches();
 		int number = m_pics.length;
 
 		int q = -1;
@@ -58,11 +57,11 @@ public class Sorter_XMLFile implements Sorter {
 		SortedSet<Pic> resultList = treeSet;
 		
 		int queryHashId = m_pics[q].name.hashCode();
-		Map<Integer, Float> distanceMap = matches.get(queryHashId);
+		Map<Integer, Float> distanceMap = m_matches.get(queryHashId);
 		if(distanceMap == null)
 		{
 			distanceMap = new HashMap<Integer, Float>(m_pics.length);
-			matches.put(queryHashId, distanceMap);
+			m_matches.put(queryHashId, distanceMap);
 		}
 		Boolean changed = false;
 		for (int n = 0; n < number; n++) {
@@ -92,7 +91,7 @@ public class Sorter_XMLFile implements Sorter {
 		}	
 		
 		if(changed)
-			matchXMLFile.WriteMatches(matches);
+			m_matchXMLFile.WriteMatches(m_matches);
 		//m_sorter.sortBySimilarity();
 		
 	}

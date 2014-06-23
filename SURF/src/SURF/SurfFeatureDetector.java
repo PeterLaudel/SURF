@@ -182,7 +182,7 @@ public class SurfFeatureDetector {
 			}
 		}
 	}
-	
+	/*
 	//find local maxima after paper implementation not finished yet
 	private  Vector<Integer>  FindLocalMaximum(Image image)
 	{
@@ -222,6 +222,7 @@ public class SurfFeatureDetector {
 	 	   
 	   return list;
 	}
+	*/
 	
 	public Image GetOctaveImage(int octaveNumber, int octaveLayer) {
 		if (octaveNumber >= m_octaveDepth || octaveLayer > 3)
