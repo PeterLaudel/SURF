@@ -33,7 +33,7 @@ public class BruteForceMatching {
 				}
 			}
 			if(tmpIndex != -1)
-				result.add(new Matches(i, tmpIndex, tmpDistance));
+				result.add(new Matches(i, tmpIndex, (float) Math.sqrt(tmpDistance)));
 		}
 		
 		return result;

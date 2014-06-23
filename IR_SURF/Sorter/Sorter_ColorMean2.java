@@ -185,5 +185,12 @@ public class Sorter_ColorMean2 implements Sorter
 		big.dispose();
 		return bi;
 	}
+
+
+	@Override
+	public void computeDistance(int queryPic, int actPic) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

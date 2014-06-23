@@ -128,5 +128,11 @@ public class Sorter_SURF implements Sorter {
 		}
 	}
 
+	@Override
+	public void computeDistance(int queryPic, int actPic) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
