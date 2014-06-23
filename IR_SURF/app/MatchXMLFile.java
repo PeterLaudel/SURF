@@ -1,14 +1,10 @@
 package app;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,14 +15,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import Features.InterestPoint;
-import PicPropertys.Pic;
 
 public class MatchXMLFile {
 	
@@ -108,26 +100,24 @@ public class MatchXMLFile {
 			Element rootElement = doc.createElement("matches");
 			doc.appendChild(rootElement);
 			
-			Iterator it = matches.entrySet().iterator();
+			Iterator<Entry<Integer, Map<Integer, Float>>> it = matches.entrySet().iterator();
 			
 		
 			while(it.hasNext())
 			{
-				Map.Entry<Integer, Map<Integer, Float>> entry = (Entry<Integer, Map<Integer, Float>>) it.next();
+				Map.Entry<Integer, Map<Integer, Float>> entry = it.next();
 				
 				Element matchElement = doc.createElement("match");
 				matchElement.setAttribute("id", Integer.toString(entry.getKey()));
 				rootElement.appendChild(matchElement);
 				
 		 
-				Iterator it2 = entry.getValue().entrySet().iterator();
+				Iterator<Entry<Integer, Float>> it2 = entry.getValue().entrySet().iterator();
 				
 				while(it2.hasNext())
 				{
-					Map.Entry<Integer, Float> distance = (Entry<Integer, Float>) it2.next();
-					
-					
-					
+					Map.Entry<Integer, Float> distance = it2.next();
+
 					Element distanceElement = doc.createElement("distance");
 					distanceElement.setAttribute("id", Integer.toString(distance.getKey()));
 					distanceElement.appendChild(doc.createTextNode(distance.getValue().toString()));

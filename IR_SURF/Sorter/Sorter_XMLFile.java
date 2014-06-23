@@ -64,7 +64,7 @@ public class Sorter_XMLFile implements Sorter {
 			distanceMap = new HashMap<Integer, Float>(m_pics.length);
 			matches.put(queryHashId, distanceMap);
 		}
-
+		Boolean changed = false;
 		for (int n = 0; n < number; n++) {
 			int actId = m_pics[n].name.hashCode();
 			if(distanceMap.containsKey(actId))
@@ -73,6 +73,7 @@ public class Sorter_XMLFile implements Sorter {
 			}
 			else
 			{
+				changed = true;
 				m_sorter.computeDistance(q, n);
 				distanceMap.put(actId, (float) m_pics[n].distance);
 			}
@@ -90,7 +91,8 @@ public class Sorter_XMLFile implements Sorter {
 			}
 		}	
 		
-		matchXMLFile.WriteMatches(matches);
+		if(changed)
+			matchXMLFile.WriteMatches(matches);
 		//m_sorter.sortBySimilarity();
 		
 	}
