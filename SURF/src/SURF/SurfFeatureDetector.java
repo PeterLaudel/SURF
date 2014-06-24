@@ -74,8 +74,8 @@ public class SurfFeatureDetector {
 	}
 	
 	/**
-	 * Detect Method for SURF feauture detecting of the given image.
-	 * This Method is usefull for following feature descriptor extraction, 
+	 * Detect Method for SURF feature detecting of the given image.
+	 * This Method is useful for following feature descriptor extraction, 
 	 * need only to compute on integral image.
 	 * @param integralImage [in] for feature detecting
 	 * @param interestPoints [out] the interest points array wich get filled 

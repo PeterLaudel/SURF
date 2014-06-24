@@ -41,13 +41,13 @@ public class Sorter_SURF implements Sorter {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 		SurfXMLFile sxmlf = new SurfXMLFile(m_path);
-		Map<String, List<InterestPoint>> fileMap = sxmlf.ReadSurfXMLFile();
+		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfXMLFile();
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
-			if(fileMap != null && fileMap.containsKey(surfpic.pic.name))
+			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
 			{
-				surfpic.interestPoints = fileMap.get(surfpic.pic.name);
+				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
 				continue;
 			}
 			

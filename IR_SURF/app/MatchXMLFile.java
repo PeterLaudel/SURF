@@ -12,19 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class MatchXMLFile {
 	
@@ -45,14 +34,12 @@ public class MatchXMLFile {
 		Map<Integer, Map<Integer, Float>> resultMap  = new HashMap<Integer, Map<Integer, Float>>();
 		try
 		{
-			File fXmlFile = new File(m_path + "/" + m_filename);
-			if(!fXmlFile.exists())
+			File file = new File(m_path + "/" + m_filename);
+			if(!file.exists())
 				return resultMap;
 			
-			DataInputStream is = new DataInputStream(new FileInputStream(fXmlFile));
+			DataInputStream is = new DataInputStream(new FileInputStream(file));
 			int size  = is.readInt();
-		 
-		
 		 
 			while(is.available() != 0)
 			{
@@ -66,7 +53,7 @@ public class MatchXMLFile {
 				}
 				resultMap.put(id, distanceMap);
 			}
-			
+			is.close();
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	    }

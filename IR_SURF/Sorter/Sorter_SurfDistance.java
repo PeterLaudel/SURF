@@ -43,15 +43,15 @@ public class Sorter_SurfDistance implements Sorter {
 	public void getFeatureVectors() {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
-		Map<String, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfXMLFile();
+		Map<Integer, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfXMLFile();
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
 			//System.out.println("" + i);
 			//System.out.println(surfpic.pic.name);
-			if(fileMap != null && fileMap.containsKey(surfpic.pic.name))
+			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
 			{
-				surfpic.interestPoints = fileMap.get(surfpic.pic.name);
+				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
 				continue;
 			}
 			
