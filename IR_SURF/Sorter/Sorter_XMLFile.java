@@ -26,7 +26,7 @@ public class Sorter_XMLFile implements Sorter {
 		m_filename = filename;
 		m_path = path;
 		m_pics = pics;
-		MatchXMLFile m_matchXMLFile = new MatchXMLFile(m_path, m_filename);
+		m_matchXMLFile = new MatchXMLFile(m_path, m_filename);
 		m_matches = m_matchXMLFile.ReadMatches();
 		
 		//m_sorter.getFeatureVectors();
@@ -90,8 +90,7 @@ public class Sorter_XMLFile implements Sorter {
 			}
 		}	
 		
-		if(changed)
-			m_matchXMLFile.WriteMatches(m_matches);
+			
 		//m_sorter.sortBySimilarity();
 		
 	}
@@ -116,7 +115,7 @@ public class Sorter_XMLFile implements Sorter {
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
 		// TODO Auto-generated method stub
-		
+		m_matchXMLFile.WriteMatches(m_matches);
 	}
 
 

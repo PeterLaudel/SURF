@@ -47,6 +47,8 @@ public class Sorter_SurfDistance implements Sorter {
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
+			//System.out.println("" + i);
+			//System.out.println(surfpic.pic.name);
 			if(fileMap != null && fileMap.containsKey(surfpic.pic.name))
 			{
 				surfpic.interestPoints = fileMap.get(surfpic.pic.name);
@@ -149,7 +151,7 @@ public class Sorter_SurfDistance implements Sorter {
 		for(int i = 0; i < finalMatch.size(); i++)
 			distance += finalMatch.get(i).distance;
 		
-		act.pic.distance = distance / finalMatch.size();
+		act.pic.distance = distance * (float) query.interestPoints.size() / (float) finalMatch.size();
 		
 		
 	}

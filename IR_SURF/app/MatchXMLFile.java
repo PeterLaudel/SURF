@@ -1,6 +1,12 @@
 package app;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,44 +49,22 @@ public class MatchXMLFile {
 			if(!fXmlFile.exists())
 				return resultMap;
 			
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
+			DataInputStream is = new DataInputStream(new FileInputStream(fXmlFile));
+			int size  = is.readInt();
 		 
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-			doc.getDocumentElement().normalize();
+		
 		 
-			//System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-		 
-			NodeList nList = doc.getElementsByTagName("match");
-		 
-			//System.out.println("----------------------------");
-			
-			resultMap = new HashMap<Integer, Map<Integer, Float>>(nList.getLength());
-		 
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-		 
-				Node nNode = nList.item(temp);
-		 
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-		 
-					Element eElement = (Element) nNode;
-					String attribute = eElement.getAttribute("id");
-					int id = Integer.parseInt(attribute);
-					
-					Map<Integer, Float> distanceMap = new HashMap<Integer, Float>();
-					
-					NodeList distancenodeList = eElement.getElementsByTagName("distance");
-					for(int i = 0; i < distancenodeList.getLength(); i++)
-					{
-						Element ipElement = (Element) distancenodeList.item(i);
-						int distanceId = Integer.parseInt(ipElement.getAttribute("id"));
-						float distance = Float.parseFloat(ipElement.getChildNodes().item(0).getTextContent());
-						distanceMap.put(distanceId, distance);
-					}
-					resultMap.put(id, distanceMap);
+			while(is.available() != 0)
+			{
+				int id = is.readInt();
+				Map<Integer, Float> distanceMap = new HashMap<Integer, Float>();
+				for(int i = 0; i < size; i++)
+				{
+					int id2 = is.readInt();
+					float distance = is.readFloat();
+					distanceMap.put(id2, distance);
 				}
+				resultMap.put(id, distanceMap);
 			}
 			
 	    } catch (Exception e) {
@@ -92,24 +76,25 @@ public class MatchXMLFile {
 	public void WriteMatches(Map<Integer, Map<Integer, Float>> matches)
 	{
 		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	 
-			// root elements
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("matches");
-			doc.appendChild(rootElement);
+			File file = new File(m_path + "/" + m_filename);
+			if(!file.exists())
+				file.createNewFile();
+			
+			DataOutputStream os = new DataOutputStream(new FileOutputStream(file));
+			
+			int size = matches.entrySet().iterator().next().getValue().size();
+			
+			os.writeInt(size);
 			
 			Iterator<Entry<Integer, Map<Integer, Float>>> it = matches.entrySet().iterator();
 			
 		
 			while(it.hasNext())
 			{
-				Map.Entry<Integer, Map<Integer, Float>> entry = it.next();
 				
-				Element matchElement = doc.createElement("match");
-				matchElement.setAttribute("id", Integer.toString(entry.getKey()));
-				rootElement.appendChild(matchElement);
+				Map.Entry<Integer, Map<Integer, Float>> entry = it.next();
+				int id = entry.getKey();
+				os.writeInt(id);
 				
 		 
 				Iterator<Entry<Integer, Float>> it2 = entry.getValue().entrySet().iterator();
@@ -117,30 +102,20 @@ public class MatchXMLFile {
 				while(it2.hasNext())
 				{
 					Map.Entry<Integer, Float> distance = it2.next();
-
-					Element distanceElement = doc.createElement("distance");
-					distanceElement.setAttribute("id", Integer.toString(distance.getKey()));
-					distanceElement.appendChild(doc.createTextNode(distance.getValue().toString()));
-					matchElement.appendChild(distanceElement);
+					int id2 = distance.getKey();
+					os.writeInt(id2);
+					float dist = distance.getValue();
+					os.writeFloat(dist);
+					
 				}
 			}
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(m_path + "/" + m_filename));
-	 
-			// Output to console for testing
-			// StreamResult result = new StreamResult(System.out);
-	 
-			transformer.transform(source, result);
-	 
-			System.out.println("File saved!");
-	 
-		  } catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		  } catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		  }
+			os.close();
+		  } catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

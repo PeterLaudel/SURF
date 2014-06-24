@@ -123,6 +123,11 @@ class IR_Project implements ActionListener{
 		mI_surfFile.addActionListener(this);
 		methodMenu.add(mI_surfFile);
 		buttonGroup.add(mI_surfFile);
+		
+		JRadioButtonMenuItem mI_test = new JRadioButtonMenuItem("test", true);
+		mI_test.addActionListener(this);
+		methodMenu.add(mI_test);
+		buttonGroup.add(mI_test);
 
 
 		JMenu settingsMenu = new JMenu("Einstellungen");
@@ -196,7 +201,7 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SurfFile")
 		{
 			sortMethod = "SurfFile";
-			sorter = new Sorter_XMLFile(pics, path, "test.xml");
+			sorter = new Sorter_XMLFile(pics, path, "test.dat");
 		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");
@@ -208,14 +213,28 @@ class IR_Project implements ActionListener{
 					selectedPics.add(pics[n]);			
 			}
 
-			if(selectedPics.size() > 0) 
+			if(selectedPics.size() > 0){
 				myTestAlgorithm.test(selectedPics,"all");
+				sorter.computeDistance(0, 1);
+			}
+				
 			else 
 				System.out.println("Keine Markierungen vorhanden");
 
 			myCanvas.markPixsAsUnselected();
 		}
-
+		else if(event.getActionCommand() == "test")
+		{
+			System.out.println("Testen");
+			Vector<Pic> selectedPics = new Vector<Pic>();
+			for (int n = 0; n < pics.length; n++) { 	
+				if(pics[n] != null &&(!pics[n].type.equals("x")))
+					selectedPics.add(pics[n]);			
+			}
+			System.out.println("All Selected");
+			sorter = new Sorter_XMLFile(pics, path, "");
+			
+		}
 		else {
 			System.out.println("sortmethod: " + sortMethod);
 			System.out.println("Testen nach Dateiname: "+event.getActionCommand());
@@ -339,7 +358,7 @@ class IR_Project implements ActionListener{
 			myTestAlgorithm = new TestAlgorithm(myCanvas, myCanvas.folder.getPath(), pics);	
 
 			updateMenu();
-			sorter = new Sorter_ColorMean(pics);
+			//sorter = new Sorter_ColorMean(pics);
 
 			if (numImages == 0) {
 				System.out.println("No images found! Exiting ...");
