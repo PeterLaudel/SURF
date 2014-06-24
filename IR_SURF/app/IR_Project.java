@@ -39,7 +39,7 @@ import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
 import Sorter.Sorter_SURF;
 import Sorter.Sorter_SurfDistance;
-import Sorter.Sorter_XMLFile;
+import Sorter.Sorter_File;
 
 
 
@@ -201,7 +201,7 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SurfFile")
 		{
 			sortMethod = "SurfFile";
-			sorter = new Sorter_XMLFile(pics, path, "test.dat");
+			sorter = new Sorter_File(pics, path, "test.dat");
 		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");
@@ -232,7 +232,7 @@ class IR_Project implements ActionListener{
 					selectedPics.add(pics[n]);			
 			}
 			System.out.println("All Selected");
-			sorter = new Sorter_XMLFile(pics, path, "");
+			sorter = new Sorter_File(pics, path, "");
 			
 		}
 		else {

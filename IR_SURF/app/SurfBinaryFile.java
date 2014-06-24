@@ -15,11 +15,11 @@ import java.util.Map;
 import Features.InterestPoint;
 import PicPropertys.PicSurf;
 
-public class SurfXMLFile {
+public class SurfBinaryFile {
 	
 	String m_path;
 
-	public SurfXMLFile(String path) {
+	public SurfBinaryFile(String path) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 	}

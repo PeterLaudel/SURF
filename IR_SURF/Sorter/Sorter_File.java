@@ -8,25 +8,25 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import PicPropertys.Pic;
-import app.MatchXMLFile;
+import app.MatchBinaryFile;
 import app.Sorter;
 
-public class Sorter_XMLFile implements Sorter {
+public class Sorter_File implements Sorter {
 	
 	Pic[] m_pics;
 	String m_path;
 	Sorter m_sorter;
 	String m_filename;
-	MatchXMLFile m_matchXMLFile;
+	MatchBinaryFile m_matchXMLFile;
 	Map<Integer, Map<Integer, Float>> m_matches;
 
-	public Sorter_XMLFile(Pic[] pics, String path, String filename) {
+	public Sorter_File(Pic[] pics, String path, String filename) {
 		// TODO Auto-generated constructor stub
 		m_sorter = new Sorter_SurfDistance(pics, path);
 		m_filename = filename;
 		m_path = path;
 		m_pics = pics;
-		m_matchXMLFile = new MatchXMLFile(m_path, m_filename);
+		m_matchXMLFile = new MatchBinaryFile(m_path, m_filename);
 		m_matches = m_matchXMLFile.ReadMatches();
 		
 		//m_sorter.getFeatureVectors();

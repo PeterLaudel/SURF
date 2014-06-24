@@ -18,20 +18,20 @@ import PicPropertys.PicSurf;
 import SURF.SurfFeatureDescriptor;
 import SURF.SurfFeatureDetector;
 import app.Sorter;
-import app.SurfXMLFile;
+import app.SurfBinaryFile;
 
 public class Sorter_SurfDistance implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
-	SurfXMLFile m_xmlFile;
+	SurfBinaryFile m_xmlFile;
 	
 	public Sorter_SurfDistance(Pic[] pics, String path) {
 		// TODO Auto-generated constructor stub
 		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfXMLFile(m_path);
+		m_xmlFile = new SurfBinaryFile(m_path);
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			m_picSurf[i] = new PicSurf(pics[i]);

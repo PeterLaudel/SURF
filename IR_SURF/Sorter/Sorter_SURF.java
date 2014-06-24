@@ -18,7 +18,7 @@ import PicPropertys.PicSurf;
 import SURF.SurfFeatureDescriptor;
 import SURF.SurfFeatureDetector;
 import app.Sorter;
-import app.SurfXMLFile;
+import app.SurfBinaryFile;
 
 public class Sorter_SURF implements Sorter {
 	
@@ -40,7 +40,7 @@ public class Sorter_SURF implements Sorter {
 	public void getFeatureVectors() {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
-		SurfXMLFile sxmlf = new SurfXMLFile(m_path);
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path);
 		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfXMLFile();
 		for(int i = 0; i < m_picSurf.length; i++)
 		{

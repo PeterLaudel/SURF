@@ -15,14 +15,14 @@ import java.util.Map.Entry;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class MatchXMLFile {
+public class MatchBinaryFile {
 	
 	String m_path;
 	String m_filename;
 	Element m_rootElement;
 	Document m_document;
 	
-	public MatchXMLFile(String path, String filename) {
+	public MatchBinaryFile(String path, String filename) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_filename = filename;
