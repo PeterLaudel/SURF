@@ -1,11 +1,17 @@
 package Sorter;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
 
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
@@ -41,25 +47,36 @@ public class Sorter_SurfDistance implements Sorter {
 
 	@Override
 	public void getFeatureVectors() {
-		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
+		SurfFeatureDetector sfd = new SurfFeatureDetector(4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 		Map<Integer, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfXMLFile();
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
+			
 			//System.out.println("" + i);
 			//System.out.println(surfpic.pic.name);
+			int k = 0;
+			if(m_picSurf[i].pic.name.startsWith("berg"))
+				k++;
 			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
 			{
 				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
 				continue;
 			}
+			BufferedImage img;
+			try {
+				img = ImageIO.read(new File(m_path + "/" + surfpic.pic.name));
+				Image image = new Image(img.getWidth(), img.getHeight());
+				img.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
+				IntegralImage ii = new IntegralImage(image);
+				sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
+				sfdesc.Compute(ii, surfpic.interestPoints);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			Image image = new Image(surfpic.pic.bImage.getWidth(), surfpic.pic.bImage.getHeight());
-			surfpic.pic.bImage.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
-			IntegralImage ii = new IntegralImage(image);
-			sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
-			sfdesc.Compute(ii, surfpic.interestPoints);
 		}
 		
 		if(fileMap == null)

@@ -201,7 +201,7 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SurfFile")
 		{
 			sortMethod = "SurfFile";
-			sorter = new Sorter_File(pics, path, "test.dat");
+			sorter = new Sorter_File(pics, path, "matches.match");
 		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");

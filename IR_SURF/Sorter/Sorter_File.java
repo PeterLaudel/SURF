@@ -58,6 +58,8 @@ public class Sorter_File implements Sorter {
 		
 		int queryHashId = m_pics[q].name.hashCode();
 		Map<Integer, Float> distanceMap = m_matches.get(queryHashId);
+	
+		
 		if(distanceMap == null)
 		{
 			distanceMap = new HashMap<Integer, Float>(m_pics.length);

@@ -27,7 +27,7 @@ public class SurfBinaryFile {
 	{
 		try {
 			 
-				File file = new File(m_path + "/matches.surf");
+				File file = new File(m_path + "/descriptor.surf");
 				if(!file.exists())
 					return null;
 				
@@ -77,7 +77,7 @@ public class SurfBinaryFile {
 	{
 		try {
 				
-				File file = new File(m_path + "/matches.surf");
+				File file = new File(m_path + "/descriptor.surf");
 				if(!file.exists())
 					file.createNewFile();
 				

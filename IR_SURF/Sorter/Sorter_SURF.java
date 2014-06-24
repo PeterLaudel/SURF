@@ -1,11 +1,16 @@
 package Sorter;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
 
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
@@ -24,6 +29,7 @@ public class Sorter_SURF implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
+	int m_count;
 
 	public Sorter_SURF(Pic[] pics, String path) {
 		// TODO Auto-generated constructor stub
@@ -34,6 +40,7 @@ public class Sorter_SURF implements Sorter {
 			m_picSurf[i] = new PicSurf(pics[i]);
 		}
 		getFeatureVectors();
+		m_count = 0;
 	}
 
 	@Override
@@ -45,19 +52,33 @@ public class Sorter_SURF implements Sorter {
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
+			
+			//System.out.println("" + i);
+			//System.out.println(surfpic.pic.name);
+
 			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
 			{
 				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
-				continue;
 			}
+			else
+			{
+				BufferedImage img;
+				try {
+					img = ImageIO.read(new File(m_path + "/" + surfpic.pic.name));
+					Image image = new Image(img.getWidth(), img.getHeight());
+					img.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
+					IntegralImage ii = new IntegralImage(image);
+					sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
+					sfdesc.Compute(ii, surfpic.interestPoints);
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			m_count+= surfpic.interestPoints.size();
 			
-			Image image = new Image(surfpic.pic.bImage.getWidth(), surfpic.pic.bImage.getHeight());
-			surfpic.pic.bImage.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
-			IntegralImage ii = new IntegralImage(image);
-			sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
-			sfdesc.Compute(ii, surfpic.interestPoints);
 		}
-		
 		if(fileMap == null)
 			sxmlf.WriteXMLFile(m_picSurf);
 	}
@@ -83,19 +104,11 @@ public class Sorter_SURF implements Sorter {
 
 
 		PicSurf queryPic = m_picSurf[q];
+
 		for (int n = 0; n < number; n++) {
 			PicSurf actPic = m_picSurf[n]; 
 			if (actPic != null) {
-				List<Matches> match1 = BruteForceMatching.BFMatch(actPic.interestPoints, queryPic.interestPoints);
-				//List<Matches> match2 = BruteForceMatching.BFMatch(queryPic.interestPoints, actPic.interestPoints);
-				
-				//List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
-				//finalMatch = FeatureMatchFilter.
-				//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
-				List<Matches> finalMatch = FeatureMatchFilter.DoDistanceThreshold(match1, 0.075f);
-				//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
-				//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
-				actPic.pic.distance = actPic.interestPoints.size() -  finalMatch.size();
+				computeDistance(q, n);
 				resultList.add(actPic.pic);
 			}
 		}
@@ -131,6 +144,20 @@ public class Sorter_SURF implements Sorter {
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
 		// TODO Auto-generated method stub
+		PicSurf query = m_picSurf[queryPic];
+		PicSurf act = m_picSurf[actPic]; 
+		List<Matches> match1 = BruteForceMatching.BFMatch(act.interestPoints, query.interestPoints);
+		List<Matches> match2 = BruteForceMatching.BFMatch(query.interestPoints, act.interestPoints);
+		
+		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
+		//finalMatch = FeatureMatchFilter.
+		//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
+		
+		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, 0.075f);
+		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
+		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
+		act.pic.distance = query.interestPoints.size() - finalMatch.size();
+		
 		
 	}
 

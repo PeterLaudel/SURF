@@ -49,6 +49,17 @@ public class SurfFeatureDetector {
 		m_max = Float.MIN_VALUE;
 	}
 	
+	public SurfFeatureDetector(int octaveDepth) {
+		m_number = -1;
+		m_octaveDepth = octaveDepth;
+		m_octaves = new Octave[m_octaveDepth];
+		
+		for (int i = 0; i < m_octaves.length; i++)
+			m_octaves[i] = new Octave(i + 1);
+		
+		m_max = Float.MIN_VALUE;
+	}
+	
 	/**
 	 * Detect Method for SURF feauture detecting of the given image.
 	 * @param image [in] for feature detecting
@@ -69,8 +80,12 @@ public class SurfFeatureDetector {
 		Map<Float, InterestPoint> resultMap = new TreeMap<Float, InterestPoint>();
 		
 		FindLocalMaximum(resultMap);
-		List<InterestPoint> result = (Vector<InterestPoint>) resultMap.values();
-		interestPoints.addAll(result.subList(0, Math.max(result.size(), m_number)));
+
+		List<InterestPoint> result = new Vector<InterestPoint>(resultMap.values());
+		if(m_number == -1)
+			interestPoints.addAll(result);
+		else
+			interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
 	}
 	
 	/**
@@ -94,7 +109,10 @@ public class SurfFeatureDetector {
 		
 		FindLocalMaximum(resultMap);
 		List<InterestPoint> result = new Vector<InterestPoint>(resultMap.values());
-		interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
+		if(m_number == -1)
+			interestPoints.addAll(result);
+		else
+			interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
 	}
 	
 	/**
