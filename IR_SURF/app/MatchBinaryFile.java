@@ -40,7 +40,7 @@ public class MatchBinaryFile {
 			
 			DataInputStream is = new DataInputStream(new FileInputStream(file));
 			int size  = is.readInt();
-		 
+			resultMap = new HashMap<Integer, Map<Integer, Float>>(size);
 			while(is.available() != 0)
 			{
 				int id = is.readInt();

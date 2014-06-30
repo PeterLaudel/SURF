@@ -20,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -35,11 +36,11 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.MouseInputAdapter;
 
 import PicPropertys.Pic;
+import Sorter.Sorter_BinaryFile;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
-import Sorter.Sorter_SURF;
-import Sorter.Sorter_SurfDistance;
 import Sorter.Sorter_File;
+import Sorter.Sorter_SURF;
 
 
 
@@ -77,6 +78,11 @@ class IR_Project implements ActionListener{
 	private JMenu testMenu;
 
 	private String sortMethod = "ColorMean";
+	
+	protected String[] m_matchFiles;
+	
+	JMenu methodMenu;
+	ButtonGroup buttonGroup;
 
 	
 	static public void main(String[] args) {
@@ -87,7 +93,8 @@ class IR_Project implements ActionListener{
 		//Fenstertitel festlegen
 		String str = "IR Project";
 		
-
+		//m_matchFiles = new ArrayList<String>();
+		
 		//Menus erzeugen
 		testMenu = new JMenu("Testen");
 
@@ -95,9 +102,8 @@ class IR_Project implements ActionListener{
 		mI_all.addActionListener(this);
 		testMenu.add(mI_all);
 
-		JMenu methodMenu = new JMenu("Suchverfahren");
-
-		ButtonGroup buttonGroup = new ButtonGroup();
+		methodMenu = new JMenu("Suchverfahren");
+		buttonGroup = new ButtonGroup();
 
 		JRadioButtonMenuItem mI_colorMean = new JRadioButtonMenuItem("ColorMean",true);
 		mI_colorMean.addActionListener(this);
@@ -174,6 +180,14 @@ class IR_Project implements ActionListener{
 				testMenu.add(mi);
 			}
 		}
+		
+		for(int i = 0; i < m_matchFiles.length; i++)
+		{
+			JRadioButtonMenuItem mI_tmp = new JRadioButtonMenuItem(m_matchFiles[i], true);
+			mI_tmp.addActionListener(this);
+			methodMenu.add(mI_tmp);
+			buttonGroup.add(mI_tmp);
+		}
 	}
 
 
@@ -195,13 +209,13 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SurfDistance")
 		{
 			sortMethod = "SurfDistance";
-			sorter = new Sorter_SurfDistance(pics, path);
+			//sorter = new Sorter_SurfDistance(pics, path);
 			//sorter = new Sorter_XMLFile(pics, path, "test.xml");
 		}
 		else if(event.getActionCommand() == "SurfFile")
 		{
 			sortMethod = "SurfFile";
-			sorter = new Sorter_File(pics, path, "matches.match");
+			//sorter = new Sorter_File(pics, path, "matches.match");
 		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");
@@ -232,9 +246,57 @@ class IR_Project implements ActionListener{
 					selectedPics.add(pics[n]);			
 			}
 			System.out.println("All Selected");
-			sorter = new Sorter_File(pics, path, "");
+			
+			sorter = new Sorter_File(pics, path, "matches50_highResponse.match", 50);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_File(pics, path, "matches100_highResponse.match", 100);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_File(pics, path, "matches150_highResponse.match", 150);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_File(pics, path, "matches200_highResponse.match", 200);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			/*
+			sorter = new Sorter_File(pics, path, "matches250_highResponse.match", 250);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			sorter = new Sorter_File(pics, path, "matches300_highResponse.match", 300);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			sorter = new Sorter_File(pics, path, "matches350_highResponse.match", 350);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			sorter = new Sorter_File(pics, path, "matches400_highResponse.match", 400);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			sorter = new Sorter_File(pics, path, "matches450_highResponse.match", 450);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			
+			sorter = new Sorter_File(pics, path, "matches500_highResponse.match", 500);
+			myTestAlgorithm.test(selectedPics, "all");
+			sorter.computeDistance(0, 1);
+			*/
 			
 		}
+		else if(Arrays.asList(m_matchFiles).contains(event.getActionCommand()))
+		{
+			sortMethod = "BinaryFile " + event.getActionCommand(); 
+			sorter = new Sorter_BinaryFile(pics, path, event.getActionCommand() + ".match");
+		}	
 		else {
 			System.out.println("sortmethod: " + sortMethod);
 			System.out.println("Testen nach Dateiname: "+event.getActionCommand());
@@ -285,6 +347,7 @@ class IR_Project implements ActionListener{
 			File[] files = folder.listFiles();
 
 			int expectedNumberOfImages = 0; 
+			int expectedNumberOfMatches = 0;
 
 			// Dateinamen werden in einem separaten Array der gleichen Laenge abgelegt
 			String[] filenames = new String[files.length];
@@ -293,12 +356,18 @@ class IR_Project implements ActionListener{
 				// Beachten, dass evtl. nicht alles Bilder sind
 				if (filenames[i].endsWith("jpg") || filenames[i].endsWith("png") || filenames[i].endsWith("gif"))
 					expectedNumberOfImages++;
+				
+				if(filenames[i].endsWith("match"))
+					expectedNumberOfMatches++;
 			}
 
 			//array mit pic-objekten fuer jedes bild
 			pics = new Pic[expectedNumberOfImages];
+			
+			m_matchFiles = new String[expectedNumberOfMatches];
 
 			numImages = 0;  // number of images 
+			int numMatches = 0;
 			for (int i = 0; i < filenames.length; i++) {
 				String path = folder + "/" + filenames[i];
 
@@ -350,6 +419,11 @@ class IR_Project implements ActionListener{
 							pics[numImages] = null;
 					} 
 					catch (IOException e) {}
+				}
+				if(filenames[i].endsWith("match"))
+				{
+					m_matchFiles[numMatches] = filenames[i].split("\\.")[0];
+					numMatches++;
 				}
 			}
 

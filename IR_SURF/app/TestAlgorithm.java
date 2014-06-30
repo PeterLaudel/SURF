@@ -85,6 +85,8 @@ public class TestAlgorithm {
 			String currentType = selectedPics.elementAt(testRun).type;
 			int currTypeOcc = selectedPics.elementAt(testRun).typeOcc;
 			numRelevant[testRun] = currTypeOcc;
+			
+			System.out.println(""+ testRun + "/" + totalTestRuns);
 
 			Pic[] picsSorted = new Pic[numPics];
 			for (int k = 0; k < numPics; k++) {

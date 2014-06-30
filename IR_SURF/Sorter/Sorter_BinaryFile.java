@@ -11,30 +11,25 @@ import PicPropertys.Pic;
 import app.MatchBinaryFile;
 import app.Sorter;
 
-public class Sorter_File implements Sorter {
+public class Sorter_BinaryFile implements Sorter {
 	
 	Pic[] m_pics;
 	String m_path;
-	Sorter m_sorter;
 	String m_filename;
 	MatchBinaryFile m_matchXMLFile;
 	Map<Integer, Map<Integer, Float>> m_matches;
 
-	public Sorter_File(Pic[] pics, String path, String filename, int count) {
+	public Sorter_BinaryFile(Pic[] pics, String path, String filename) {
 		// TODO Auto-generated constructor stub
-		m_sorter = new Sorter_SurfDistance(pics, path, count);
 		m_filename = filename;
 		m_path = path;
 		m_pics = pics;
 		m_matchXMLFile = new MatchBinaryFile(m_path, m_filename);
 		m_matches = m_matchXMLFile.ReadMatches();
-		
-		//m_sorter.getFeatureVectors();
 	}
 
 	@Override
 	public void getFeatureVectors() {
-		m_sorter.getFeatureVectors();
 	}
 
 	@Override
@@ -71,14 +66,7 @@ public class Sorter_File implements Sorter {
 			{
 				m_pics[n].distance = distanceMap.get(actId);
 			}
-			else
-			{
-
-				m_sorter.computeDistance(q, n);
-				distanceMap.put(actId, (float) m_pics[n].distance);
-			}
 			resultList.add(m_pics[n]);
-			
 		}
 
 		Iterator<Pic> it = resultList.iterator();
@@ -115,8 +103,7 @@ public class Sorter_File implements Sorter {
 
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
-		// TODO Auto-generated method stub
-		m_matchXMLFile.WriteMatches(m_matches);
+		
 	}
 
 

@@ -48,7 +48,7 @@ public class Sorter_SURF implements Sorter {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path);
-		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfXMLFile();
+		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(200);
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
@@ -80,7 +80,7 @@ public class Sorter_SURF implements Sorter {
 			
 		}
 		if(fileMap == null)
-			sxmlf.WriteXMLFile(m_picSurf);
+			sxmlf.WriteSurfBinaryFile(m_picSurf);
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class SurfBinaryFile {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 	}
-	public Map<Integer, List<InterestPoint>> ReadSurfXMLFile()
+	public Map<Integer, List<InterestPoint>> ReadSurfBinaryFile(int countIP)
 	{
 		try {
 			 
@@ -42,7 +42,7 @@ public class SurfBinaryFile {
 					int id = is.readInt();
 					
 					int count = is.readInt();
-					List<InterestPoint> interestPoints = new ArrayList<InterestPoint>(count);
+					List<InterestPoint> interestPoints = new ArrayList<InterestPoint>(countIP);
 					for(int j = 0; j < count; j++)
 					{
 						int x = is.readInt();
@@ -59,9 +59,12 @@ public class SurfBinaryFile {
 						is.read(buffer.array());
 						ip.descriptor = new float[descriptorLength];
 						buffer.asFloatBuffer().get(ip.descriptor);
-						interestPoints.add(ip);
+						if(j > count - countIP )
+							interestPoints.add(ip);
 					}
-					resultMap.put(id, interestPoints);
+					int start = Math.max(interestPoints.size() - countIP, 0);
+					int end = interestPoints.size();
+					resultMap.put(id, interestPoints.subList(start, end));
 				}
 				is.close();
 				return resultMap;
@@ -73,7 +76,7 @@ public class SurfBinaryFile {
 		
 	}
 	
-	public void WriteXMLFile(PicSurf []surfPics)
+	public void WriteSurfBinaryFile(PicSurf []surfPics)
 	{
 		try {
 				

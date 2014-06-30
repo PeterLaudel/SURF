@@ -1,7 +1,6 @@
 package Sorter;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
@@ -31,13 +30,15 @@ public class Sorter_SurfDistance implements Sorter {
 	PicSurf[] m_picSurf;
 	String m_path;
 	SurfBinaryFile m_xmlFile;
+	int m_count;
 	
-	public Sorter_SurfDistance(Pic[] pics, String path) {
+	public Sorter_SurfDistance(Pic[] pics, String path, int count) {
 		// TODO Auto-generated constructor stub
 		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
 		m_xmlFile = new SurfBinaryFile(m_path);
+		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			m_picSurf[i] = new PicSurf(pics[i]);
@@ -49,16 +50,13 @@ public class Sorter_SurfDistance implements Sorter {
 	public void getFeatureVectors() {
 		SurfFeatureDetector sfd = new SurfFeatureDetector(4);
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
-		Map<Integer, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfXMLFile();
+		Map<Integer, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfBinaryFile(m_count);
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
 			
 			//System.out.println("" + i);
 			//System.out.println(surfpic.pic.name);
-			int k = 0;
-			if(m_picSurf[i].pic.name.startsWith("berg"))
-				k++;
 			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
 			{
 				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
@@ -80,7 +78,7 @@ public class Sorter_SurfDistance implements Sorter {
 		}
 		
 		if(fileMap == null)
-			m_xmlFile.WriteXMLFile(m_picSurf);
+			m_xmlFile.WriteSurfBinaryFile(m_picSurf);
 	}
 
 	@Override
