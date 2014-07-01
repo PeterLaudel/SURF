@@ -69,7 +69,7 @@ public class SurfImagePanel extends JPanel {
 		
 		m_interestPoints = new Vector<InterestPoint>();
 		IntegralImage ii = new IntegralImage(image);
-		m_surfDetector = new SurfFeatureDetector(4);
+		m_surfDetector = new SurfFeatureDetector(200, 4);
 		
 		long startTime = System.currentTimeMillis();
 		m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);

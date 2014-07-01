@@ -39,8 +39,10 @@ import PicPropertys.Pic;
 import Sorter.Sorter_BinaryFile;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
-import Sorter.Sorter_File;
-import Sorter.Sorter_SURF;
+import Sorter.Sorter_SurfFeatureExtractor;
+import Sorter.Sorter_WriteMatchFile;
+import Sorter.Sorter_SurfDistance;
+import Sorter.Sorter_SurfSymmetryCount;
 
 
 
@@ -204,7 +206,7 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SURF")
 		{
 			sortMethod = "SURF";
-			sorter = new Sorter_SURF(pics, path);
+			sorter = new Sorter_SurfSymmetryCount(pics, path, 200);
 		}
 		else if(event.getActionCommand() == "SurfDistance")
 		{
@@ -247,24 +249,27 @@ class IR_Project implements ActionListener{
 			}
 			System.out.println("All Selected");
 			
-			sorter = new Sorter_File(pics, path, "matches50_highResponse.match", 50);
+			sorter = new Sorter_SurfFeatureExtractor(pics, path, 200);
+			
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches50_high.match", new Sorter_SurfDistance(pics, path, 50));
 			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
 			
 			System.out.println("All Selected");
-			sorter = new Sorter_File(pics, path, "matches100_highResponse.match", 100);
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches100_high.match", new Sorter_SurfDistance(pics, path, 100));
 			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
 			
 			System.out.println("All Selected");
-			sorter = new Sorter_File(pics, path, "matches150_highResponse.match", 150);
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches150_high.match", new Sorter_SurfDistance(pics, path, 150));
 			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
 			
 			System.out.println("All Selected");
-			sorter = new Sorter_File(pics, path, "matches200_highResponse.match", 200);
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches200_high.match", new Sorter_SurfDistance(pics, path, 200));
 			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
+			
 			/*
 			sorter = new Sorter_File(pics, path, "matches250_highResponse.match", 250);
 			myTestAlgorithm.test(selectedPics, "all");

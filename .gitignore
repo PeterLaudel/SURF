@@ -11,6 +11,8 @@
 *.jpg
 *.xml
 *.txt
+*.match
+*.surf
 
 .metadata/
 

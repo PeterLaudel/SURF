@@ -1,33 +1,27 @@
 package Sorter;
 
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import PicPropertys.Pic;
 import app.MatchBinaryFile;
 import app.Sorter;
 
-public class Sorter_File implements Sorter {
+public class Sorter_WriteMatchFile implements Sorter {
 	
 	Pic[] m_pics;
 	String m_path;
 	Sorter m_sorter;
 	String m_filename;
-	MatchBinaryFile m_matchXMLFile;
 	Map<Integer, Map<Integer, Float>> m_matches;
 
-	public Sorter_File(Pic[] pics, String path, String filename, int count) {
+	public Sorter_WriteMatchFile(Pic[] pics, String path, String filename, Sorter sorter) {
 		// TODO Auto-generated constructor stub
-		m_sorter = new Sorter_SurfDistance(pics, path, count);
+		m_sorter = sorter;
 		m_filename = filename;
 		m_path = path;
 		m_pics = pics;
-		m_matchXMLFile = new MatchBinaryFile(m_path, m_filename);
-		m_matches = m_matchXMLFile.ReadMatches();
+		m_matches = new HashMap<Integer, Map<Integer, Float>>(pics.length);
 		
 		//m_sorter.getFeatureVectors();
 	}
@@ -52,6 +46,19 @@ public class Sorter_File implements Sorter {
 		if (q == -1)
 			return;
 		
+		
+		m_sorter.sortBySimilarity();
+		
+		int queryHashId = m_pics[q].name.hashCode();
+		Map<Integer, Float> distanceMap = new HashMap<Integer, Float>(m_pics.length);
+
+		m_matches.put(queryHashId, distanceMap);
+		for (int n = 0; n < number; n++) {
+			int actId = m_pics[n].name.hashCode();
+			distanceMap.put(actId, (float) m_pics[n].distance);
+		}
+		
+		/*
 		DistComparator distComparator = new DistComparator();
 		TreeSet<Pic> treeSet = new TreeSet<Pic>(distComparator);
 		SortedSet<Pic> resultList = treeSet;
@@ -90,33 +97,22 @@ public class Sorter_File implements Sorter {
 				pic.rank = n++;
 			}
 		}	
-		
+		*/
 			
 		//m_sorter.sortBySimilarity();
 		
-	}
-	
-	class DistComparator implements Comparator<Object> {
-		public int compare( java.lang.Object p1, java.lang.Object p2 ) {
-			Double d1 = ((Pic) p1).distance;
-			Double d2 = ((Pic) p2).distance;
-			
-			if( d1 < d2 ) 
-				return -1;
-			else if( d1 > d2 ) 
-				return 1;
-			else if ( ((Pic)p1).id == ((Pic) p2).id)
-				return 0;
-			else 
-				return 1;
-			
-		}
 	}
 
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
 		// TODO Auto-generated method stub
-		m_matchXMLFile.WriteMatches(m_matches);
+		
+	}
+	
+	public void SaveMatches()
+	{
+		MatchBinaryFile mbf = new MatchBinaryFile(m_path, m_filename);
+		mbf.WriteMatches(m_matches);
 	}
 
 

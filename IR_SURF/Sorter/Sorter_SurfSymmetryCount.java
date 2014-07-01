@@ -1,8 +1,5 @@
 package Sorter;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -10,28 +7,22 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.imageio.ImageIO;
-
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.Matches;
 import Features.InterestPoint;
-import Imageprocess.Image;
-import IntegralImage.IntegralImage;
 import PicPropertys.Pic;
 import PicPropertys.PicSurf;
-import SURF.SurfFeatureDescriptor;
-import SURF.SurfFeatureDetector;
 import app.Sorter;
 import app.SurfBinaryFile;
 
-public class Sorter_SURF implements Sorter {
+public class Sorter_SurfSymmetryCount implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
 	int m_count;
 
-	public Sorter_SURF(Pic[] pics, String path) {
+	public Sorter_SurfSymmetryCount(Pic[] pics, String path, int count) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
@@ -40,47 +31,20 @@ public class Sorter_SURF implements Sorter {
 			m_picSurf[i] = new PicSurf(pics[i]);
 		}
 		getFeatureVectors();
-		m_count = 0;
+		m_count = count;
 	}
 
 	@Override
 	public void getFeatureVectors() {
-		SurfFeatureDetector sfd = new SurfFeatureDetector(200, 4);
-		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path);
-		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(200);
+		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
+		if(fileMap == null)
+			return;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
-			
-			//System.out.println("" + i);
-			//System.out.println(surfpic.pic.name);
-
-			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
-			{
-				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
-			}
-			else
-			{
-				BufferedImage img;
-				try {
-					img = ImageIO.read(new File(m_path + "/" + surfpic.pic.name));
-					Image image = new Image(img.getWidth(), img.getHeight());
-					img.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
-					IntegralImage ii = new IntegralImage(image);
-					sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
-					sfdesc.Compute(ii, surfpic.interestPoints);
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			m_count+= surfpic.interestPoints.size();
-			
+			surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
 		}
-		if(fileMap == null)
-			sxmlf.WriteSurfBinaryFile(m_picSurf);
 	}
 
 	@Override
@@ -101,9 +65,6 @@ public class Sorter_SURF implements Sorter {
 		DistComparator distComparator = new DistComparator();
 		TreeSet<Pic> treeSet = new TreeSet<Pic>(distComparator);
 		SortedSet<Pic> resultList = treeSet;
-
-
-		PicSurf queryPic = m_picSurf[q];
 
 		for (int n = 0; n < number; n++) {
 			PicSurf actPic = m_picSurf[n]; 
@@ -146,6 +107,13 @@ public class Sorter_SURF implements Sorter {
 		// TODO Auto-generated method stub
 		PicSurf query = m_picSurf[queryPic];
 		PicSurf act = m_picSurf[actPic]; 
+		
+		if(act.interestPoints == null || query.interestPoints == null)
+		{
+			act.pic.distance = Float.MAX_VALUE;
+			return;
+		}
+		
 		List<Matches> match1 = BruteForceMatching.BFMatch(act.interestPoints, query.interestPoints);
 		List<Matches> match2 = BruteForceMatching.BFMatch(query.interestPoints, act.interestPoints);
 		

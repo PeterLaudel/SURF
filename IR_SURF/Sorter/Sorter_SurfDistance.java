@@ -1,8 +1,5 @@
 package Sorter;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -10,18 +7,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.imageio.ImageIO;
-
 import FeatureMatching.BruteForceMatching;
 import FeatureMatching.FeatureMatchFilter;
 import FeatureMatching.Matches;
 import Features.InterestPoint;
-import Imageprocess.Image;
-import IntegralImage.IntegralImage;
 import PicPropertys.Pic;
 import PicPropertys.PicSurf;
-import SURF.SurfFeatureDescriptor;
-import SURF.SurfFeatureDetector;
 import app.Sorter;
 import app.SurfBinaryFile;
 
@@ -48,37 +39,15 @@ public class Sorter_SurfDistance implements Sorter {
 
 	@Override
 	public void getFeatureVectors() {
-		SurfFeatureDetector sfd = new SurfFeatureDetector(4);
-		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
-		Map<Integer, List<InterestPoint>> fileMap = m_xmlFile.ReadSurfBinaryFile(m_count);
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path);
+		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
+		if(fileMap == null)
+			return;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
-			
-			//System.out.println("" + i);
-			//System.out.println(surfpic.pic.name);
-			if(fileMap != null && fileMap.containsKey(surfpic.pic.name.hashCode()))
-			{
-				surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
-				continue;
-			}
-			BufferedImage img;
-			try {
-				img = ImageIO.read(new File(m_path + "/" + surfpic.pic.name));
-				Image image = new Image(img.getWidth(), img.getHeight());
-				img.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
-				IntegralImage ii = new IntegralImage(image);
-				sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
-				sfdesc.Compute(ii, surfpic.interestPoints);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+			surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
 		}
-		
-		if(fileMap == null)
-			m_xmlFile.WriteSurfBinaryFile(m_picSurf);
 	}
 
 	@Override
@@ -151,6 +120,11 @@ public class Sorter_SurfDistance implements Sorter {
 		//List<Matches> match2 = FeatureMatchFilter.DoRatioTest(knnMatch2);
 		
 		//List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
+		if(act.interestPoints == null || query.interestPoints == null)
+		{
+			act.pic.distance = Float.MAX_VALUE;
+			return;
+		}
 		
 		List<Matches> match1 = BruteForceMatching.BFMatch(act.interestPoints, query.interestPoints);
 		List<Matches> match2 = BruteForceMatching.BFMatch(query.interestPoints, act.interestPoints);
