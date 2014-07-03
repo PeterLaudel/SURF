@@ -54,25 +54,28 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 	@Override
 	public void getFeatureVectors() {
 		
+		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
+		SurfFeatureDetector sfd;
+		if(m_count != -1)
+			sfd = new SurfFeatureDetector(m_count, 4);
+		else
+			sfd = new SurfFeatureDetector(4);
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			try {
 				PicSurf surfpic = m_picSurf[i];
-				SurfFeatureDetector sfd;
-				if(m_count != -1)
-					sfd = new SurfFeatureDetector(m_count, 4);
-				else
-					sfd = new SurfFeatureDetector(4);
-				
-				
-				
-				SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 				BufferedImage img = ImageIO.read(new File(m_path + "/" + surfpic.pic.name));
 				Image image = new Image(img.getWidth(), img.getHeight());
 				img.getRGB(0, 0, image.GetWidth(), image.GetHeight(), image.GetImagePixels(), 0, image.GetWidth());
 				IntegralImage ii = new IntegralImage(image);
 				sfd.Detect(ii, image.GetWidth(), image.GetHeight(), surfpic.interestPoints);
 				sfdesc.Compute(ii, surfpic.interestPoints);
+				img.flush();
+				image = null;
+				ii = null;
+				img = null;
+				System.gc();
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

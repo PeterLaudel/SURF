@@ -249,7 +249,7 @@ class IR_Project implements ActionListener{
 			}
 			System.out.println("All Selected");
 			
-			sorter = new Sorter_SurfFeatureExtractor(pics, path, 200);
+			sorter = new Sorter_SurfFeatureExtractor(pics, path, 400);
 			
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches50_high.match", new Sorter_SurfDistance(pics, path, 50));
 			myTestAlgorithm.test(selectedPics, "all");
@@ -375,55 +375,70 @@ class IR_Project implements ActionListener{
 			int numMatches = 0;
 			for (int i = 0; i < filenames.length; i++) {
 				String path = folder + "/" + filenames[i];
-
+				Boolean fast = false;
 				if (filenames[i].endsWith("jpg") || filenames[i].endsWith("png") || filenames[i].endsWith("gif")) {
-					try {
-						File file = new File(path); 
-						Image image = null;
+					if(fast)
+					{
 						try {
-							image = ImageIO.read(file);
+							File file = new File(path); 
+							Image image = null;
+							try {
+								image = ImageIO.read(file);
+							} 
+							catch (RuntimeException e) {
+								e.printStackTrace();
+							} 
+	
+							if (image != null) {
+								int iw = image.getWidth(null);
+								int ih = image.getHeight(null);
+	
+								int maxOrigImgSize = Math.max(iw,ih);
+	
+								float thumbSize = 128;
+	
+								//skalierungsfaktor bestimmen:
+								float scale = (maxOrigImgSize > thumbSize) ? thumbSize/maxOrigImgSize : 1;
+	
+								int nw = (int)(iw*scale);
+								int nh = (int)(ih*scale);
+	
+								//BufferedImage currBi = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
+								//Graphics2D big = currBi.createGraphics();
+								//big.drawImage(image,0,0,nw,nh,null);
+	
+								Pic currPic = pics[numImages] = new Pic();
+								currPic.name = filenames[i];
+								currPic.type = filenames[i].split("[_]")[0];
+								//currPic.bImage=currBi;
+								currPic.id = numImages;
+								currPic.rank = numImages;
+								currPic.origWidth=iw;
+								currPic.origHeight=ih;
+	
+								//bei x-ten jedem Bild anzeige aktualisieren
+								if (numImages % 10 == numImages/10-1)
+									doDrawing();
+	
+								numImages++;
+							}
+							else 
+								pics[numImages] = null;
+							
+							image.flush();
+							image = null;
 						} 
-						catch (RuntimeException e) {
-							e.printStackTrace();
-						} 
-
-						if (image != null) {
-							int iw = image.getWidth(null);
-							int ih = image.getHeight(null);
-
-							int maxOrigImgSize = Math.max(iw,ih);
-
-							float thumbSize = 128;
-
-							//skalierungsfaktor bestimmen:
-							float scale = (maxOrigImgSize > thumbSize) ? thumbSize/maxOrigImgSize : 1;
-
-							int nw = (int)(iw*scale);
-							int nh = (int)(ih*scale);
-
-							BufferedImage currBi = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
-							Graphics2D big = currBi.createGraphics();
-							big.drawImage(image,0,0,nw,nh,null);
-
-							Pic currPic = pics[numImages] = new Pic();
-							currPic.name = filenames[i];
-							currPic.type = filenames[i].split("[_]")[0];
-							currPic.bImage=currBi;
-							currPic.id = numImages;
-							currPic.rank = numImages;
-							currPic.origWidth=iw;
-							currPic.origHeight=ih;
-
-							//bei x-ten jedem Bild anzeige aktualisieren
-							if (numImages % 10 == numImages/10-1)
-								doDrawing();
-
-							numImages++;
-						}
-						else 
-							pics[numImages] = null;
-					} 
-					catch (IOException e) {}
+						catch (IOException e) {}
+					}
+					else
+					{
+						Pic currPic = pics[numImages] = new Pic();
+						currPic.name = filenames[i];
+						currPic.type = filenames[i].split("[_]")[0];
+						currPic.id = numImages;
+						currPic.rank = numImages;
+						numImages++;
+					}
 				}
 				if(filenames[i].endsWith("match"))
 				{

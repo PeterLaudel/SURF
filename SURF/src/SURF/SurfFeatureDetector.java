@@ -1,5 +1,6 @@
 package SURF;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,11 +82,16 @@ public class SurfFeatureDetector {
 		
 		FindLocalMaximum(resultMap);
 
-		List<InterestPoint> result = new Vector<InterestPoint>(resultMap.values());
 		if(m_number == -1)
-			interestPoints.addAll(result);
+			interestPoints.addAll(resultMap.values());
 		else
+		{
+			List<InterestPoint> result = new ArrayList<InterestPoint>(resultMap.values());
 			interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
+			result = null;
+		}
+		
+		resultMap = null;
 	}
 	
 	/**
@@ -108,11 +114,17 @@ public class SurfFeatureDetector {
 		Map<Float, InterestPoint> resultMap = new TreeMap<Float, InterestPoint>();
 		
 		FindLocalMaximum(resultMap);
-		List<InterestPoint> result = new Vector<InterestPoint>(resultMap.values());
+		
 		if(m_number == -1)
-			interestPoints.addAll(result);
+			interestPoints.addAll(resultMap.values());
 		else
+		{
+			List<InterestPoint> result = new ArrayList<InterestPoint>(resultMap.values());
 			interestPoints.addAll(result.subList(Math.max(0, result.size()-m_number), result.size()));
+			result = null;
+		}
+
+		resultMap = null;
 	}
 	
 	/**
