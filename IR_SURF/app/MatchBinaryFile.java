@@ -60,6 +60,12 @@ public class MatchBinaryFile {
 		return resultMap;
 	}
 	
+	
+	/**
+	 * Method for writing matches in a binary file. Give the function
+	 * a Map with the name hashId as key.
+	 * @param matches map which contains all the matches.
+	 */
 	public void WriteMatches(Map<Integer, Map<Integer, Float>> matches)
 	{
 		try {

@@ -55,7 +55,7 @@ public class Process extends JPanel {
         JPanel tmp = new JPanel(new BorderLayout());
         
         // load the default image
-        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\IR_SURF\\images\\holiday_big\\1000_00.png");
+        File input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\IR_SURF\\images\\holiday_big\\1000_00.jpg");
         
         if(!input.canRead()) input = openFile(); // file not found, choose another image
         
@@ -78,7 +78,9 @@ public class Process extends JPanel {
 		
 		Image srcImage = new Image(dstPixels, width, height);
 		
-		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\IR_SURF\\images\\holiday_big\\1000_00.png");
+		input = new File("D:\\HTW Berlin\\4. Semester\\IC\\workspace\\IR_SURF\\images\\holiday_big\\1000_01.jpg");
+		
+		if(!input.canRead()) input = openFile(); // file not found, choose another image
 		srcView = new ImageView(input);
 		// get pixels arrays
 		

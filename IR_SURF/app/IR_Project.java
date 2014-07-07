@@ -249,6 +249,7 @@ class IR_Project implements ActionListener{
 			}
 			System.out.println("All Selected");
 			
+			/*
 			sorter = new Sorter_SurfFeatureExtractor(pics, path, 400);
 			
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches50_high.match", new Sorter_SurfDistance(pics, path, 50));
@@ -269,32 +270,26 @@ class IR_Project implements ActionListener{
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches200_high.match", new Sorter_SurfDistance(pics, path, 200));
 			myTestAlgorithm.test(selectedPics, "all");
 			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			/*
-			sorter = new Sorter_File(pics, path, "matches250_highResponse.match", 250);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
-			
-			sorter = new Sorter_File(pics, path, "matches300_highResponse.match", 300);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
-			
-			sorter = new Sorter_File(pics, path, "matches350_highResponse.match", 350);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
-			
-			sorter = new Sorter_File(pics, path, "matches400_highResponse.match", 400);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
-			
-			sorter = new Sorter_File(pics, path, "matches450_highResponse.match", 450);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
-			
-			sorter = new Sorter_File(pics, path, "matches500_highResponse.match", 500);
-			myTestAlgorithm.test(selectedPics, "all");
-			sorter.computeDistance(0, 1);
 			*/
+			
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches250_high.match", new Sorter_SurfDistance(pics, path, 250));
+			myTestAlgorithm.test(selectedPics, "all");
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches300_high.match", new Sorter_SurfDistance(pics, path, 300));
+			myTestAlgorithm.test(selectedPics, "all");
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches350_high.match", new Sorter_SurfDistance(pics, path, 350));
+			myTestAlgorithm.test(selectedPics, "all");
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
+			
+			System.out.println("All Selected");
+			sorter = new Sorter_WriteMatchFile(pics, path, "matches400_high.match", new Sorter_SurfDistance(pics, path, 400));
+			myTestAlgorithm.test(selectedPics, "all");
+			((Sorter_WriteMatchFile) sorter).SaveMatches();
 			
 		}
 		else if(Arrays.asList(m_matchFiles).contains(event.getActionCommand()))

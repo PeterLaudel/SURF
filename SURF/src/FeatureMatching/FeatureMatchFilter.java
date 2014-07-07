@@ -1,7 +1,7 @@
 package FeatureMatching;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import Features.InterestPoint;
 
@@ -9,7 +9,7 @@ public class FeatureMatchFilter {
 	
 	public static List<Matches> DoRatioTest(List<List<Matches>> knnMatches)
 	{
-		List<Matches> resultMatches = new Vector<Matches>();
+		List<Matches> resultMatches = new ArrayList<Matches>((int) (knnMatches.size() * 0.7f));
 
 		for(int i = 0; i< knnMatches.size(); i++)
 		{
@@ -37,7 +37,7 @@ public class FeatureMatchFilter {
 	public static List<Matches> DoSymmetryTest(List<Matches> matches1, List<Matches> matches2)
 	{
 
-		List<Matches> resultMatches = new Vector<Matches>();
+		List<Matches> resultMatches = new ArrayList<Matches>((int) (matches1.size() * 0.7f));
 		for(int i = 0; i < matches1.size(); i++)
 		{
 			Matches match1 = matches1.get(i);
@@ -58,7 +58,7 @@ public class FeatureMatchFilter {
 	
 	public static List<Matches> DoSurfResponseTest(List<Matches> matches, List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
 	{
-		List<Matches> result = new Vector<Matches>();
+		List<Matches> result = new ArrayList<Matches>((int) (matches.size() * 0.7f));
 		
 		for(int i = 0; i < matches.size(); i++)
 		{
@@ -77,7 +77,7 @@ public class FeatureMatchFilter {
 	
 	public static List<Matches> DoDistanceThreshold(List<Matches> matches, float threshold)
 	{
-		List<Matches> result = new Vector<Matches>();
+		List<Matches> result = new ArrayList<Matches>((int) (matches.size() * 0.7f));
 		
 		for(int i = 0; i < matches.size(); i++)
 		{
@@ -91,7 +91,7 @@ public class FeatureMatchFilter {
 	
 	public static List<Matches> DoResponseRatioTest(List<Matches> matches, List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
 	{
-		List<Matches> result = new Vector<Matches>();
+		List<Matches> result = new ArrayList<Matches>((int) (matches.size() * 0.7f));
 		
 		for(int i = 0; i < matches.size(); i++)
 		{
