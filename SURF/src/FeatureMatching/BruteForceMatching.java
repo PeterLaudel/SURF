@@ -7,7 +7,7 @@ import Features.InterestPoint;
 
 public class BruteForceMatching {
 
-	public static List<Matches> BFMatch(List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
+	public List<Matches> BFMatch(List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
 	{
 		List<Matches> result = new ArrayList<Matches>(interestPoints1.size());
 		
@@ -33,7 +33,7 @@ public class BruteForceMatching {
 				}
 			}
 			if(tmpIndex != -1)
-				result.add(new Matches(i, tmpIndex, (float) Math.sqrt(tmpDistance)));
+				result.add(new Matches(i, tmpIndex, tmpDistance));
 		}
 		
 		return result;

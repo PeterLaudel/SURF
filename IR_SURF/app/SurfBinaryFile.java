@@ -43,7 +43,12 @@ public class SurfBinaryFile {
 					
 					int count = is.readInt();
 					List<InterestPoint> interestPoints = new ArrayList<InterestPoint>(countIP);
-					for(int j = 0; j < count; j++)
+					//is.skipBytes(4);
+					int offset = Math.max(0, count - countIP);
+					int skip = (4 + 4 + 4 + 1 + 4 + 4 + 4 + (64 * 4)) * offset;
+					is.skipBytes(skip);
+					int end = Math.min(count, countIP);
+					for(int j = 0; j < end; j++)
 					{
 						int x = is.readInt();
 						int y = is.readInt();
@@ -51,20 +56,21 @@ public class SurfBinaryFile {
 						Boolean negative = is.readBoolean();
 						float scale = is.readFloat();
 						float value = is.readFloat();
-						InterestPoint ip = new InterestPoint(x, y, scale, value, negative);
-						ip.orientation = orientation;
+						
 						
 						int descriptorLength = is.readInt();
 						ByteBuffer buffer = ByteBuffer.allocate(4 * descriptorLength);
 						is.read(buffer.array());
-						ip.descriptor = new float[descriptorLength];
-						buffer.asFloatBuffer().get(ip.descriptor);
-						if(j > count - countIP )
-							interestPoints.add(ip);
+						float[] descriptor = new float[descriptorLength];
+						buffer.asFloatBuffer().get(descriptor);
+						
+						InterestPoint ip = new InterestPoint(x, y, scale, value, negative);
+						ip.orientation = orientation;
+						ip.descriptor = descriptor;
+						interestPoints.add(ip);
+							
 					}
-					int start = Math.max(interestPoints.size() - countIP, 0);
-					int end = interestPoints.size();
-					resultMap.put(id, interestPoints.subList(start, end));
+					resultMap.put(id, interestPoints);
 				}
 				is.close();
 				return resultMap;

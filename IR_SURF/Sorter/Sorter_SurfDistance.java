@@ -126,8 +126,10 @@ public class Sorter_SurfDistance implements Sorter {
 			return;
 		}
 		
-		List<Matches> match1 = BruteForceMatching.BFMatch(act.interestPoints, query.interestPoints);
-		List<Matches> match2 = BruteForceMatching.BFMatch(query.interestPoints, act.interestPoints);
+		BruteForceMatching bfm = new BruteForceMatching();
+		
+		List<Matches> match1 = bfm.BFMatch(act.interestPoints, query.interestPoints);
+		List<Matches> match2 = bfm.BFMatch(query.interestPoints, act.interestPoints);
 		
 		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		//finalMatch = FeatureMatchFilter.

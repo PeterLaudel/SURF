@@ -47,9 +47,9 @@ public class MatchImagePanel extends JPanel {
 
 		long startTime = System.currentTimeMillis();
 		//List<List<Matches>> matches = kdTree.KnnMatching(interestPoints1, interestPoints2, 2);
-		
-		List<Matches> matches = BruteForceMatching.BFMatch(interestPoints1, interestPoints2);
-		List<Matches> matches2 = BruteForceMatching.BFMatch(interestPoints2, interestPoints1);
+		BruteForceMatching bfm = new BruteForceMatching();
+		List<Matches> matches = bfm.BFMatch(interestPoints1, interestPoints2);
+		List<Matches> matches2 = bfm.BFMatch(interestPoints2, interestPoints1);
 		outputString += "matching: " + (System.currentTimeMillis() - startTime) + " ms  " + "befor filtering: " + matches.size() + " ";
 		
 		startTime = System.currentTimeMillis();

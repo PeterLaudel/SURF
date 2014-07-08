@@ -206,12 +206,12 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SURF")
 		{
 			sortMethod = "SURF";
-			sorter = new Sorter_SurfSymmetryCount(pics, path, 200);
+			//sorter = new Sorter_SurfSymmetryCount(pics, path, 200);
 		}
 		else if(event.getActionCommand() == "SurfDistance")
 		{
 			sortMethod = "SurfDistance";
-			//sorter = new Sorter_SurfDistance(pics, path);
+			sorter = new Sorter_SurfDistance(pics, path, 100);
 			//sorter = new Sorter_XMLFile(pics, path, "test.xml");
 		}
 		else if(event.getActionCommand() == "SurfFile")
@@ -241,6 +241,34 @@ class IR_Project implements ActionListener{
 		}
 		else if(event.getActionCommand() == "test")
 		{
+			
+			Vector<Pic> selectedPics = new Vector<Pic>();
+			for (int n = 0; n < pics.length; n++) { 	
+				if(pics[n] != null &&(!pics[n].type.equals("x")))
+					selectedPics.add(pics[n]);			
+			}
+			/*
+			Arrays.sort(m_matchFiles);
+			
+			for(int i = 0; i < m_matchFiles.length; i++)
+			{
+				sorter = new Sorter_BinaryFile(pics, path, m_matchFiles[i] + ".match");
+				myTestAlgorithm.test(selectedPics, m_matchFiles[i]);
+			}
+			*/
+			
+			float threshold = 0.01f;
+			for(int i = 0; i < 20; i++)
+			{
+				String name = Float.toString(threshold);
+				name = name.replace('.', ',');
+				sorter = new Sorter_WriteMatchFile(pics, path, "MatchCount_" + name + ".match", new Sorter_SurfSymmetryCount(pics, path, 200, threshold));
+				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
+				((Sorter_WriteMatchFile) sorter).SaveMatches();
+				threshold += 0.01f;
+				sorter = null;
+			}
+			/*
 			System.out.println("Testen");
 			Vector<Pic> selectedPics = new Vector<Pic>();
 			for (int n = 0; n < pics.length; n++) { 	
@@ -249,7 +277,7 @@ class IR_Project implements ActionListener{
 			}
 			System.out.println("All Selected");
 			
-			/*
+			
 			sorter = new Sorter_SurfFeatureExtractor(pics, path, 400);
 			
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches50_high.match", new Sorter_SurfDistance(pics, path, 50));
@@ -270,7 +298,7 @@ class IR_Project implements ActionListener{
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches200_high.match", new Sorter_SurfDistance(pics, path, 200));
 			myTestAlgorithm.test(selectedPics, "all");
 			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			*/
+			
 			
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches250_high.match", new Sorter_SurfDistance(pics, path, 250));
 			myTestAlgorithm.test(selectedPics, "all");
@@ -290,6 +318,7 @@ class IR_Project implements ActionListener{
 			sorter = new Sorter_WriteMatchFile(pics, path, "matches400_high.match", new Sorter_SurfDistance(pics, path, 400));
 			myTestAlgorithm.test(selectedPics, "all");
 			((Sorter_WriteMatchFile) sorter).SaveMatches();
+			*/
 			
 		}
 		else if(Arrays.asList(m_matchFiles).contains(event.getActionCommand()))

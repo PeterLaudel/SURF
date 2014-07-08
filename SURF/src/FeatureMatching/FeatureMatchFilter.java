@@ -45,7 +45,8 @@ public class FeatureMatchFilter {
 			{
 				
 				Matches match2 = matches2.get(j);
-				if(match1.idx1== match2.idx2 && match1.idx1 == match2.idx2)
+				if((match1.idx1 == match2.idx1 && match1.idx2 == match2.idx2) ||
+				   (match1.idx1 == match2.idx2 && match1.idx2 == match2.idx1))
 				{
 					resultMatches.add(match1);
 					break;

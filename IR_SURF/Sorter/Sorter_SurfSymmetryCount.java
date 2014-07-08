@@ -21,8 +21,9 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 	PicSurf[] m_picSurf;
 	String m_path;
 	int m_count;
+	float m_threshold;
 
-	public Sorter_SurfSymmetryCount(Pic[] pics, String path, int count) {
+	public Sorter_SurfSymmetryCount(Pic[] pics, String path, int count, float threshold) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
@@ -30,8 +31,9 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 		{
 			m_picSurf[i] = new PicSurf(pics[i]);
 		}
-		getFeatureVectors();
 		m_count = count;
+		m_threshold = threshold;
+		getFeatureVectors();
 	}
 
 	@Override
@@ -113,18 +115,18 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 			act.pic.distance = Float.MAX_VALUE;
 			return;
 		}
-		
-		List<Matches> match1 = BruteForceMatching.BFMatch(act.interestPoints, query.interestPoints);
-		List<Matches> match2 = BruteForceMatching.BFMatch(query.interestPoints, act.interestPoints);
+		BruteForceMatching bfm = new BruteForceMatching();
+		List<Matches> match1 = bfm.BFMatch(act.interestPoints, query.interestPoints);
+		List<Matches> match2 = bfm.BFMatch(query.interestPoints, act.interestPoints);
 		
 		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		//finalMatch = FeatureMatchFilter.
 		//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
 		
-		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, 0.075f);
+		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, m_threshold);
 		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
-		act.pic.distance = query.interestPoints.size() - finalMatch.size();
+		act.pic.distance = m_count - finalMatch.size();
 		
 		
 	}
