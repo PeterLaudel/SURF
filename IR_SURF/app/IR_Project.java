@@ -37,12 +37,12 @@ import javax.swing.event.MouseInputAdapter;
 
 import PicPropertys.Pic;
 import Sorter.Sorter_BinaryFile;
+import Sorter.Sorter_BruteForceCV;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
-import Sorter.Sorter_SurfFeatureExtractor;
-import Sorter.Sorter_WriteMatchFile;
-import Sorter.Sorter_SurfDistance;
+import Sorter.Sorter_SurfFeatureExtractorCV;
 import Sorter.Sorter_SurfSymmetryCount;
+import Sorter.Sorter_WriteMatchFile;
 
 
 
@@ -206,12 +206,12 @@ class IR_Project implements ActionListener{
 		else if(event.getActionCommand() == "SURF")
 		{
 			sortMethod = "SURF";
-			//sorter = new Sorter_SurfSymmetryCount(pics, path, 200);
+			sorter = new Sorter_SurfFeatureExtractorCV(pics, path, 400);
 		}
 		else if(event.getActionCommand() == "SurfDistance")
 		{
 			sortMethod = "SurfDistance";
-			sorter = new Sorter_SurfDistance(pics, path, 100);
+			sorter = new Sorter_SurfSymmetryCount(pics, path, 200, 0.07f);
 			//sorter = new Sorter_XMLFile(pics, path, "test.xml");
 		}
 		else if(event.getActionCommand() == "SurfFile")
@@ -257,16 +257,24 @@ class IR_Project implements ActionListener{
 			}
 			*/
 			
-			float threshold = 0.01f;
-			for(int i = 0; i < 20; i++)
+			float threshold = 0.6f;
+			for(int i = 0; i < 10; i++)
 			{
 				String name = Float.toString(threshold);
 				name = name.replace('.', ',');
-				sorter = new Sorter_WriteMatchFile(pics, path, "MatchCount_" + name + ".match", new Sorter_SurfSymmetryCount(pics, path, 200, threshold));
+				//sorter = new Sorter_WriteMatchFile(pics, path, "SymDistance_" + name + "_200.match", new Sorter_BruteForceCV(pics, path, 200, threshold));
+				sorter = new Sorter_SurfSymmetryCount(pics, path, 200, threshold);
 				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
-				((Sorter_WriteMatchFile) sorter).SaveMatches();
-				threshold += 0.01f;
+				//((Sorter_WriteMatchFile) sorter).SaveMatches();
+				threshold += 0.1f;
 				sorter = null;
+			}
+			/*
+			for(int i = 0; i < m_matchFiles.length; i++)
+			{
+				sortMethod = "BinaryFile " + m_matchFiles[i]; 
+				sorter = new Sorter_BinaryFile(pics, path, m_matchFiles[i]+ ".match");
+				myTestAlgorithm.test(selectedPics, " ");
 			}
 			/*
 			System.out.println("Testen");
@@ -427,14 +435,14 @@ class IR_Project implements ActionListener{
 								int nw = (int)(iw*scale);
 								int nh = (int)(ih*scale);
 	
-								//BufferedImage currBi = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
-								//Graphics2D big = currBi.createGraphics();
-								//big.drawImage(image,0,0,nw,nh,null);
+								BufferedImage currBi = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
+								Graphics2D big = currBi.createGraphics();
+								big.drawImage(image,0,0,nw,nh,null);
 	
 								Pic currPic = pics[numImages] = new Pic();
 								currPic.name = filenames[i];
 								currPic.type = filenames[i].split("[_]")[0];
-								//currPic.bImage=currBi;
+								currPic.bImage=currBi;
 								currPic.id = numImages;
 								currPic.rank = numImages;
 								currPic.origWidth=iw;

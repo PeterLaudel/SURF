@@ -18,16 +18,18 @@ import PicPropertys.PicSurf;
 public class SurfBinaryFile {
 	
 	String m_path;
+	String m_name;
 
-	public SurfBinaryFile(String path) {
+	public SurfBinaryFile(String path, String name) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
+		m_name = name;
 	}
 	public Map<Integer, List<InterestPoint>> ReadSurfBinaryFile(int countIP)
 	{
 		try {
 			 
-				File file = new File(m_path + "/descriptor.surf");
+			File file = new File(m_path + "/" + m_name + ".surf");
 				if(!file.exists())
 					return null;
 				
@@ -86,7 +88,7 @@ public class SurfBinaryFile {
 	{
 		try {
 				
-				File file = new File(m_path + "/descriptor.surf");
+				File file = new File(m_path + "/" + m_name + ".surf");
 				if(!file.exists())
 					file.createNewFile();
 				

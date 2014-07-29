@@ -89,6 +89,18 @@ public class FeatureMatchFilter {
 		return result;
 	}
 	
+	public static int CountDistanceThreshold(List<Matches> matches, float threshold)
+	{
+		int count = 0;
+		for(int i = 0; i < matches.size(); i++)
+		{
+			Matches match = matches.get(i);
+			if(match.distance < threshold)
+				count++;
+		}
+		return count;
+	}
+	
 	
 	public static List<Matches> DoResponseRatioTest(List<Matches> matches, List<InterestPoint> interestPoints1, List<InterestPoint> interestPoints2)
 	{

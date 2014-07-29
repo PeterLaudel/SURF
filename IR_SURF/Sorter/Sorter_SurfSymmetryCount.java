@@ -38,7 +38,7 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 
 	@Override
 	public void getFeatureVectors() {
-		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path);
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, "descriptor");
 		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
 		if(fileMap == null)
 			return;
@@ -126,8 +126,10 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, m_threshold);
 		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
-		act.pic.distance = m_count - finalMatch.size();
+		//System.out.println("Query:" + query.interestPoints.size() + "/" + finalMatch.size());
 		
+		act.pic.distance = query.interestPoints.size() - finalMatch.size();
+		//System.out.println("Distance: "  + act.pic.distance);
 		
 	}
 

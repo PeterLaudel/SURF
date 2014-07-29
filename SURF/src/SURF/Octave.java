@@ -94,7 +94,7 @@ public class Octave {
 					float Dyy =  (integralImage.ApplyBoxFilter(dyyBoxFilter, x, y));
 					float Dxy =  (integralImage.ApplyBoxFilter(dxyBoxFilter, x, y));
 					
-					//now comute the response
+					//now compute the response
 					octavePixels[pos] = Dxx*Dyy - 0.9f * (Dxy * Dxy);
 				}
 			}

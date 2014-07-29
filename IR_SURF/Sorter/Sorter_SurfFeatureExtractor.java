@@ -27,7 +27,7 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path);
+		m_xmlFile = new SurfBinaryFile(m_path, "descriptor");
 		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
@@ -41,7 +41,7 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path);
+		m_xmlFile = new SurfBinaryFile(m_path, "descriptor");
 		m_count = -1;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
@@ -75,7 +75,6 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 				ii = null;
 				img = null;
 				System.gc();
-				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

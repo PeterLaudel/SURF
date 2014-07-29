@@ -16,24 +16,23 @@ import PicPropertys.PicSurf;
 import app.Sorter;
 import app.SurfBinaryFile;
 
-public class Sorter_SurfDistance implements Sorter {
+public class Sorter_DistanceCount implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
-	SurfBinaryFile m_xmlFile;
 	int m_count;
-	
-	public Sorter_SurfDistance(Pic[] pics, String path, int count) {
+	float m_threshold;
+
+	public Sorter_DistanceCount(Pic[] pics, String path, int count, float threshold) {
 		// TODO Auto-generated constructor stub
-		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path, "descriptor");
-		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			m_picSurf[i] = new PicSurf(pics[i]);
 		}
+		m_count = count;
+		m_threshold = threshold;
 		getFeatureVectors();
 	}
 
@@ -68,7 +67,6 @@ public class Sorter_SurfDistance implements Sorter {
 		DistComparator distComparator = new DistComparator();
 		TreeSet<Pic> treeSet = new TreeSet<Pic>(distComparator);
 		SortedSet<Pic> resultList = treeSet;
-
 
 		for (int n = 0; n < number; n++) {
 			PicSurf actPic = m_picSurf[n]; 
@@ -108,41 +106,25 @@ public class Sorter_SurfDistance implements Sorter {
 
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
-		
-		PicSurf act = m_picSurf[actPic];
-		PicSurf query = m_picSurf[queryPic];
 		// TODO Auto-generated method stub
-		//KDTree kdtree = new KDTree();
-		//List<List<Matches>> knnMatch1 = kdtree.KnnMatching(actPic.interestPoints, queryPic.interestPoints, 2);
-		//List<List<Matches>> knnMatch2 = kdtree.KnnMatching(queryPic.interestPoints, actPic.interestPoints, 2);
+		PicSurf query = m_picSurf[queryPic];
+		PicSurf act = m_picSurf[actPic]; 
 		
-		//List<Matches> match1 = FeatureMatchFilter.DoRatioTest(knnMatch1);
-		//List<Matches> match2 = FeatureMatchFilter.DoRatioTest(knnMatch2);
-		
-		//List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		if(act.interestPoints == null || query.interestPoints == null)
 		{
 			act.pic.distance = Float.MAX_VALUE;
 			return;
 		}
-		
 		BruteForceMatching bfm = new BruteForceMatching();
+		List<Matches> match = bfm.BFMatch(act.interestPoints, query.interestPoints);
 		
-		List<Matches> match1 = bfm.BFMatch(act.interestPoints, query.interestPoints);
-		List<Matches> match2 = bfm.BFMatch(query.interestPoints, act.interestPoints);
-		
-		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		//finalMatch = FeatureMatchFilter.
 		//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
-		//List<Matches> finalMatch = FeatureMatchFilter.DoDistanceThreshold(match1, 0.075f);
+		
+		int count = FeatureMatchFilter.CountDistanceThreshold(match, m_threshold);
 		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
-		
-		float distance = 0;
-		for(int i = 0; i < finalMatch.size(); i++)
-			distance += finalMatch.get(i).distance;
-		
-		act.pic.distance = distance * (float) query.interestPoints.size() / (float) finalMatch.size();
+		act.pic.distance = m_count - count;
 		
 		
 	}
