@@ -37,7 +37,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import PicPropertys.Pic;
 import Sorter.Sorter_BinaryFile;
-import Sorter.Sorter_BruteForceCV;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
 import Sorter.Sorter_SurfFeatureExtractorCV;
@@ -256,19 +255,20 @@ class IR_Project implements ActionListener{
 				myTestAlgorithm.test(selectedPics, m_matchFiles[i]);
 			}
 			*/
-			
-			float threshold = 0.6f;
+			                                                                          
+			float threshold = 0.5f;
 			for(int i = 0; i < 10; i++)
 			{
 				String name = Float.toString(threshold);
 				name = name.replace('.', ',');
-				//sorter = new Sorter_WriteMatchFile(pics, path, "SymDistance_" + name + "_200.match", new Sorter_BruteForceCV(pics, path, 200, threshold));
-				sorter = new Sorter_SurfSymmetryCount(pics, path, 200, threshold);
+				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistanceCV_" + name + "_200.match", new Sorter_SurfSymmetryCount(pics, path, 200, threshold));
+				//sorter = new Sorter_SurfSymmetryCount(pics, path, 200, threshold);
 				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
-				//((Sorter_WriteMatchFile) sorter).SaveMatches();
+				((Sorter_WriteMatchFile) sorter).SaveMatches();
 				threshold += 0.1f;
-				sorter = null;
+				sorter = null;	
 			}
+			
 			/*
 			for(int i = 0; i < m_matchFiles.length; i++)
 			{

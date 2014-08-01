@@ -141,8 +141,8 @@ public class SurfFeatureDescriptor {
 					if (ang1 < ang && ang2 > ang) {
 						sumX += angle.x;
 						sumY += angle.y;
-					} else if (ang2 < ang1 && (0 > ang && ang < ang2)
-							|| (ang1 < ang && ang < 2 * Math.PI)) {
+					} else if (ang2 < ang1 && (0 < ang && ang2 > ang)
+							|| (ang1 < ang && ang < pi2)) {
 						sumX += angle.x;
 						sumY += angle.y;
 					}

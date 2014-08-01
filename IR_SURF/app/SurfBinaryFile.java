@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import Features.InterestPoint;
 import PicPropertys.PicSurf;
@@ -82,6 +84,55 @@ public class SurfBinaryFile {
 		
 		return null;
 		
+	}
+	
+	public void WriteSurfBinaryFile(Map<Integer, List<InterestPoint>> surf)
+	{
+		try {
+			
+			File file = new File(m_path + "/" + m_name + ".surf");
+			if(!file.exists())
+				file.createNewFile();
+			
+			DataOutputStream os = new DataOutputStream(new FileOutputStream(file));
+			os.writeInt(surf.size());
+			Iterator<Entry<Integer, List<InterestPoint>>> it = surf.entrySet().iterator();
+			while(it.hasNext())
+			{
+				Map.Entry<Integer, List<InterestPoint>> entry = it.next();
+				int id = entry.getKey();
+				os.writeInt(id);
+		 
+				
+				List<InterestPoint> interestPoints = entry.getValue();
+				int ipCount = interestPoints.size();
+				os.writeInt(ipCount);
+				
+				for(int j = 0; j < ipCount; j++)
+				{
+					InterestPoint ip = interestPoints.get(j);
+					
+					os.writeInt(ip.x);
+					os.writeInt(ip.y);
+					os.writeFloat(ip.orientation);
+					os.writeBoolean(ip.negative);
+					os.writeFloat(ip.scale);
+					os.writeFloat(ip.value);
+					os.writeInt(ip.descriptor.length);
+					ByteBuffer buffer = ByteBuffer.allocate(4 * ip.descriptor.length);
+					
+			        for (float value : ip.descriptor){
+			            buffer.putFloat(value);
+			        }
+					os.write(buffer.array());
+				}
+			}
+			os.close();
+		  } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void WriteSurfBinaryFile(PicSurf []surfPics)

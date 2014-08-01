@@ -14,12 +14,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfDMatch;
 import org.opencv.features2d.DMatch;
 import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.Features2d;
-import org.opencv.features2d.KeyPoint;
 
-import FeatureMatching.BruteForceMatching;
-import FeatureMatching.FeatureMatchFilter;
-import FeatureMatching.Matches;
 import Features.InterestPoint;
 import PicPropertys.Pic;
 import PicPropertys.PicSurf;
