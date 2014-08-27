@@ -39,6 +39,7 @@ import PicPropertys.Pic;
 import Sorter.Sorter_BinaryFile;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
+import Sorter.Sorter_RatioDistanceCount;
 import Sorter.Sorter_SurfFeatureExtractorCV;
 import Sorter.Sorter_SurfSymmetryCount;
 import Sorter.Sorter_WriteMatchFile;
@@ -49,7 +50,7 @@ class IR_Project implements ActionListener{
 
 	// Einstellbare Parameter:
 
-	private final String startDirectory = "./images/";
+	private final String startDirectory = "../../images/";
 	private String path;
 	
 
@@ -255,21 +256,21 @@ class IR_Project implements ActionListener{
 				myTestAlgorithm.test(selectedPics, m_matchFiles[i]);
 			}
 			*/
-			                                                                          
-			float threshold = 0.5f;
+			/*                                                               
+			float threshold = 0.05f;
 			for(int i = 0; i < 10; i++)
 			{
 				String name = Float.toString(threshold);
 				name = name.replace('.', ',');
-				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistanceCV_" + name + "_200.match", new Sorter_SurfSymmetryCount(pics, path, 200, threshold));
+				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistance_" + name + "_400.match", new Sorter_SurfSymmetryCount(pics, path, 400, threshold));
 				//sorter = new Sorter_SurfSymmetryCount(pics, path, 200, threshold);
 				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
 				((Sorter_WriteMatchFile) sorter).SaveMatches();
-				threshold += 0.1f;
+				threshold += 0.01f;
 				sorter = null;	
 			}
 			
-			/*
+			*/
 			for(int i = 0; i < m_matchFiles.length; i++)
 			{
 				sortMethod = "BinaryFile " + m_matchFiles[i]; 
@@ -277,6 +278,7 @@ class IR_Project implements ActionListener{
 				myTestAlgorithm.test(selectedPics, " ");
 			}
 			/*
+			 * 
 			System.out.println("Testen");
 			Vector<Pic> selectedPics = new Vector<Pic>();
 			for (int n = 0; n < pics.length; n++) { 	

@@ -28,7 +28,7 @@ public class Sorter_SurfFeatureExtractorCV implements Sorter{
 		// TODO Auto-generated method stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path, "descriptorCV");
+		m_xmlFile = new SurfBinaryFile(m_path, "descriptorCV_ID");
 		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
@@ -84,7 +84,7 @@ public class Sorter_SurfFeatureExtractorCV implements Sorter{
 				{
 					KeyPoint kp = keypointsArray[k];
 					Point pt = kp.pt;
-					InterestPoint ip = new InterestPoint((int) pt.x, (int) pt.y, 0.0f, kp.response, (kp.response < 0));
+					InterestPoint ip = new InterestPoint((int) pt.x, (int) pt.y, 0.0f, kp.response, (kp.class_id < 0));
 					ip.orientation = kp.angle;
 					ip.descriptor = new float[descriptors.cols()];
 					for(int j = 0; j < descriptors.cols(); j++)

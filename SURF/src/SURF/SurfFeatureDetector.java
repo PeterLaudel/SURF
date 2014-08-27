@@ -38,25 +38,25 @@ public class SurfFeatureDetector {
 	 * @param number of to detected features
 	 * @param octaveDepth the octave depth (3 or 4 is useful)
 	 */
-	public SurfFeatureDetector(int number, int octaveDepth) {
+	public SurfFeatureDetector(int number, int octaveDepth, int layerDepth) {
 		
 		m_number = number;
 		m_octaveDepth = octaveDepth;
 		m_octaves = new Octave[m_octaveDepth];
 		
 		for (int i = 0; i < m_octaves.length; i++)
-			m_octaves[i] = new Octave(i + 1);
+			m_octaves[i] = new Octave(i + 1, layerDepth);
 		
 		m_max = Float.MIN_VALUE;
 	}
 	
-	public SurfFeatureDetector(int octaveDepth) {
+	public SurfFeatureDetector(int octaveDepth, int layerDepth) {
 		m_number = -1;
 		m_octaveDepth = octaveDepth;
 		m_octaves = new Octave[m_octaveDepth];
 		
 		for (int i = 0; i < m_octaves.length; i++)
-			m_octaves[i] = new Octave(i + 1);
+			m_octaves[i] = new Octave(i + 1, layerDepth);
 		
 		m_max = Float.MIN_VALUE;
 	}

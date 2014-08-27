@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Vector;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -54,12 +55,16 @@ public class Process extends JPanel {
         
         JPanel tmp = new JPanel(new BorderLayout());
         
+        
+        //int message = JOptionPane.showConfirmDialog(svp, "OK");
+        
         // load the default image
-        File input = openFile(); // file not found, choose another image
+        File input1 = openFile(); // file not found, choose another image
         
+        if(input1 == null)
+        	return;
         
-        
-        srcView = new ImageView(input);
+        srcView = new ImageView(input1);
         srcView.setMaxSize(new Dimension(maxWidth, maxHeight));
 
      // get image dimensions
@@ -76,8 +81,12 @@ public class Process extends JPanel {
 		
 		Image srcImage = new Image(dstPixels, width, height);
 		
-		input = openFile(); // file not found, choose another image
-		srcView = new ImageView(input);
+		File input2 = openFile(); // file not found, choose another image
+		
+		if(input2 == null)
+			return;
+		
+		srcView = new ImageView(input2);
 		// get pixels arrays
 		
 		 width = srcView.getImgWidth();
@@ -90,10 +99,14 @@ public class Process extends JPanel {
 		Image srcImage2 = new Image(dstPixels, width, height);
 		//doTmp(srcImage);
 		
+		SurfValuesDialog svp = new SurfValuesDialog(input1.getName(), input2.getName());
+        //svp.setModalityType(JDialog.DEFAULT_MODALITY_TYPE.APPLICATION_MODAL);
+        svp.setVisible(true);
+		
         
-        SurfImagePanel sip = new SurfImagePanel(srcImage);
+        SurfImagePanel sip = new SurfImagePanel(srcImage, svp.GetOctaveDepthImage1(), svp.GetLayerDepthImage1(), svp.GetNumberImage1());
         tmp.add(sip, BorderLayout.WEST);
-        SurfImagePanel sip2 = new SurfImagePanel(srcImage2);
+        SurfImagePanel sip2 = new SurfImagePanel(srcImage2, svp.GetOctaveDepthImage2(), svp.GetLayerDepthImage2(), svp.GetNumberImage2());
         tmp.add(sip2, BorderLayout.CENTER);
         
         /*

@@ -57,7 +57,7 @@ public class SurfImagePanel extends JPanel {
 	private JCheckBox m_rectCheckBox;
 
 	
-	public SurfImagePanel(Image image)
+	public SurfImagePanel(Image image, int octaveDepth, int layerDepth, int number)
 	{
 		m_imageView = new ImageView(maxWidth, maxHeight);
 		m_imageView.setPixels(image.GetImagePixels(), image.GetWidth(), image.GetHeight());
@@ -69,7 +69,7 @@ public class SurfImagePanel extends JPanel {
 		
 		m_interestPoints = new Vector<InterestPoint>();
 		IntegralImage ii = new IntegralImage(image);
-		m_surfDetector = new SurfFeatureDetector(4);
+		m_surfDetector = new SurfFeatureDetector(number, octaveDepth, layerDepth);
 		
 		long startTime = System.currentTimeMillis();
 		m_surfDetector.Detect(ii, image.GetWidth(), image.GetHeight(), m_interestPoints);
@@ -91,8 +91,8 @@ public class SurfImagePanel extends JPanel {
 		JLabel octaveLayerText = new JLabel("Octave Layer: ");
 		JLabel thresholdText = new JLabel("Threshold: ");
 		
-		m_octaveDepthSlider = new JSlider(0, 3);
-		m_octaveLayerSlider = new JSlider(0, 3);
+		m_octaveDepthSlider = new JSlider(0, octaveDepth-1);
+		m_octaveLayerSlider = new JSlider(0, layerDepth-1);
 		
 		m_showComboBox = new JComboBox<String>();
 		m_showComboBox.addItem("Image View");

@@ -23,12 +23,13 @@ public class Octave {
 	private HarrisResponse[] m_octave; //< the resonse layers of the octave
 	private int m_scalePixelSteps; //< the pixels steps by growing filter size
 	private int m_startFilterSize; //< the initial filter size of the first response layer
+	private int m_layerDepth; //< the number of layers
 	
 	/**
 	 * Constructor for Octave class.
 	 * @param octaveNumber the current octave number
 	 */
-	public Octave(int octaveNumber)
+	public Octave(int octaveNumber, int layerDepth)
 	{
 		
 		m_octaveNumber = octaveNumber;
@@ -39,6 +40,7 @@ public class Octave {
 	
 		//compute the initial start filter size
 		m_startFilterSize = m_scalePixelSteps + 3;
+		m_layerDepth = layerDepth;
 	}
 	
 	
@@ -58,10 +60,10 @@ public class Octave {
 		
 		//int min = Integer.MAX_VALUE;
 		//int max = Integer.MIN_VALUE;
-		m_octave = new HarrisResponse[4];
+		m_octave = new HarrisResponse[m_layerDepth];
 		
 		//create all harris response
-		for(int i = 0; i < 4; i++)
+		for(int i = 0; i < m_octave.length; i++)
 		{
 			//check if harris response layer was already computed in a other octave
 			if(harrisMap.containsKey(startFilterSize))
