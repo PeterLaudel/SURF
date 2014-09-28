@@ -22,8 +22,9 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 	String m_path;
 	int m_count;
 	float m_threshold;
+	String m_fileName;
 
-	public Sorter_SurfSymmetryCount(Pic[] pics, String path, int count, float threshold) {
+	public Sorter_SurfSymmetryCount(Pic[] pics, String path, int count, float threshold, String fileName) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
@@ -33,12 +34,13 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 		}
 		m_count = count;
 		m_threshold = threshold;
+		m_fileName = fileName;
 		getFeatureVectors();
 	}
 
 	@Override
 	public void getFeatureVectors() {
-		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, "descriptor");
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, m_fileName);
 		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
 		if(fileMap == null)
 			return;
@@ -122,8 +124,11 @@ public class Sorter_SurfSymmetryCount implements Sorter {
 		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		//finalMatch = FeatureMatchFilter.
 		//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
+		//for(int i = 0; i< finalMatch.size();i++)
+		//	System.out.println("FinalMatchDistance"+i+": " + finalMatch.get(i).distance);
 		
 		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, m_threshold);
+		//System.out.println("Query: " +queryPic + "  Act: " + actPic + "  Filtered: " + (size - finalMatch.size()));
 		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
 		//System.out.println("Query:" + query.interestPoints.size() + "/" + finalMatch.size());

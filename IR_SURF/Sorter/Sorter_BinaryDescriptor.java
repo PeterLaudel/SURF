@@ -16,37 +16,66 @@ import PicPropertys.PicSurf;
 import app.Sorter;
 import app.SurfBinaryFile;
 
-public class Sorter_SurfDistance implements Sorter {
+public class Sorter_BinaryDescriptor implements Sorter {
 	
 	PicSurf[] m_picSurf;
 	String m_path;
-	SurfBinaryFile m_xmlFile;
 	int m_count;
-	
-	public Sorter_SurfDistance(Pic[] pics, String path, int count) {
+	float m_threshold;
+	String m_fileName;
+	float m_binaryThreshold;
+
+	public Sorter_BinaryDescriptor(Pic[] pics, String path, int count, float threshold, String fileName) {
 		// TODO Auto-generated constructor stub
-		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path, "descriptor");
-		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			m_picSurf[i] = new PicSurf(pics[i]);
 		}
+		m_count = count;
+		m_threshold = threshold;
+		m_fileName = fileName;
 		getFeatureVectors();
 	}
 
 	@Override
 	public void getFeatureVectors() {
-		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, "descriptor");
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, m_fileName);
 		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
 		if(fileMap == null)
 			return;
+		
+		float sum = 0;
+		int count = 0;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			PicSurf surfpic = m_picSurf[i];
 			surfpic.interestPoints = fileMap.get(surfpic.pic.name.hashCode());
+			for(int j = 0; j < surfpic.interestPoints.size(); j++)
+			{
+				InterestPoint ip = surfpic.interestPoints.get(j);
+				for(int k = 0; k < ip.descriptor.length; k++)
+				{
+					sum += ip.descriptor[k];
+					count++;
+				}
+			}
+		}
+		
+		m_binaryThreshold = sum / (float) count;
+		
+		for(int i = 0; i < m_picSurf.length; i++)
+		{
+			PicSurf surfpic = m_picSurf[i];
+			for(int j = 0; j < surfpic.interestPoints.size(); j++)
+			{
+				InterestPoint ip = surfpic.interestPoints.get(j);
+				for(int k = 0; k < ip.descriptor.length; k++)
+				{
+					ip.descriptor[k] = ip.descriptor[k] < m_binaryThreshold ? 0.0f : 1.0f;
+				}
+			}
 		}
 	}
 
@@ -68,7 +97,6 @@ public class Sorter_SurfDistance implements Sorter {
 		DistComparator distComparator = new DistComparator();
 		TreeSet<Pic> treeSet = new TreeSet<Pic>(distComparator);
 		SortedSet<Pic> resultList = treeSet;
-
 
 		for (int n = 0; n < number; n++) {
 			PicSurf actPic = m_picSurf[n]; 
@@ -108,42 +136,33 @@ public class Sorter_SurfDistance implements Sorter {
 
 	@Override
 	public void computeDistance(int queryPic, int actPic) {
-		
-		PicSurf act = m_picSurf[actPic];
-		PicSurf query = m_picSurf[queryPic];
 		// TODO Auto-generated method stub
-		//KDTree kdtree = new KDTree();
-		//List<List<Matches>> knnMatch1 = kdtree.KnnMatching(actPic.interestPoints, queryPic.interestPoints, 2);
-		//List<List<Matches>> knnMatch2 = kdtree.KnnMatching(queryPic.interestPoints, actPic.interestPoints, 2);
+		PicSurf query = m_picSurf[queryPic];
+		PicSurf act = m_picSurf[actPic]; 
 		
-		//List<Matches> match1 = FeatureMatchFilter.DoRatioTest(knnMatch1);
-		//List<Matches> match2 = FeatureMatchFilter.DoRatioTest(knnMatch2);
-		
-		//List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		if(act.interestPoints == null || query.interestPoints == null)
 		{
 			act.pic.distance = Float.MAX_VALUE;
 			return;
 		}
-		
 		BruteForceMatching bfm = new BruteForceMatching();
-		
 		List<Matches> match1 = bfm.BFMatch(act.interestPoints, query.interestPoints);
 		List<Matches> match2 = bfm.BFMatch(query.interestPoints, act.interestPoints);
 		
 		List<Matches> finalMatch = FeatureMatchFilter.DoSymmetryTest(match1, match2);
 		//finalMatch = FeatureMatchFilter.
 		//List<Matches> finalMatch = FeatureMatchFilter.DoSurfResponseTest(match1, actPic.interestPoints, queryPic.interestPoints);
-		//List<Matches> finalMatch = FeatureMatchFilter.DoDistanceThreshold(match1, 0.075f);
+		//for(int i = 0; i< finalMatch.size();i++)
+		//	System.out.println("FinalMatchDistance"+i+": " + finalMatch.get(i).distance);
+		
+		finalMatch = FeatureMatchFilter.DoDistanceThreshold(finalMatch, m_threshold);
+		//System.out.println("Query: " +queryPic + "  Act: " + actPic + "  Filtered: " + (size - finalMatch.size()));
 		//finalMatch = FeatureMatchFilter.DoResponseRatioTest(finalMatch, actPic.interestPoints, queryPic.interestPoints);
 		//double dist = getEuclidianDistance((Pic) actPic, (Pic) queryPic);
+		//System.out.println("Query:" + query.interestPoints.size() + "/" + finalMatch.size());
 		
-		float distance = 0;
-		for(int i = 0; i < finalMatch.size(); i++)
-			distance += finalMatch.get(i).distance;
-		
-		act.pic.distance = distance * (float) query.interestPoints.size() / (float) finalMatch.size();
-		
+		act.pic.distance = query.interestPoints.size() - finalMatch.size();
+		//System.out.println("Distance: "  + act.pic.distance);
 		
 	}
 

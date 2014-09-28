@@ -36,10 +36,12 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.MouseInputAdapter;
 
 import PicPropertys.Pic;
+import Sorter.Sorter_BinaryDescriptor;
 import Sorter.Sorter_BinaryFile;
 import Sorter.Sorter_ColorMean;
 import Sorter.Sorter_ColorMean2;
-import Sorter.Sorter_RatioDistanceCount;
+import Sorter.Sorter_DistanceCount;
+import Sorter.Sorter_SurfFeatureExtractor;
 import Sorter.Sorter_SurfFeatureExtractorCV;
 import Sorter.Sorter_SurfSymmetryCount;
 import Sorter.Sorter_WriteMatchFile;
@@ -50,8 +52,16 @@ class IR_Project implements ActionListener{
 
 	// Einstellbare Parameter:
 
-	private final String startDirectory = "../../images/";
+	private final String startDirectory = "../../images/"; ///< start directory
 	private String path;
+	
+	Boolean loadImages = false; ///< bool value for decide if the Image view in the application get loaded (speeds up the start of the application)
+	
+	
+	int numberOfDescriptors = 400; ///<the number of descriptors to use
+	float distanceThreshold = 0.07f; ///< the distance threshold (e.g. DistSymm Filter)
+	String descriptorFileName = "descriptor"; ///<the Filname of the *.surf file
+	
 	
 
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +88,7 @@ class IR_Project implements ActionListener{
 	private MyCanvas myCanvas = new MyCanvas(); 
 	private TestAlgorithm myTestAlgorithm;
 	private JMenu testMenu;
+	JMenu m_parameter;
 
 	private String sortMethod = "ColorMean";
 	
@@ -85,6 +96,8 @@ class IR_Project implements ActionListener{
 	
 	JMenu methodMenu;
 	ButtonGroup buttonGroup;
+	
+
 
 	
 	static public void main(String[] args) {
@@ -117,20 +130,26 @@ class IR_Project implements ActionListener{
 		methodMenu.add(mI_colorMean2);
 		buttonGroup.add(mI_colorMean2);
 		
-		JRadioButtonMenuItem mI_surf = new JRadioButtonMenuItem("SURF", true);
-		mI_surf.addActionListener(this);
-		methodMenu.add(mI_surf);
-		buttonGroup.add(mI_surf);
+		JRadioButtonMenuItem mI_surfFeatureExtractorCV = new JRadioButtonMenuItem("SurfFeatureExtractorCV", true);
+		mI_surfFeatureExtractorCV.addActionListener(this);
+		methodMenu.add(mI_surfFeatureExtractorCV);
+		buttonGroup.add(mI_surfFeatureExtractorCV);
 		
-		JRadioButtonMenuItem mI_surfDistance = new JRadioButtonMenuItem("SurfDistance", true);
+		JRadioButtonMenuItem mI_surfFeatureExtractorSelf = new JRadioButtonMenuItem("SurfFeatureExtractorSelf", true);
+		mI_surfFeatureExtractorSelf.addActionListener(this);
+		methodMenu.add(mI_surfFeatureExtractorSelf);
+		buttonGroup.add(mI_surfFeatureExtractorSelf);
+		
+		JRadioButtonMenuItem mI_surfDistanceSymm = new JRadioButtonMenuItem("SurfDistSymm", true);
+		mI_surfDistanceSymm.addActionListener(this);
+		methodMenu.add(mI_surfDistanceSymm);
+		buttonGroup.add(mI_surfDistanceSymm);
+		
+		JRadioButtonMenuItem mI_surfDistance = new JRadioButtonMenuItem("SurfDist", true);
 		mI_surfDistance.addActionListener(this);
 		methodMenu.add(mI_surfDistance);
 		buttonGroup.add(mI_surfDistance);
 		
-		JRadioButtonMenuItem mI_surfFile = new JRadioButtonMenuItem("SurfFile", true);
-		mI_surfFile.addActionListener(this);
-		methodMenu.add(mI_surfFile);
-		buttonGroup.add(mI_surfFile);
 		
 		JRadioButtonMenuItem mI_test = new JRadioButtonMenuItem("test", true);
 		mI_test.addActionListener(this);
@@ -140,7 +159,7 @@ class IR_Project implements ActionListener{
 
 		JMenu settingsMenu = new JMenu("Einstellungen");
 
-		JMenu m_parameter = new JMenu("Parameter");
+		m_parameter = new JMenu("Parameter");
 		settingsMenu.add(m_parameter);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -193,7 +212,7 @@ class IR_Project implements ActionListener{
 	}
 
 
-	public void actionPerformed(ActionEvent event) {		
+	public void actionPerformed(ActionEvent event) {
 		
 		if (event.getActionCommand() == "ColorMean") {
 			sortMethod = "ColorMean";
@@ -203,21 +222,29 @@ class IR_Project implements ActionListener{
 			sortMethod = "ColorMean2";
 			sorter = new Sorter_ColorMean2(pics);
 		}
-		else if(event.getActionCommand() == "SURF")
+		else if(event.getActionCommand() == "SurfFeatureExtractorCV")
 		{
-			sortMethod = "SURF";
-			sorter = new Sorter_SurfFeatureExtractorCV(pics, path, 400);
+			//Surf Feature Extractor create an .surf file with all OpenCV SURF Descriptors for each Image in the folder
+			sortMethod = "SurfFeatureExtractorCV";
+			sorter = new Sorter_SurfFeatureExtractorCV(pics, path, numberOfDescriptors, descriptorFileName);
 		}
-		else if(event.getActionCommand() == "SurfDistance")
+		else if(event.getActionCommand() == "SurfFeatureExtractorSelf")
 		{
-			sortMethod = "SurfDistance";
-			sorter = new Sorter_SurfSymmetryCount(pics, path, 200, 0.07f);
-			//sorter = new Sorter_XMLFile(pics, path, "test.xml");
+			//Surf Feature Extractor create an .surf file with all self SURF Descriptors for each Image in the folder
+			sortMethod = "SurfFeatureExtractorSelf";
+			sorter = new Sorter_SurfFeatureExtractor(pics, path, numberOfDescriptors, descriptorFileName);
 		}
-		else if(event.getActionCommand() == "SurfFile")
+		else if(event.getActionCommand() == "SurfDistSymm")
 		{
-			sortMethod = "SurfFile";
-			//sorter = new Sorter_File(pics, path, "matches.match");
+			//Compute the distance of the Image by using symmetry Filter and Distance Threshold
+			sortMethod = "SurfDistSymm";
+			sorter = new Sorter_SurfSymmetryCount(pics, path, numberOfDescriptors, distanceThreshold, descriptorFileName);
+		}
+		else if(event.getActionCommand() == "SurfDist")
+		{
+			//Compute the distance of the Image by using Distance Threshold
+			sortMethod = "SurfDist";
+			sorter = new Sorter_DistanceCount(pics, path, numberOfDescriptors, distanceThreshold, descriptorFileName);
 		}
 		else if (event.getActionCommand() == "Alle") {
 			System.out.println("Alle Testen");
@@ -247,92 +274,24 @@ class IR_Project implements ActionListener{
 				if(pics[n] != null &&(!pics[n].type.equals("x")))
 					selectedPics.add(pics[n]);			
 			}
-			/*
-			Arrays.sort(m_matchFiles);
-			
-			for(int i = 0; i < m_matchFiles.length; i++)
-			{
-				sorter = new Sorter_BinaryFile(pics, path, m_matchFiles[i] + ".match");
-				myTestAlgorithm.test(selectedPics, m_matchFiles[i]);
-			}
-			*/
-			/*                                                               
-			float threshold = 0.05f;
+
+			// test loop which test the given sorter over a given threshold and save the result
+			float threshold = 4f;
 			for(int i = 0; i < 10; i++)
 			{
 				String name = Float.toString(threshold);
 				name = name.replace('.', ',');
-				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistance_" + name + "_400.match", new Sorter_SurfSymmetryCount(pics, path, 400, threshold));
-				//sorter = new Sorter_SurfSymmetryCount(pics, path, 200, threshold);
+				//sorter which saves the result by given sorter
+				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistanceBin_" + name + "_200.match", new Sorter_BinaryDescriptor(pics, path, 200, threshold, descriptorFileName));
 				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
 				((Sorter_WriteMatchFile) sorter).SaveMatches();
-				threshold += 0.01f;
+				threshold += 1f;
 				sorter = null;	
 			}
-			
-			*/
-			for(int i = 0; i < m_matchFiles.length; i++)
-			{
-				sortMethod = "BinaryFile " + m_matchFiles[i]; 
-				sorter = new Sorter_BinaryFile(pics, path, m_matchFiles[i]+ ".match");
-				myTestAlgorithm.test(selectedPics, " ");
-			}
-			/*
-			 * 
-			System.out.println("Testen");
-			Vector<Pic> selectedPics = new Vector<Pic>();
-			for (int n = 0; n < pics.length; n++) { 	
-				if(pics[n] != null &&(!pics[n].type.equals("x")))
-					selectedPics.add(pics[n]);			
-			}
-			System.out.println("All Selected");
-			
-			
-			sorter = new Sorter_SurfFeatureExtractor(pics, path, 400);
-			
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches50_high.match", new Sorter_SurfDistance(pics, path, 50));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches100_high.match", new Sorter_SurfDistance(pics, path, 100));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches150_high.match", new Sorter_SurfDistance(pics, path, 150));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches200_high.match", new Sorter_SurfDistance(pics, path, 200));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches250_high.match", new Sorter_SurfDistance(pics, path, 250));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches300_high.match", new Sorter_SurfDistance(pics, path, 300));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches350_high.match", new Sorter_SurfDistance(pics, path, 350));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			
-			System.out.println("All Selected");
-			sorter = new Sorter_WriteMatchFile(pics, path, "matches400_high.match", new Sorter_SurfDistance(pics, path, 400));
-			myTestAlgorithm.test(selectedPics, "all");
-			((Sorter_WriteMatchFile) sorter).SaveMatches();
-			*/
-			
 		}
 		else if(Arrays.asList(m_matchFiles).contains(event.getActionCommand()))
 		{
+			//load the binary file which is in the imageset folder
 			sortMethod = "BinaryFile " + event.getActionCommand(); 
 			sorter = new Sorter_BinaryFile(pics, path, event.getActionCommand() + ".match");
 		}	
@@ -409,9 +368,9 @@ class IR_Project implements ActionListener{
 			int numMatches = 0;
 			for (int i = 0; i < filenames.length; i++) {
 				String path = folder + "/" + filenames[i];
-				Boolean fast = false;
+				
 				if (filenames[i].endsWith("jpg") || filenames[i].endsWith("png") || filenames[i].endsWith("gif")) {
-					if(fast)
+					if(loadImages)
 					{
 						try {
 							File file = new File(path); 

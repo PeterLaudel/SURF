@@ -45,6 +45,8 @@ public class RenameFiles {
 	}
 
 	static void SaveDescriptorAsOutputStream() {
+		
+		int size = 600;
 
 		String startDirectory = "./images/";
 
@@ -62,9 +64,9 @@ public class RenameFiles {
 		File[] files = folder.listFiles();
 
 		SurfBinaryFile sbf = new SurfBinaryFile(path, "descriptor");
-		Map<Integer, List<InterestPoint>> map = sbf.ReadSurfBinaryFile(200);
+		Map<Integer, List<InterestPoint>> map = sbf.ReadSurfBinaryFile(size);
 
-		float[][] values = new float[files.length * 200][64];
+		float[][] values = new float[files.length * size][64];
 
 		for (int i = 0; i < files.length; i++) {
 
@@ -78,7 +80,7 @@ public class RenameFiles {
 
 			for (int j = 0; j < list.size(); j++) {
 				InterestPoint ip = list.get(j);
-				values[i * 200 + j] = ip.descriptor;
+				values[i * size + j] = ip.descriptor;
 			}
 			System.out.println("" + i);
 		}
@@ -99,6 +101,7 @@ public class RenameFiles {
 		
 		JFileChooser fc = new JFileChooser(startDirectory);
 
+		int size = 600;
 		
 		
 		// Nur komplette Ordner koennen ausgewaehlt werden
@@ -116,9 +119,9 @@ public class RenameFiles {
 		
 		
 		SurfBinaryFile sbf = new SurfBinaryFile(path, "descriptor");
-		Map<Integer, List<InterestPoint>> map = sbf.ReadSurfBinaryFile(200);
+		Map<Integer, List<InterestPoint>> map = sbf.ReadSurfBinaryFile(size);
 		
-		float[][] values = new float[files.length * 200][64];
+		float[][] values = new float[files.length * size][];
 		
 		for(int i = 0; i < files.length; i++)
 		{
@@ -133,17 +136,17 @@ public class RenameFiles {
 			for(int j = 0; j < list.size(); j++)
 			{
 				InterestPoint ip = list.get(j);
-				values[i * 200 + j] = ip.descriptor;
+				values[i * size + j] = ip.descriptor;
 			}
-			System.out.println("" + i);
+			System.out.println("" + i+ " " + list.size());
 		}
 		
 		
 		// speichere auf die Festplatte
 		//File file = new File(path +"/test.lol");
-        try(ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path + "\\file.output")))) {
+        try(ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get(path + "\\file600_16.output")))) {
         	float[][] values32 = (float[][]) ois.readObject();
-           sbf = new SurfBinaryFile(path, "descriptor32");
+           sbf = new SurfBinaryFile(path, "descriptor16_600");
            Map<Integer, List<InterestPoint>> finalMap = new HashMap<Integer, List<InterestPoint>>();
            for(int i = 0; i< files.length; i++)
            {
@@ -157,7 +160,7 @@ public class RenameFiles {
    			for(int j = 0; j < list.size(); j++)
 			{
 				InterestPoint ip = list.get(j);
-				ip.descriptor = values32[i * 200 + j];
+				ip.descriptor = values32[i * size + j];
 			}
    			finalMap.put(hash, list);
            }

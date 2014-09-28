@@ -24,11 +24,11 @@ public class Sorter_SurfFeatureExtractorCV implements Sorter{
 	SurfBinaryFile m_xmlFile;
 	int m_count;
 
-	public Sorter_SurfFeatureExtractorCV(Pic[] pics, String path, int count) {
+	public Sorter_SurfFeatureExtractorCV(Pic[] pics, String path, int count, String fileName) {
 		// TODO Auto-generated method stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path, "descriptorCV_ID");
+		m_xmlFile = new SurfBinaryFile(m_path, fileName);
 		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{

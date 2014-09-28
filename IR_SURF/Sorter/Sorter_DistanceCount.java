@@ -22,8 +22,9 @@ public class Sorter_DistanceCount implements Sorter {
 	String m_path;
 	int m_count;
 	float m_threshold;
+	String m_fileName;
 
-	public Sorter_DistanceCount(Pic[] pics, String path, int count, float threshold) {
+	public Sorter_DistanceCount(Pic[] pics, String path, int count, float threshold, String fileName) {
 		// TODO Auto-generated constructor stub
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
@@ -33,12 +34,13 @@ public class Sorter_DistanceCount implements Sorter {
 		}
 		m_count = count;
 		m_threshold = threshold;
+		m_fileName = fileName;
 		getFeatureVectors();
 	}
 
 	@Override
 	public void getFeatureVectors() {
-		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, "descriptor");
+		SurfBinaryFile sxmlf = new SurfBinaryFile(m_path, m_fileName);
 		Map<Integer, List<InterestPoint>> fileMap = sxmlf.ReadSurfBinaryFile(m_count);
 		if(fileMap == null)
 			return;

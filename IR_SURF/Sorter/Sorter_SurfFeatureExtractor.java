@@ -22,12 +22,12 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 	SurfBinaryFile m_xmlFile;
 	int m_count;
 	
-	public Sorter_SurfFeatureExtractor(Pic[] pics, String path, int count) {
+	public Sorter_SurfFeatureExtractor(Pic[] pics, String path, int count, String fileName) {
 		// TODO Auto-generated constructor stub
 		
 		m_path = path;
 		m_picSurf = new PicSurf[pics.length];
-		m_xmlFile = new SurfBinaryFile(m_path, "descriptor");
+		m_xmlFile = new SurfBinaryFile(m_path, fileName);
 		m_count = count;
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
@@ -57,9 +57,9 @@ public class Sorter_SurfFeatureExtractor implements Sorter {
 		SurfFeatureDescriptor sfdesc = new SurfFeatureDescriptor();
 		SurfFeatureDetector sfd;
 		if(m_count != -1)
-			sfd = new SurfFeatureDetector(m_count, 4);
+			sfd = new SurfFeatureDetector(m_count, 4, 4);
 		else
-			sfd = new SurfFeatureDetector(4);
+			sfd = new SurfFeatureDetector(4, 4);
 		for(int i = 0; i < m_picSurf.length; i++)
 		{
 			try {
