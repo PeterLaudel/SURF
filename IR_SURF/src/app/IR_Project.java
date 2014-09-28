@@ -281,12 +281,18 @@ class IR_Project implements ActionListener{
 			{
 				String name = Float.toString(threshold);
 				name = name.replace('.', ',');
+				
+				
+				//choose your sorter which has to get saved
+				Sorter saveResultSorter = new Sorter_BinaryDescriptor(pics, path, 200, threshold, descriptorFileName);
+				
 				//sorter which saves the result by given sorter
-				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistanceBin_" + name + "_200.match", new Sorter_BinaryDescriptor(pics, path, 200, threshold, descriptorFileName));
+				sorter = new Sorter_WriteMatchFile(pics, path, "SymDistanceBin_" + name + "_200.match", saveResultSorter);
 				myTestAlgorithm.test(selectedPics, "threshold: " + threshold);
 				((Sorter_WriteMatchFile) sorter).SaveMatches();
 				threshold += 1f;
-				sorter = null;	
+				sorter = null;
+				saveResultSorter = null;
 			}
 		}
 		else if(Arrays.asList(m_matchFiles).contains(event.getActionCommand()))
